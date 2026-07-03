@@ -1,0 +1,107 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── Base ── */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: #F6F4EC;
+  font-family: 'Hanken Grotesk', system-ui, sans-serif;
+  color: #23241C;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection { background: #BECA5C; color: #23260F; }
+
+/* ── Scrollbar hide (for strip) ── */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* ── Confidence bar animation needs to start from 0 ── */
+@keyframes sk-bar      { from { width: 0; } }
+@keyframes sk-bar-slow { from { width: 0; } }
+
+/* ── Scan line uses top % so must be in CSS, not Tailwind ── */
+@keyframes sk-scan {
+  0%   { top: 4%; }
+  50%  { top: 92%; }
+  100% { top: 4%; }
+}
+.animate-scan { animation: sk-scan 1.6s ease-in-out infinite; }
+
+/* ── Marquee (strip) ── */
+@keyframes sk-marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.animate-marquee { animation: sk-marquee 34s linear infinite; }
+
+/* ── Cross-fade ── */
+@keyframes sk-cross {
+  0%,42%  { opacity: 1; }
+  50%,92% { opacity: 0; }
+  100%    { opacity: 1; }
+}
+@keyframes sk-cross2 {
+  0%,42%  { opacity: 0; }
+  50%,92% { opacity: 1; }
+  100%    { opacity: 0; }
+}
+.animate-cross  { animation: sk-cross  7s ease-in-out infinite; }
+.animate-cross2 { animation: sk-cross2 7s ease-in-out infinite; }
+
+/* ── Confidence bar animation ── */
+.animate-bar      { animation: sk-bar      1.1s ease both; }
+.animate-bar-slow { animation: sk-bar-slow 1.3s ease both; }
+
+/* ── Pulse dot ── */
+@keyframes sk-pulsedot {
+  0%,100% { opacity: 1;   transform: scale(1); }
+  50%     { opacity: .35; transform: scale(.7); }
+}
+.animate-pulsedot { animation: sk-pulsedot 1.6s infinite; }
+
+/* ── Spinner ── */
+@keyframes sk-spin { to { transform: rotate(360deg); } }
+.animate-spinner { animation: sk-spin 0.9s linear infinite; }
+
+/* ── Fade up (screen enter) ── */
+@keyframes sk-fadeup {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeup      { animation: sk-fadeup 0.7s ease both; }
+.animate-fadeup-slow { animation: sk-fadeup 0.9s ease both; }
+
+/* ── Float ── */
+@keyframes sk-float {
+  0%,100% { transform: translateY(0); }
+  50%     { transform: translateY(-7px); }
+}
+.animate-float { animation: sk-float 3s ease-in-out infinite; }
+
+/* ── Typography helpers ── */
+.font-serif { font-family: 'Newsreader', Georgia, serif; }
+.font-mono  { font-family: 'Spline Sans Mono', monospace; }
+
+/* ── Eyebrow label ── */
+.eyebrow {
+  font-family: 'Spline Sans Mono', monospace;
+  font-size: 11px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: #9C9A8C;
+}
+
+/* ── Repeating stripe overlay (used in remedy cards) ── */
+.stripe-overlay {
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(255,255,255,.18) 0 10px,
+    transparent 10px 20px
+  );
+}
