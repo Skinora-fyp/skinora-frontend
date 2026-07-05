@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useGoogleLogin } from '@react-oauth/google';
 import { useApp } from '../context/AppContext';
-import { login, register } from '../api';
+import { login, register, googleLogin } from '../api';
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -15,17 +16,30 @@ export default function Auth() {
 
   const isSignup = tab === 'signup';
 
-  // Mock login: creates a user session immediately (replace with real OAuth in prod)
-  function mockLogin(displayName = 'Maya Fernando', displayEmail = 'maya@skinora.app') {
-    const user = { id: 1, name: displayName || 'Maya Fernando', email: displayEmail || email || 'maya@skinora.app' };
+  function saveSession(user, access_token) {
     dispatch({ type: 'SET_USER',  payload: user });
-    dispatch({ type: 'SET_TOKEN', payload: 'mock-jwt-token' });
+    dispatch({ type: 'SET_TOKEN', payload: access_token });
     navigate('/guidelines');
   }
 
-  async function handleGoogleAuth() {
-    // In production: redirect to /api/auth/google
-    mockLogin(name || 'Maya Fernando', email || 'maya@skinora.app');
+  const initiateGoogleLogin = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      setLoad(true);
+      setError('');
+      try {
+        const res = await googleLogin({ access_token: tokenResponse.access_token });
+        saveSession(res.data.user, res.data.access_token);
+      } catch {
+        setError('Google sign-in failed. Please try again.');
+      } finally {
+        setLoad(false);
+      }
+    },
+    onError: () => setError('Google sign-in was cancelled or failed.'),
+  });
+
+  function handleGoogleAuth() {
+    initiateGoogleLogin();
   }
 
   async function handleSubmit(e) {
@@ -34,22 +48,17 @@ export default function Auth() {
     setLoad(true);
     try {
       if (isSignup) {
-        const res = await register({ name, email, password });
-        if (res.data?.message === 'Registration Successful') {
-          const lr = await login({ email, password });
-          dispatch({ type: 'SET_USER',  payload: lr.data.user });
-          dispatch({ type: 'SET_TOKEN', payload: lr.data.access_token });
-          navigate('/guidelines');
-        }
+        await register({ name, email, password });
+        // Auto-login after successful registration
+        const lr = await login({ email, password });
+        saveSession(lr.data.user, lr.data.access_token);
       } else {
         const res = await login({ email, password });
-        dispatch({ type: 'SET_USER',  payload: res.data.user });
-        dispatch({ type: 'SET_TOKEN', payload: res.data.access_token });
-        navigate('/guidelines');
+        saveSession(res.data.user, res.data.access_token);
       }
-    } catch {
-      // Fallback to mock in development
-      mockLogin(name, email);
+    } catch (err) {
+      const msg = err?.response?.data?.error;
+      setError(msg || (isSignup ? 'Registration failed. Please try again.' : 'Invalid email or password.'));
     } finally {
       setLoad(false);
     }

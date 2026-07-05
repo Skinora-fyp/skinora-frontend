@@ -26,12 +26,16 @@ api.interceptors.response.use(
 );
 
 // ── Auth ──────────────────────────────────────────────────────
-export const register = (data) => api.post('/auth/register', data);
-export const login    = (data) => api.post('/auth/login', data);
+export const register     = (data) => api.post('/auth/register', data);
+export const login        = (data) => api.post('/auth/login', data);
+export const googleLogin  = (data) => api.post('/auth/google-login', data);
 
 // ── Detection ─────────────────────────────────────────────────
 export const detect = (formData) =>
-  api.post('/detect', formData, { headers: { 'Content-Type': 'multipart/form-data' } });
+  api.post('/detect', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+    timeout: 120000, // 2 min — TF models load on first call
+  });
 
 // ── Questionnaire ─────────────────────────────────────────────
 export const submitAnswers = (data) => api.post('/questionnaire/submit', data);
