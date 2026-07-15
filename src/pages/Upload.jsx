@@ -51,7 +51,9 @@ export default function Upload() {
       }
 
       setTimeout(() => {
-        navigate(routing === 'consultant' ? '/consult' : '/result');
+        if (routing === 'consultant')    navigate('/consult');
+        else if (routing === 'questionnaire') navigate('/questionnaire');
+        else                             navigate('/result');
       }, 400);
 
     } catch (err) {
