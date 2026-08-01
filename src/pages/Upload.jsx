@@ -22,6 +22,13 @@ export default function Upload() {
     setPreview({ url, file });
   }, []);
 
+  function handleReupload() {
+    setFaceError(null);
+    setPreview(null);
+    if (fileRef.current) fileRef.current.value = '';
+    fileRef.current?.click();
+  }
+
   const onDrop = (e) => {
     e.preventDefault(); setDragOver(false);
     handleFile(e.dataTransfer.files[0]);
@@ -59,7 +66,7 @@ export default function Upload() {
     } catch (err) {
       setScanning(false);
 
-      // 400 = validation error (no face, wrong file type, etc.)
+      // 400 = no face detected or invalid file
       if (err.response?.status === 400) {
         setFaceError(err.response.data?.error || 'No face detected. Please upload a clear face photo.');
         return;
@@ -130,21 +137,56 @@ export default function Upload() {
             )}
           </div>
 
-          {/* Face detection error banner */}
+          {/* Face / upload error banner */}
           {faceError && (
             <div style={{
-              marginTop: 14, padding: '14px 18px', borderRadius: 12,
+              marginTop: 14, borderRadius: 14,
               background: '#FDF0EF', border: '1px solid #F5C6C2',
-              display: 'flex', alignItems: 'flex-start', gap: 12,
+              overflow: 'hidden',
             }}>
-              <span style={{ fontSize: 20, lineHeight: 1 }}>⚠️</span>
-              <div>
-                <div style={{ fontWeight: 600, fontSize: 14, color: '#922B21', marginBottom: 4 }}>
-                  No face detected
+              {/* Message row */}
+              <div style={{ padding: '14px 18px 10px', display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+                <span style={{ fontSize: 20, lineHeight: 1, flexShrink: 0 }}>⚠️</span>
+                <div>
+                  <div style={{ fontWeight: 600, fontSize: 14, color: '#922B21', marginBottom: 4 }}>
+                    Could not analyse this image
+                  </div>
+                  <div style={{ fontSize: 13, color: '#7B241C', lineHeight: 1.55 }}>
+                    {faceError}
+                  </div>
+                  <div style={{ fontSize: 12, color: '#9C9A8C', marginTop: 6, lineHeight: 1.5 }}>
+                    Tips: use natural lighting, face the camera directly, avoid filters or heavy makeup.
+                  </div>
                 </div>
-                <div style={{ fontSize: 13, color: '#7B241C', lineHeight: 1.5 }}>
-                  {faceError} Please try again with a clear, well-lit frontal photo.
-                </div>
+              </div>
+
+              {/* Action buttons row */}
+              <div style={{
+                borderTop: '1px solid #F5C6C2', padding: '10px 18px',
+                display: 'flex', gap: 10, alignItems: 'center',
+              }}>
+                <button
+                  onClick={handleReupload}
+                  style={{
+                    background: '#922B21', color: '#fff', border: 'none',
+                    borderRadius: 8, padding: '8px 16px',
+                    fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 13,
+                    cursor: 'pointer', flexShrink: 0,
+                  }}
+                >
+                  Try a different photo
+                </button>
+                <button
+                  onClick={() => navigate('/guidelines')}
+                  style={{
+                    background: 'transparent', color: '#922B21',
+                    border: '1px solid #F5C6C2', borderRadius: 8,
+                    padding: '8px 16px', fontFamily: "'Hanken Grotesk'",
+                    fontWeight: 500, fontSize: 13, cursor: 'pointer',
+                  }}
+                >
+                  View photo guidelines
+                </button>
               </div>
             </div>
           )}
