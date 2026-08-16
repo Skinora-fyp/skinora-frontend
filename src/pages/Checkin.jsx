@@ -13,8 +13,8 @@ const OUTCOMES = {
     deltaLabel: 'improvement',
     headline: 'Looking good — keep going.',
     body:   'Your skin shows measurable improvement. Continue with the current protocol for another cycle to lock in these gains.',
-    cta:    'Continue tracking →',
-    route:  '/track',
+    cta:    'Back to dashboard →',
+    route:  '/upload',
   },
   'No change': {
     label: 'No change',
@@ -180,9 +180,9 @@ export default function Checkin() {
                 style={{ background: o.accent, color: '#fff', border: 'none', borderRadius: '999px', padding: '15px 26px', fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 15, cursor: 'pointer', marginBottom: 12 }}>
                 {saved ? 'Saving…' : o.cta}
               </button>
-              <button onClick={() => navigate('/')}
+              <button onClick={() => navigate('/upload')}
                 style={{ background: 'transparent', border: '1px solid #D5D1C2', color: '#57564E', borderRadius: '999px', padding: '12px 20px', fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 13.5, cursor: 'pointer' }}>
-                Return to home
+                Back to dashboard
               </button>
             </div>
           </div>

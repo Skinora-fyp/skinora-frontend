@@ -43,7 +43,7 @@ export default function AppHeader({ activeStep = 'capture', consultMode = false 
     }}>
       {/* Logo — real image */}
       <button
-        onClick={() => navigate('/')}
+        onClick={() => navigate(state.user ? '/upload' : '/')}
         style={{ display: 'flex', alignItems: 'center', gap: '9px', background: 'none', border: 'none', cursor: 'pointer' }}
       >
         <img
