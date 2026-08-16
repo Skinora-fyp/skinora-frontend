@@ -48,6 +48,11 @@ export const getRemedy    = (id)              => api.get(`/remedies/${id}`);
 // ── Tracking ──────────────────────────────────────────────────
 export const createTracking   = (data) => api.post('/tracking/create', data);
 export const getTracking      = ()     => api.get('/tracking');
+export const getDashboard     = ()     => api.get('/tracking/dashboard');
 export const recordCheckin    = (data) => api.post('/tracking/checkin', data);
+export const sendTestReminder      = ()     => api.post('/tracking/send-reminder');
+export const checkTrackingDue      = ()     => api.get('/tracking/due');
+export const compareProgress       = (data) => api.post('/tracking/compare', data);
+export const getNotificationCount  = ()     => api.get('/tracking/notifications/count');
 
 export default api;

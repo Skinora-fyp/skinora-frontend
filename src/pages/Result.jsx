@@ -27,6 +27,12 @@ const VALIDATION_STYLES = {
   'Weakly Supports Prediction':     { bg: '#FFF0F0', border: '#F5C6C2', dot: '#C0392B', label: '✗ Weakly Supports Prediction' },
 };
 
+const PROGRESS_CONFIG = {
+  improved: { label: 'Improved', icon: '↑', accent: '#3E7A2A', bg: '#F0FAF0', border: '#A8D5A2', msg: "Your skin is responding well to the remedy. Keep going!" },
+  no_change: { label: 'No change yet', icon: '→', accent: '#8A6B1E', bg: '#FFF8E6', border: '#F0DFA0', msg: "Skin looks similar to before. Give it another cycle — some remedies take time." },
+  worse: { label: 'Regression detected', icon: '↓', accent: '#B05E3C', bg: '#FDF4F0', border: '#EDBBAA', msg: "Skin appears to have reacted. Consider switching remedies or consulting a dermatologist." },
+};
+
 export default function Result() {
   const navigate  = useNavigate();
   const { state } = useApp();
@@ -35,6 +41,7 @@ export default function Result() {
   const validationScore   = state.validationScore;
   const advices           = state.advices ?? [];
   const routing           = state.routing ?? 'direct';
+  const checkinProgress   = state.checkinProgress;
 
   useEffect(() => { if (!detection) navigate('/upload', { replace: true }); }, [detection, navigate]);
   if (!detection) return null;
@@ -169,6 +176,82 @@ export default function Result() {
           </div>
         </section>
       )}
+
+      {/* ── Progress Comparison Panel (shown when a check-in was just completed) ── */}
+      {checkinProgress && (() => {
+        const pc = PROGRESS_CONFIG[checkinProgress.progress] ?? PROGRESS_CONFIG.no_change;
+        const deltaPct = checkinProgress.delta != null ? Math.round(Math.abs(checkinProgress.delta) * 100) : null;
+        return (
+          <section style={{ background: pc.bg, borderTop: `2px solid ${pc.border}`, padding: '36px 44px' }}>
+            <div style={{ maxWidth: 1080, margin: '0 auto' }}>
+              <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: pc.accent, marginBottom: 10 }}>
+                Progress Check-in Result
+              </div>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 32, alignItems: 'flex-start' }}>
+
+                {/* Score badge */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexShrink: 0 }}>
+                  <div style={{ width: 68, height: 68, borderRadius: '50%', background: pc.accent, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 30 }}>
+                    {pc.icon}
+                  </div>
+                  <div>
+                    <div style={{ fontFamily: "'Newsreader',serif", fontSize: 28, color: pc.accent, lineHeight: 1 }}>
+                      {pc.label}
+                    </div>
+                    {deltaPct != null && (
+                      <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 11, color: pc.accent, letterSpacing: '.06em', marginTop: 4 }}>
+                        {checkinProgress.progress === 'improved' ? '+' : checkinProgress.progress === 'worse' ? '−' : '±'}{deltaPct}% skin health score
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Before / After thumbnails */}
+                <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
+                  {[
+                    { label: 'Before', url: checkinProgress.old_image_url, condition: checkinProgress.old_condition },
+                    { label: 'After',  url: checkinProgress.new_image_url, condition: checkinProgress.new_condition },
+                  ].map(({ label, url, condition }) => (
+                    <div key={label} style={{ textAlign: 'center' }}>
+                      <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, letterSpacing: '.1em', textTransform: 'uppercase', color: '#9C9A8C', marginBottom: 6 }}>{label}</div>
+                      <div style={{ width: 80, height: 80, borderRadius: 12, overflow: 'hidden', background: '#ECEADF', border: `1.5px solid ${pc.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        {url
+                          ? <img src={url} alt={label} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                          : <span style={{ fontSize: 24 }}>📷</span>
+                        }
+                      </div>
+                      {condition && (
+                        <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, color: '#7E9A3E', marginTop: 5 }}>{condition}</div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Message + next step */}
+                <div style={{ flex: '1 1 260px' }}>
+                  <p style={{ fontSize: 14.5, color: '#3a3a2a', lineHeight: 1.65, margin: '0 0 16px' }}>{pc.msg}</p>
+                  {checkinProgress.progress === 'worse' ? (
+                    <button onClick={() => navigate('/consult')}
+                      style={{ background: pc.accent, color: '#fff', border: 'none', borderRadius: '999px', padding: '12px 24px', fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 14, cursor: 'pointer' }}>
+                      Talk to a specialist →
+                    </button>
+                  ) : checkinProgress.progress === 'no_change' ? (
+                    <button onClick={() => navigate('/remedies')}
+                      style={{ background: pc.accent, color: '#fff', border: 'none', borderRadius: '999px', padding: '12px 24px', fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 14, cursor: 'pointer' }}>
+                      Explore other remedies →
+                    </button>
+                  ) : (
+                    <button onClick={() => navigate('/upload')}
+                      style={{ background: pc.accent, color: '#fff', border: 'none', borderRadius: '999px', padding: '12px 24px', fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 14, cursor: 'pointer' }}>
+                      Back to dashboard →
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </section>
+        );
+      })()}
 
       {/* ── Medical Disclaimer ── */}
       <footer style={{ background: '#ECEADF', borderTop: '1px solid #E0DCCC', padding: '28px 44px' }}>

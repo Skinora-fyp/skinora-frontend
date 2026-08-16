@@ -2,12 +2,12 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AppHeader from '../components/AppHeader';
 import { useApp } from '../context/AppContext';
-import { detect, getRemedies as fetchRemedies } from '../api';
+import { detect, getRemedies as fetchRemedies, checkTrackingDue, compareProgress, getNotificationCount } from '../api';
 import { getRemediesForCondition } from '../data/remedies';
 
 export default function Upload() {
-  const navigate     = useNavigate();
-  const { dispatch } = useApp();
+  const navigate          = useNavigate();
+  const { state, dispatch } = useApp();
   const fileRef      = useRef(null);
   const videoRef     = useRef(null);
   const canvasRef    = useRef(null);
@@ -21,6 +21,14 @@ export default function Upload() {
   const [cameraErr,   setCameraErr]   = useState(null);
   const [cameraReady, setCameraReady] = useState(false);
   const [facingMode,  setFacingMode]  = useState('user');
+
+  // Fetch whether a progress check-in is due for this user
+  useEffect(() => {
+    if (!state.user) return;
+    checkTrackingDue()
+      .then(res => dispatch({ type: 'SET_TRACKING_DUE', payload: res.data }))
+      .catch(() => {});
+  }, [state.user]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Wire stream into video element after the modal mounts
   useEffect(() => {
@@ -133,6 +141,23 @@ export default function Upload() {
 
       dispatch({ type: 'SET_DETECTION', payload: { ...data, image_url: preview.url } });
       dispatch({ type: 'SET_ROUTING',   payload: routing });
+      dispatch({ type: 'SET_CHECKIN_PROGRESS', payload: null }); // clear any previous check-in
+
+      // If a progress check-in is due, compare new scan with the tracked baseline
+      if (state.trackingDue?.due && data.detection_id) {
+        try {
+          const cmpRes = await compareProgress({ detection_id: data.detection_id });
+          dispatch({ type: 'SET_CHECKIN_PROGRESS', payload: cmpRes.data });
+          // Clear badge — notifications resolved server-side by compare endpoint
+          getNotificationCount()
+            .then(r => dispatch({ type: 'SET_PENDING_CHECKINS', payload: r.data.count }))
+            .catch(() => {});
+          // Refresh tracking due (next_reminder just got updated)
+          checkTrackingDue()
+            .then(r => dispatch({ type: 'SET_TRACKING_DUE', payload: r.data }))
+            .catch(() => {});
+        } catch { /* comparison failure should not block results */ }
+      }
 
       try {
         const remRes = await fetchRemedies(data.final_condition);
@@ -339,6 +364,41 @@ export default function Upload() {
         display: 'flex', flexWrap: 'wrap', gap: 40, alignItems: 'flex-start',
       }}>
 
+        {/* ── Check-in due banner ── */}
+        {state.trackingDue?.due && (() => {
+          const td = state.trackingDue;
+          const freqDays = td.tracking?.frequency === 'weekly' ? '7 days' : '30 days';
+          return (
+            <div style={{ width: '100%', background: 'linear-gradient(135deg,#EEF0DC,#F4F6EA)', border: '1.5px solid #BECA5C', borderRadius: 16, padding: '20px 26px', display: 'flex', gap: 18, alignItems: 'flex-start' }}>
+              <div style={{ width: 44, height: 44, borderRadius: 12, background: '#BECA5C', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22, flexShrink: 0 }}>📅</div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: '#5E6A2A', marginBottom: 6 }}>
+                  Progress check-in due
+                </div>
+                <div style={{ fontWeight: 700, fontSize: 15, color: '#23241C', marginBottom: 4 }}>
+                  {freqDays} have passed since you started {td.tracking?.remedy_name ?? 'your remedy'}.
+                </div>
+                <div style={{ fontSize: 13.5, color: '#6B6A60', lineHeight: 1.55, marginBottom: td.old_detection ? 14 : 0 }}>
+                  Upload a new photo below to see your progress. Our AI will automatically compare it with your original scan.
+                </div>
+                {td.old_detection && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: 12 }}>
+                    <span style={{ fontSize: 12, color: '#9C9A8C' }}>Original scan:</span>
+                    {td.old_detection.image_url ? (
+                      <img src={td.old_detection.image_url} alt="Original scan" style={{ width: 52, height: 52, borderRadius: 10, objectFit: 'cover', border: '1px solid #E0DCCC' }} />
+                    ) : (
+                      <span style={{ width: 52, height: 52, borderRadius: 10, background: '#ECEADF', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20 }}>📷</span>
+                    )}
+                    <span style={{ fontFamily: "'Spline Sans Mono'", fontSize: 11, color: '#7E9A3E', background: '#F4F6EA', padding: '4px 10px', borderRadius: 6 }}>
+                      {td.old_detection.final_condition}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })()}
+
         {/* ── Left: dropzone / preview ── */}
         <div style={{ flex: '1 1 420px' }}>
           <div style={{
@@ -352,7 +412,7 @@ export default function Upload() {
             fontFamily: "'Newsreader',serif", fontWeight: 400,
             fontSize: 38, letterSpacing: '-.02em', margin: '0 0 22px',
           }}>
-            Upload your photo.
+            {state.trackingDue?.due ? 'Upload your new photo.' : 'Upload your photo.'}
           </h2>
 
           {/* Dropzone */}

@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AppHeader from '../components/AppHeader';
 import { useApp } from '../context/AppContext';
+import { sendTestReminder } from '../api';
 
 export default function Reminder() {
   const navigate   = useNavigate();
@@ -12,6 +14,18 @@ export default function Reminder() {
   const freqDays   = freq === 'weekly' ? '7 days' : '30 days';
   const userEmail  = state.user?.email ?? 'your email';
   const userName   = state.user?.name?.split(' ')[0] ?? 'there';
+
+  const [testState, setTestState] = useState('idle'); // 'idle' | 'sending' | 'sent' | 'error'
+
+  async function handleTestReminder() {
+    setTestState('sending');
+    try {
+      await sendTestReminder();
+      setTestState('sent');
+    } catch {
+      setTestState('error');
+    }
+  }
 
   return (
     <div style={{ background: '#F6F4EC', minHeight: '100vh', fontFamily: "'Hanken Grotesk'" }}>
@@ -109,6 +123,39 @@ export default function Reminder() {
               <p style={{ fontSize: 11, color: '#A8A698', lineHeight: 1.6, margin: '18px 0 0', textAlign: 'center' }}>
                 Receiving this because progress tracking is on ({freqLabel}). Manage reminders anytime.
               </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Test reminder section */}
+        <div style={{ background: '#fff', border: '1px solid #E6E3D8', borderRadius: 14, padding: '20px 24px', marginBottom: 28 }}>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
+            <span style={{ fontSize: 22, flexShrink: 0, marginTop: 2 }}>🧪</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontWeight: 600, fontSize: 14, color: '#23241C', marginBottom: 4 }}>
+                Want to verify the reminder email now?
+              </div>
+              <div style={{ fontSize: 13, color: '#6B6A60', lineHeight: 1.55, marginBottom: 14 }}>
+                Click below to immediately send a test reminder to <strong>{userEmail}</strong> — no need to wait {freqDays}.
+              </div>
+
+              {testState === 'sent' ? (
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#F4F8EE', border: '1px solid #B8D4A0', borderRadius: 10, padding: '10px 16px', fontSize: 13.5, color: '#3E7A2A' }}>
+                  <span>✓</span> Reminder email sent! Check <strong>{userEmail}</strong>
+                </div>
+              ) : testState === 'error' ? (
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#FDF4F0', border: '1px solid #EDBBAA', borderRadius: 10, padding: '10px 16px', fontSize: 13.5, color: '#B05E3C' }}>
+                  <span>✗</span> Failed to send — check Flask backend logs.
+                </div>
+              ) : (
+                <button
+                  onClick={handleTestReminder}
+                  disabled={testState === 'sending'}
+                  style={{ background: testState === 'sending' ? '#ECEADF' : '#F1EEE3', color: '#3a3a2a', border: '1px solid #D5D1C2', borderRadius: '999px', padding: '10px 22px', fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 13.5, cursor: testState === 'sending' ? 'default' : 'pointer' }}
+                >
+                  {testState === 'sending' ? 'Sending…' : 'Send test reminder now →'}
+                </button>
+              )}
             </div>
           </div>
         </div>

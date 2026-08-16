@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
+import { getNotificationCount } from '../api';
 
 // activeStep: 'capture' | 'analyze' | 'personalize' | 'remedies' | 'track'
 // consultMode: boolean — turns Analyze step terracotta
@@ -10,6 +11,21 @@ export default function AppHeader({ activeStep = 'capture', consultMode = false 
   const [menuOpen, setMenuOpen] = useState(false);
   const userName = state.user?.name ?? 'User';
   const userInitial = userName.charAt(0).toUpperCase();
+
+  const pending = state.pendingCheckins ?? 0;
+  const intervalRef = useRef(null);
+
+  // Fetch pending count on mount and every 5 minutes
+  useEffect(() => {
+    if (!state.user) return;
+    const refresh = () =>
+      getNotificationCount()
+        .then(res => dispatch({ type: 'SET_PENDING_CHECKINS', payload: res.data.count }))
+        .catch(() => {});
+    refresh();
+    intervalRef.current = setInterval(refresh, 5 * 60 * 1000);
+    return () => clearInterval(intervalRef.current);
+  }, [state.user]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const steps = [
     { id: 'capture',     label: 'Capture',     route: '/guidelines' },
@@ -75,12 +91,27 @@ export default function AppHeader({ activeStep = 'capture', consultMode = false 
           onClick={() => setMenuOpen((v) => !v)}
           style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'none', border: 'none', cursor: 'pointer', padding: '4px 6px', borderRadius: 10 }}
         >
-          <div style={{
-            width: 32, height: 32, borderRadius: '50%', background: '#6E7733',
-            color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontWeight: 600, fontSize: 13,
-          }}>
-            {userInitial}
+          <div style={{ position: 'relative' }}>
+            <div style={{
+              width: 32, height: 32, borderRadius: '50%', background: '#6E7733',
+              color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontWeight: 600, fontSize: 13,
+            }}>
+              {userInitial}
+            </div>
+            {/* Numbered badge — count of pending check-in uploads */}
+            {pending > 0 && (
+              <span style={{
+                position: 'absolute', top: -5, right: -7,
+                minWidth: 18, height: 18, borderRadius: '999px',
+                background: '#E8553F', border: '2px solid rgba(246,244,236,.95)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontFamily: "'Hanken Grotesk'", fontWeight: 800, fontSize: 10,
+                color: '#fff', lineHeight: 1, padding: '0 3px',
+              }} title={`${pending} check-in${pending !== 1 ? 's' : ''} pending`}>
+                {pending > 9 ? '9+' : pending}
+              </span>
+            )}
           </div>
           <span style={{ fontSize: 13, color: '#57564E' }}>{userName.split(' ')[0]}</span>
           <span style={{ fontSize: 10, color: '#9C9A8C' }}>▾</span>
@@ -108,8 +139,8 @@ export default function AppHeader({ activeStep = 'capture', consultMode = false 
               {[
                 { label: 'My Activity History', icon: '📋', action: () => { navigate('/history'); setMenuOpen(false); } },
                 { label: 'My Remedies', icon: '🌿', action: () => { navigate('/remedies'); setMenuOpen(false); } },
-                { label: 'Progress Tracking', icon: '📈', action: () => { navigate('/track'); setMenuOpen(false); } },
-              ].map(({ label, icon, action }) => (
+                { label: 'Progress Tracking', icon: '📈', action: () => { navigate('/progress'); setMenuOpen(false); }, badge: pending > 0 ? pending : null },
+              ].map(({ label, icon, action, badge }) => (
                 <button key={label} onClick={action} style={{
                   width: '100%', display: 'flex', alignItems: 'center', gap: 10,
                   padding: '12px 16px', background: 'none', border: 'none',
@@ -119,7 +150,19 @@ export default function AppHeader({ activeStep = 'capture', consultMode = false 
                 }}
                 onMouseEnter={(e) => { e.currentTarget.style.background = '#F8F6F0'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}>
-                  <span>{icon}</span> {label}
+                  <span>{icon}</span>
+                  <span style={{ flex: 1 }}>{label}</span>
+                  {badge != null && (
+                    <span style={{
+                      minWidth: 20, height: 20, borderRadius: '999px',
+                      background: '#E8553F', color: '#fff',
+                      fontWeight: 800, fontSize: 11,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center',
+                      padding: '0 5px', lineHeight: 1, flexShrink: 0,
+                    }}>
+                      {badge > 9 ? '9+' : badge}
+                    </span>
+                  )}
                 </button>
               ))}
 

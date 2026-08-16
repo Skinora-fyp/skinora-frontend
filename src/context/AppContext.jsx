@@ -13,6 +13,9 @@ const initialState = {
   remedies: [],            // fetched remedy array
   selectedRemedy: null,    // chosen remedy object
   tracking: { enabled: false, frequency: 'weekly' },
+  trackingDue: null,       // null | { due: bool, tracking: {...}, old_detection: {...} }
+  checkinProgress: null,   // null | { progress, delta, old_image_url, new_image_url, ... }
+  pendingCheckins: 0,      // count of unresolved check-in notifications
   checkin: { outcome: 'better' },
   history: [],             // past session records
 };
@@ -29,8 +32,11 @@ function reducer(state, action) {
     case 'SET_VALIDATION': return { ...state, validationScore: action.payload.score, validationStatus: action.payload.status };
     case 'SET_REMEDIES':   return { ...state, remedies: action.payload };
     case 'SELECT_REMEDY':  return { ...state, selectedRemedy: action.payload };
-    case 'SET_TRACKING':   return { ...state, tracking: { ...state.tracking, ...action.payload } };
-    case 'SET_CHECKIN':    return { ...state, checkin: { ...state.checkin, ...action.payload } };
+    case 'SET_TRACKING':          return { ...state, tracking: { ...state.tracking, ...action.payload } };
+    case 'SET_TRACKING_DUE':      return { ...state, trackingDue: action.payload };
+    case 'SET_CHECKIN_PROGRESS':  return { ...state, checkinProgress: action.payload };
+    case 'SET_PENDING_CHECKINS':  return { ...state, pendingCheckins: action.payload ?? 0 };
+    case 'SET_CHECKIN':          return { ...state, checkin: { ...state.checkin, ...action.payload } };
     case 'SET_HISTORY':    return { ...state, history: action.payload };
     case 'LOGOUT':         return { ...initialState };
     default:               return state;

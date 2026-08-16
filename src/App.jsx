@@ -16,6 +16,7 @@ import Track        from './pages/Track';
 import Reminder     from './pages/Reminder';
 import Checkin      from './pages/Checkin';
 import History      from './pages/History';
+import Progress     from './pages/Progress';
 
 function ProtectedRoute({ children }) {
   const { state } = useApp();
@@ -39,6 +40,7 @@ function AppRoutes() {
       <Route path="/reminder"      element={<ProtectedRoute><Reminder /></ProtectedRoute>} />
       <Route path="/checkin"       element={<ProtectedRoute><Checkin /></ProtectedRoute>} />
       <Route path="/history"       element={<ProtectedRoute><History /></ProtectedRoute>} />
+      <Route path="/progress"      element={<ProtectedRoute><Progress /></ProtectedRoute>} />
       <Route path="*"              element={<Navigate to="/" replace />} />
     </Routes>
   );
