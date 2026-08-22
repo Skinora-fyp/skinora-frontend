@@ -65,7 +65,7 @@ export default function AppHeader({ activeStep = 'capture', consultMode = false 
         <img
           src="/assets/skinora_logo.png"
           alt="Skinora"
-          style={{ width: 48, height: 48, objectFit: 'contain', borderRadius: 8 }}
+          style={{ width: 64, height: 64, objectFit: 'contain', borderRadius: 10 }}
           onError={(e) => {
             e.target.style.display = 'none';
             e.target.nextSibling.style.display = 'inline-block';

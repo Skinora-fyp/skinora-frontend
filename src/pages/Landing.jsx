@@ -30,7 +30,7 @@ export default function Landing() {
         position: 'sticky', top: 0, zIndex: 100,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-          <img src="/assets/skinora_logo.png" alt="Skinora" style={{ width: 52, height: 52, objectFit: 'contain', borderRadius: 8 }}
+          <img src="/assets/skinora_logo.png" alt="Skinora" style={{ width: 68, height: 68, objectFit: 'contain', borderRadius: 10 }}
             onError={(e) => { e.target.style.display = 'none'; }} />
           <span style={{ fontFamily: "'Newsreader',serif", fontSize: 21, letterSpacing: '-.01em' }}>Skinora</span>
         </div>
