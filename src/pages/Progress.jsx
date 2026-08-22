@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AppHeader from '../components/AppHeader';
 import { useApp } from '../context/AppContext';
-import { detect, compareProgress, checkTrackingDue, getNotificationCount } from '../api';
+import { detect, compareProgress, checkTrackingDue, getNotificationCount, downloadProgressReport } from '../api';
 
 const STATUS_CONFIG = {
   better:      { label: 'Improving',      color: '#3E7A2A', bg: '#F0FAF0', dot: '#5CB85C' },
@@ -43,7 +43,8 @@ export default function Progress() {
   const [scanning,    setScanning]    = useState(false);
   const [scanResult,  setScanResult]  = useState(null);
   const [faceError,   setFaceError]   = useState(null);
-  const [selectedDet, setSelectedDet] = useState(null);
+  const [selectedDet,   setSelectedDet]   = useState(null);
+  const [downloadingPdf, setDownloadingPdf] = useState(false);
 
   // Camera state
   const fileRef    = useRef(null);
@@ -172,6 +173,25 @@ export default function Progress() {
       setFaceError(err.response?.data?.error || 'No face detected. Please use a clear, well-lit face photo.');
     } finally {
       setScanning(false);
+    }
+  }
+
+  async function handleDownloadPdf() {
+    const detId = scanResult?.detection?.detection_id;
+    if (!detId || downloadingPdf) return;
+    setDownloadingPdf(true);
+    try {
+      const res = await downloadProgressReport(detId);
+      const url = URL.createObjectURL(new Blob([res.data], { type: 'application/pdf' }));
+      const a   = document.createElement('a');
+      a.href    = url;
+      a.download = 'skinora-progress-report.pdf';
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch {
+      alert('Could not generate report. Please try again.');
+    } finally {
+      setDownloadingPdf(false);
     }
   }
 
@@ -445,6 +465,30 @@ export default function Progress() {
                         ? <button onClick={() => navigate('/remedies')} style={{ width: '100%', background: pc.accent, color: '#fff', border: 'none', borderRadius: '999px', padding: '12px', fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 14, cursor: 'pointer' }}>Explore other remedies →</button>
                         : <div style={{ textAlign: 'center', fontSize: 14, color: pc.accent, fontWeight: 600 }}>✓ Keep using {tracking.remedy_name ?? 'your remedy'}!</div>
                       }
+
+                      {/* ── Report section ── */}
+                      <div style={{ marginTop: 16, borderTop: `1px solid ${pc.border}`, paddingTop: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
+
+                        {/* Email confirmation badge */}
+                        {scanResult.comparison.report_emailed && (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 9, background: 'rgba(255,255,255,.55)', border: `1px solid ${pc.border}`, borderRadius: 10, padding: '10px 14px' }}>
+                            <span style={{ fontSize: 18, flexShrink: 0 }}>📧</span>
+                            <div>
+                              <div style={{ fontSize: 13, fontWeight: 600, color: pc.accent }}>Report emailed to you</div>
+                              <div style={{ fontSize: 11.5, color: '#9C9A8C', marginTop: 2 }}>A full PDF report with your results has been sent to your registered email.</div>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Download button */}
+                        <button
+                          onClick={handleDownloadPdf}
+                          disabled={downloadingPdf}
+                          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', background: 'rgba(255,255,255,.7)', border: `1.5px solid ${pc.border}`, borderRadius: '999px', padding: '11px', fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 14, color: pc.accent, cursor: downloadingPdf ? 'default' : 'pointer', opacity: downloadingPdf ? 0.7 : 1 }}>
+                          <span style={{ fontSize: 16 }}>⬇</span>
+                          {downloadingPdf ? 'Generating PDF…' : 'Download PDF Report'}
+                        </button>
+                      </div>
                     </div>
                   );
                 })()}

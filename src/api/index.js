@@ -55,6 +55,7 @@ export const recordCheckin    = (data) => api.post('/tracking/checkin', data);
 export const sendTestReminder      = ()     => api.post('/tracking/send-reminder');
 export const checkTrackingDue      = ()     => api.get('/tracking/due');
 export const compareProgress       = (data) => api.post('/tracking/compare', data);
-export const getNotificationCount  = ()     => api.get('/tracking/notifications/count');
+export const getNotificationCount      = ()  => api.get('/tracking/notifications/count');
+export const downloadProgressReport = (id)  => api.get(`/tracking/progress-report?detection_id=${id}`, { responseType: 'blob' });
 
 export default api;
