@@ -8,8 +8,8 @@ const EMAIL_RE = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
 
 /* ── Shared input style ── */
 const INPUT = (extra = {}) => ({
-  width: '100%', border: '1.5px solid #E0DCCC', borderRadius: 12,
-  padding: '12px 14px 12px 42px', background: '#FAFAF7', fontSize: 14,
+  width: '100%', border: '1.5px solid #E0DCCC', borderRadius: 11,
+  padding: '10px 14px 10px 42px', background: '#FAFAF7', fontSize: 14,
   fontFamily: "'Hanken Grotesk'", color: '#23241C', outline: 'none',
   boxSizing: 'border-box', transition: 'border-color .15s',
   ...extra,
@@ -217,7 +217,7 @@ export default function Auth() {
      RENDER
   ══════════════════════════════════════════════════════════════ */
   return (
-    <div style={{ minHeight: '100vh', background: '#EFF0E8', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden', padding: '24px 16px', fontFamily: "'Hanken Grotesk'" }}>
+    <div className="sk-auth-outer" style={{ height: '100vh', background: '#EFF0E8', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden', padding: '16px', fontFamily: "'Hanken Grotesk'", boxSizing: 'border-box' }}>
 
       <style>{`
         @keyframes skinora-banner-in {
@@ -232,6 +232,19 @@ export default function Auth() {
         .skinora-submit-btn { transition: all .15s; }
         .skinora-google-btn:hover { border-color: #BECA5C !important; background: #FAFAF7 !important; }
         .skinora-google-btn { transition: all .15s; }
+
+        @media (max-width: 640px) {
+          .sk-auth-outer { padding: 0 !important; align-items: stretch !important; }
+          .sk-auth-card  { border-radius: 0 !important; max-width: 100% !important; max-height: 100vh !important; height: 100vh !important; }
+          .sk-auth-form  { padding: 20px 24px !important; }
+        }
+        @media (max-width: 400px) {
+          .sk-auth-form  { padding: 16px 18px !important; }
+        }
+        @media (min-width: 641px) and (max-height: 700px) {
+          .sk-auth-form  { padding: 16px 36px !important; }
+          .sk-auth-form .sk-logo-row { margin-bottom: 10px !important; }
+        }
       `}</style>
 
       {/* ── Decorative background circles ── */}
@@ -241,24 +254,26 @@ export default function Auth() {
       <div style={{ position: 'absolute', bottom: '20%', right: '6%', width: 120, height: 120, borderRadius: '50%', background: 'rgba(110,119,51,.07)', pointerEvents: 'none' }} />
 
       {/* ── Card ── */}
-      <div style={{
-        display: 'flex', width: '100%', maxWidth: 940,
-        minHeight: 580, background: '#fff',
-        borderRadius: 24, overflow: 'hidden',
-        boxShadow: '0 24px 72px rgba(0,0,0,.13)',
+      <div className="sk-auth-card" style={{
+        display: 'flex', width: '100%', maxWidth: 920,
+        maxHeight: 'calc(100vh - 32px)', background: '#fff',
+        borderRadius: 20, overflow: 'hidden',
+        boxShadow: '0 20px 60px rgba(0,0,0,.14)',
         position: 'relative', zIndex: 1,
       }}>
 
         {/* ════════════════════════════════
             LEFT — Form panel
         ════════════════════════════════ */}
-        <div style={{ flex: '1 1 52%', padding: '48px 50px', display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
+        <div className="sk-auth-form" style={{ flex: '1 1 52%', padding: '22px 40px', display: 'flex', flexDirection: 'column', overflowY: 'hidden', minHeight: 0 }}>
 
           {/* Logo */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 36 }}>
-            <img src="/assets/skinora_logo.png" alt="Skinora"
-              style={{ width: 52, height: 52, objectFit: 'contain', borderRadius: 10 }}
-              onError={e => { e.target.style.display = 'none'; }} />
+          <div className="sk-logo-row" style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
+            <div style={{ width: 56, height: 56, flexShrink: 0, overflow: 'hidden', background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <img src="/assets/skinora_logo.png" alt="Skinora"
+                style={{ width: 168, height: 168, objectFit: 'contain', flexShrink: 0 }}
+                onError={e => { e.target.style.display = 'none'; e.target.parentElement.innerHTML = '<span style="font-family:\'Newsreader\',serif;font-size:26px;color:#6E7733;line-height:1;font-weight:700">S</span>'; }} />
+            </div>
             <span style={{ fontFamily: "'Newsreader',serif", fontSize: 20, color: '#23241C', letterSpacing: '-.01em' }}>Skinora</span>
           </div>
 
@@ -334,19 +349,19 @@ export default function Auth() {
           ) : (
             /* ── Normal form ── */
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-              <h3 style={{ fontFamily: "'Newsreader',serif", fontWeight: 400, fontSize: 28, margin: '0 0 4px', letterSpacing: '-.01em' }}>
+              <h3 style={{ fontFamily: "'Newsreader',serif", fontWeight: 400, fontSize: 26, margin: '0 0 3px', letterSpacing: '-.01em' }}>
                 {isSignup ? 'Create your account' : 'Welcome back'}
               </h3>
-              <p style={{ fontSize: 14, color: '#9C9A8C', margin: '0 0 28px' }}>
+              <p style={{ fontSize: 13.5, color: '#9C9A8C', margin: '0 0 14px' }}>
                 {isSignup ? 'Start your personalised skin journey.' : 'Continue to your Skinora dashboard.'}
               </p>
 
               {/* ── Tab switcher — underline style ── */}
-              <div style={{ display: 'flex', borderBottom: '1.5px solid #ECEADF', marginBottom: 28 }}>
+              <div style={{ display: 'flex', borderBottom: '1.5px solid #ECEADF', marginBottom: 16 }}>
                 {[['signin', 'Login'], ['signup', 'Sign up']].map(([id, label]) => (
                   <button key={id} onClick={() => switchTab(id)} className="skinora-tab-btn"
                     style={{
-                      padding: '0 0 13px', marginRight: 28,
+                      padding: '0 0 10px', marginRight: 28,
                       background: 'none', border: 'none',
                       borderBottom: tab === id ? '2.5px solid #BECA5C' : '2.5px solid transparent',
                       marginBottom: -1.5,
@@ -361,19 +376,19 @@ export default function Auth() {
 
               {/* Google */}
               <button onClick={() => initiateGoogleLogin()} className="skinora-google-btn"
-                style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, background: '#fff', border: '1.5px solid #E0DCCC', borderRadius: '999px', padding: '13px 20px', cursor: 'pointer', fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 14, color: '#23241C', marginBottom: 20 }}>
+                style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, background: '#fff', border: '1.5px solid #E0DCCC', borderRadius: '999px', padding: '10px 20px', cursor: 'pointer', fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 14, color: '#23241C', marginBottom: 12 }}>
                 <span style={{ fontFamily: "'Newsreader',serif", fontWeight: 800, fontSize: 17, background: 'conic-gradient(from -45deg,#EA4335,#FBBC05,#34A853,#4285F4,#EA4335)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>G</span>
                 Continue with Google
               </button>
 
               {/* Divider */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '0 0 20px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '0 0 12px' }}>
                 <div style={{ flex: 1, height: 1, background: '#ECEADF' }} />
                 <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9.5, letterSpacing: '.1em', textTransform: 'uppercase', color: '#B6B4A8' }}>or email</span>
                 <div style={{ flex: 1, height: 1, background: '#ECEADF' }} />
               </div>
 
-              <form onSubmit={isSignup ? handleSendOtp : handleSignin} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <form onSubmit={isSignup ? handleSendOtp : handleSignin} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
 
                 {/* Name (signup only) */}
                 {isSignup && (
@@ -434,14 +449,14 @@ export default function Auth() {
                   const blocked = loading || (isSignup && emailStatus === 'invalid');
                   return (
                     <button type="submit" disabled={blocked} className="skinora-submit-btn"
-                      style={{ width: '100%', background: blocked ? '#D8DC9A' : '#BECA5C', color: '#2A2D14', border: 'none', borderRadius: '999px', padding: '14px', fontFamily: "'Hanken Grotesk'", fontWeight: 700, fontSize: 15, cursor: blocked ? 'not-allowed' : 'pointer', marginTop: 4 }}>
+                      style={{ width: '100%', background: blocked ? '#D8DC9A' : '#BECA5C', color: '#2A2D14', border: 'none', borderRadius: '999px', padding: '12px', fontFamily: "'Hanken Grotesk'", fontWeight: 700, fontSize: 15, cursor: blocked ? 'not-allowed' : 'pointer', marginTop: 2 }}>
                       {loading ? 'Loading…' : isSignup ? 'Send verification code →' : 'Login →'}
                     </button>
                   );
                 })()}
               </form>
 
-              <p style={{ fontSize: 12.5, color: '#B6B4A8', textAlign: 'center', margin: '20px 0 0', lineHeight: 1.55 }}>
+              <p style={{ fontSize: 12, color: '#B6B4A8', textAlign: 'center', margin: '10px 0 0', lineHeight: 1.5 }}>
                 {isSignup
                   ? '✉️  A 6-digit code will be sent to verify your email.'
                   : '🔒  A verified account is required to upload any photo.'
@@ -454,7 +469,7 @@ export default function Auth() {
         {/* ════════════════════════════════
             RIGHT — Aloe vera image panel
         ════════════════════════════════ */}
-        <div style={{ flex: '1 1 48%', position: 'relative', overflow: 'hidden', minHeight: 400 }}
+        <div style={{ flex: '1 1 48%', position: 'relative', overflow: 'hidden' }}
           className="skinora-auth-img-panel">
           <style>{`.skinora-auth-img-panel { display: block; } @media (max-width: 640px) { .skinora-auth-img-panel { display: none; } }`}</style>
 
@@ -474,7 +489,7 @@ export default function Auth() {
           </div>
 
           {/* Bottom text */}
-          <div style={{ position: 'absolute', bottom: 32, left: 28, right: 28 }}>
+          <div style={{ position: 'absolute', bottom: 24, left: 24, right: 24 }}>
             <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgba(190,202,92,.9)', marginBottom: 8 }}>
               Natural · Science-backed
             </div>

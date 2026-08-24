@@ -53,31 +53,30 @@ export default function AppHeader({ activeStep = 'capture', consultMode = false 
   return (
     <header style={{
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      padding: '12px 44px', borderBottom: '1px solid #E6E3D8',
-      background: 'rgba(246,244,236,.95)', position: 'sticky',
-      top: 0, zIndex: 100, backdropFilter: 'blur(8px)',
+      padding: '0 44px', height: 80, borderBottom: '1px solid #C8D068',
+      background: 'rgba(220,228,140,.22)', position: 'sticky',
+      top: 0, zIndex: 100, backdropFilter: 'blur(14px)',
     }}>
       {/* Logo */}
       <button
         onClick={() => navigate(state.user ? '/upload' : '/')}
-        style={{ display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 'none', cursor: 'pointer' }}
+        style={{ display: 'flex', alignItems: 'center', height: '100%', background: 'none', border: 'none', cursor: 'pointer', padding: '4px 0' }}
       >
         <div style={{
-          width: 58, height: 58, flexShrink: 0,
+          width: 78, height: 78, flexShrink: 0,
           overflow: 'hidden', background: 'transparent',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
         }}>
           <img
             src="/assets/skinora_logo.png"
             alt="Skinora"
-            style={{ width: 139, height: 139, objectFit: 'contain', flexShrink: 0 }}
+            style={{ width: 234, height: 234, objectFit: 'contain', flexShrink: 0 }}
             onError={(e) => {
               e.target.style.display = 'none';
-              e.target.parentElement.innerHTML = '<span style="font-family:\'Newsreader\',serif;font-size:30px;color:#6E7733;line-height:1;font-weight:700">S</span>';
+              e.target.parentElement.innerHTML = '<span style="font-family:\'Newsreader\',serif;font-size:32px;color:#6E7733;line-height:1;font-weight:700">S</span>';
             }}
           />
         </div>
-        <span style={{ fontFamily: "'Newsreader',serif", fontSize: 20, letterSpacing: '-.01em', color: '#23241C' }}>Skinora</span>
       </button>
 
       {/* Stepper */}

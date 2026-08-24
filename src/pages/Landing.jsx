@@ -12,7 +12,7 @@ const PROCESS_STEPS = [
 ];
 
 function LogoMark({ size = 72 }) {
-  /* PNG has large transparent padding — render at 2.4× so the actual mark
+  /* PNG has large transparent padding — render at 3× so the actual mark
      fills the clipped viewport. No background, no border. */
   return (
     <div style={{
@@ -21,7 +21,7 @@ function LogoMark({ size = 72 }) {
       display: 'flex', alignItems: 'center', justifyContent: 'center',
     }}>
       <img src="/assets/skinora_logo.png" alt="Skinora"
-        style={{ width: size * 2.4, height: size * 2.4, objectFit: 'contain', flexShrink: 0 }}
+        style={{ width: size * 3, height: size * 3, objectFit: 'contain', flexShrink: 0 }}
         onError={e => {
           e.target.style.display = 'none';
           e.target.parentElement.innerHTML = `<span style="font-family:'Newsreader',serif;font-size:${Math.round(size*.65)}px;color:#6E7733;font-weight:700;line-height:1">S</span>`;
@@ -63,12 +63,12 @@ export default function Landing() {
       ══════════════════════════════════════════════ */}
       <header style={{
         display:'flex', alignItems:'center', justifyContent:'space-between',
-        padding:'0 52px', height:80, borderBottom:'1px solid #E6E3D8',
-        background:'rgba(246,244,236,.94)', position:'sticky', top:0, zIndex:200,
-        backdropFilter:'blur(12px)',
+        padding:'0 52px', height:80, borderBottom:'1px solid #C8D068',
+        background:'rgba(220,228,140,.22)', position:'sticky', top:0, zIndex:200,
+        backdropFilter:'blur(14px)',
       }}>
-        <button onClick={()=>navigate('/')} style={{display:'flex',alignItems:'center',height:'100%',background:'none',border:'none',cursor:'pointer',padding:'8px 0'}}>
-          <LogoMark size={64} />
+        <button onClick={()=>navigate('/')} style={{display:'flex',alignItems:'center',height:'100%',background:'none',border:'none',cursor:'pointer',padding:'4px 0'}}>
+          <LogoMark size={78} />
         </button>
 
         <button className="sk-btn-primary" onClick={()=>navigate('/login')}
@@ -80,7 +80,7 @@ export default function Landing() {
       {/* ══════════════════════════════════════════════
           HERO
       ══════════════════════════════════════════════ */}
-      <section style={{maxWidth:1280,margin:'0 auto',padding:'52px 52px 56px',display:'grid',gridTemplateColumns:'1fr 1fr',gap:52,alignItems:'center'}}>
+      <section style={{maxWidth:1280,margin:'0 auto',padding:'14px 52px 48px',display:'grid',gridTemplateColumns:'1fr 1fr',gap:52,alignItems:'flex-start'}}>
 
         {/* Left */}
         <div style={{animation:'sk-fadein .7s ease both'}}>
@@ -169,7 +169,7 @@ export default function Landing() {
           </div>
 
           {/* Video card */}
-          <div className="sk-img-card" style={{position:'relative',zIndex:1,borderRadius:26,overflow:'hidden',aspectRatio:'3/4.6',maxWidth:420,margin:'0 auto',boxShadow:'0 32px 72px -18px rgba(20,24,8,.48), 0 0 0 1px rgba(190,202,92,.18)',border:'2px solid rgba(255,255,255,.4)'}}>
+          <div className="sk-img-card" style={{position:'relative',zIndex:1,borderRadius:24,overflow:'hidden',aspectRatio:'3/4.8',maxWidth:350,margin:'0 auto',boxShadow:'0 28px 64px -16px rgba(20,24,8,.44), 0 0 0 1px rgba(190,202,92,.18)',border:'2px solid rgba(255,255,255,.4)'}}>
             <video src="/assets/gif1.mp4" autoPlay loop muted playsInline
               style={{position:'absolute',inset:0,width:'100%',height:'100%',objectFit:'cover'}} />
             <div style={{position:'absolute',inset:0,background:'linear-gradient(180deg,rgba(0,0,0,.04) 0%,transparent 30%,rgba(20,24,8,.18) 100%)',pointerEvents:'none'}} />
@@ -210,9 +210,6 @@ export default function Landing() {
               <div key={i} style={{flex:'0 0 auto',width:210,height:158,borderRadius:12,overflow:'hidden',position:'relative',border:'1px solid rgba(0,0,0,.05)'}}>
                 <img src={item.image} alt={item.label} style={{width:'100%',height:'100%',objectFit:'cover'}}
                   onError={e=>{e.target.style.display='none';e.target.parentElement.style.background=item.tint||'#DDE0C8';}} />
-                <div style={{position:'absolute',left:8,bottom:8,right:8,fontFamily:"'Spline Sans Mono',monospace",fontSize:9,letterSpacing:'.06em',textTransform:'uppercase',color:'#3a3a30',background:'rgba(252,251,246,.92)',padding:'4px 8px',borderRadius:5}}>
-                  {item.label}
-                </div>
               </div>
             ))}
           </div>
@@ -328,7 +325,7 @@ export default function Landing() {
 
         {/* Image — before/after skin progress */}
         <div className="sk-img-card" style={{borderRadius:22,overflow:'hidden',height:480,background:'linear-gradient(160deg,#E8EDD8 0%,#D4DABC 100%)',boxShadow:'0 20px 48px -16px rgba(35,36,28,.28)',position:'relative',flexShrink:0}}>
-          <img src="/assets/skin_progress.jfif" alt="Skin before and after progress"
+          <img src="/assets/skin_progress.png" alt="Skin before and after progress"
             style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center top',display:'block'}} />
           {/* Subtle gradient overlay at bottom only */}
           <div style={{position:'absolute',inset:0,background:'linear-gradient(180deg,transparent 55%,rgba(26,28,16,.48) 100%)',pointerEvents:'none'}} />

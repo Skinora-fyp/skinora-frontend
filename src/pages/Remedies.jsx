@@ -5,12 +5,32 @@ import { useApp } from '../context/AppContext';
 import { getRemediesForCondition } from '../data/remedies';
 import { getRemedies as fetchRemedies } from '../api';
 
+// Map remedy name keywords → correct image asset
+function resolveImage(remedy) {
+  if (remedy.image && !remedy.image.includes('remedi')) return remedy.image; // already a real override
+  const name = (remedy.name ?? '').toLowerCase();
+  if (name.includes('aloe'))                          return '/assets/remedi8.jfif';
+  if (name.includes('cucumber'))                      return '/assets/remedi1.jfif';
+  if (name.includes('honey') || name.includes('raw honey')) return '/assets/remedi2.jfif';
+  if (name.includes('green tea'))                     return '/assets/remedi3.jfif';
+  if (name.includes('oat') || name.includes('oatmeal')) return '/assets/remedi4.jfif';
+  if (name.includes('rose water') || name.includes('rosewater')) return '/assets/remedi5.jfif';
+  if (name.includes('avocado'))                       return '/assets/avacado.jfif';
+  // fallback to whatever the data has
+  return remedy.image ?? null;
+}
+
+const EVIDENCE_COLOR = {
+  'High evidence':   { bg: '#EEF0DC', text: '#5E6A2A', border: '#C8D068' },
+  'Medium evidence': { bg: '#FFF8E6', text: '#7A5C00', border: '#F0DFA0' },
+  'Low evidence':    { bg: '#FDF0EC', text: '#B05E3C', border: '#F0C0A8' },
+};
+
 export default function Remedies() {
   const navigate = useNavigate();
   const { state, dispatch } = useApp();
   const condition = state.detection?.final_condition ?? 'Oily_Acne';
 
-  // Ensure remedies are loaded
   useEffect(() => {
     if (!state.remedies?.length) {
       fetchRemedies(condition)
@@ -28,6 +48,8 @@ export default function Remedies() {
     ? [(lifestyle.high_stress && 'stress'), (lifestyle.low_water && 'hydration')].filter(Boolean).join(' & ') + ' weighted'
     : 'personalized for you';
 
+  const conditionLabel = condition.replace('_', ' · ').replace('NoAcne', 'No Acne');
+
   function selectRemedy(remedy) {
     dispatch({ type: 'SELECT_REMEDY', payload: remedy });
     navigate(`/remedies/${remedy.id}`);
@@ -37,65 +59,157 @@ export default function Remedies() {
     <div style={{ background: '#F6F4EC', minHeight: '100vh', fontFamily: "'Hanken Grotesk'" }}>
       <AppHeader activeStep="remedies" />
 
-      <main style={{ maxWidth: 1080, margin: '0 auto', padding: '46px 44px 60px' }}>
-        {/* Header row */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 16, marginBottom: 36 }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,300;0,400;0,600;1,400&family=Hanken+Grotesk:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500&display=swap');
+
+        @keyframes sk-fade-up { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+
+        .sk-remedy-card { animation: sk-fade-up .35s ease both; transition: transform .18s, box-shadow .18s; }
+        .sk-remedy-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(94,106,42,.16) !important; }
+
+        .sk-view-btn { transition: background .15s, color .15s, transform .14s; }
+        .sk-view-btn:hover { background: #BECA5C !important; color: #1A1E0A !important; transform: translateY(-1px); }
+
+        @media (max-width: 700px) {
+          .sk-remedies-grid { grid-template-columns: 1fr !important; }
+          .sk-remedies-header { flex-direction: column !important; align-items: flex-start !important; }
+        }
+      `}</style>
+
+      <main style={{ maxWidth: 1120, margin: '0 auto', padding: '44px 40px 72px' }}>
+
+        {/* ── Page header ── */}
+        <div className="sk-remedies-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 16, marginBottom: 40 }}>
           <div>
-            <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 11, letterSpacing: '.16em', textTransform: 'uppercase', color: '#9C9A8C', marginBottom: 12 }}>
-              Step 05 · For {condition}
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#23241C', borderRadius: '999px', padding: '4px 13px', marginBottom: 16 }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#BECA5C', display: 'inline-block' }} />
+              <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: '#BECA5C' }}>
+                Step 5 · Remedies · {conditionLabel}
+              </span>
             </div>
-            <h2 style={{ fontFamily: "'Newsreader',serif", fontWeight: 400, fontSize: 40, letterSpacing: '-.02em', margin: 0 }}>
-              Three botanical remedies, ranked for you.
+            <h2 style={{ fontFamily: "'Newsreader',serif", fontWeight: 400, fontSize: 42, letterSpacing: '-.025em', margin: '0 0 10px', lineHeight: 1.1, color: '#23241C' }}>
+              Botanical remedies,<br />ranked for your skin.
             </h2>
+            <p style={{ fontSize: 15, color: '#6B6A60', margin: 0, lineHeight: 1.65 }}>
+              Each remedy is backed by peer-reviewed evidence and tailored to your detected condition.
+            </p>
           </div>
-          <span style={{ fontFamily: "'Spline Sans Mono'", fontSize: 11, color: '#9AA646', background: '#F4F6EA', padding: '8px 14px', borderRadius: '999px', textTransform: 'uppercase', letterSpacing: '.06em' }}>
-            Personalized · {personalizeChip}
-          </span>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-end' }}>
+            <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 10.5, color: '#7E9A3E', background: '#EEF0DC', padding: '7px 14px', borderRadius: '999px', textTransform: 'uppercase', letterSpacing: '.08em', border: '1px solid #C8D068' }}>
+              {personalizeChip}
+            </span>
+            <span style={{ fontSize: 12, color: '#9C9A8C' }}>{remedies.length} remedies matched</span>
+          </div>
         </div>
 
-        {/* Cards grid */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(290px,1fr))', gap: 20 }}>
-          {remedies.map((remedy, idx) => (
-            <div key={remedy.id} style={{ background: '#fff', border: '1px solid #E6E3D8', borderRadius: 18, overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 1px 3px rgba(0,0,0,.08)' }}>
-              {/* Tinted header */}
-              <div style={{ height: 140, position: 'relative', background: remedy.tint }}>
-                <div className="stripe-overlay" style={{ position: 'absolute', inset: 0 }} />
-                {remedy.image && (
-                  <img src={remedy.image} alt={remedy.name}
-                    style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', mixBlendMode: 'multiply', opacity: .7 }}
-                    onError={(e) => { e.target.style.display = 'none'; }} />
-                )}
-                {/* Remedy number chip */}
-                <span style={{ position: 'absolute', top: 13, left: 14, fontFamily: "'Spline Sans Mono'", fontSize: 10, letterSpacing: '.08em', textTransform: 'uppercase', color: '#3a3a2a', background: 'rgba(252,251,246,.85)', padding: '5px 9px', borderRadius: 6 }}>
-                  Remedy {String(idx + 1).padStart(2, '0')}
-                </span>
-                {/* Match score circle */}
-                <span style={{ position: 'absolute', top: 13, right: 14, fontFamily: "'Newsreader',serif", fontSize: 22, color: '#3a3a2a', background: 'rgba(252,251,246,.85)', width: 46, height: 46, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  {remedy.match}
-                </span>
-              </div>
+        {/* ── Cards grid ── */}
+        <div className="sk-remedies-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24 }}>
+          {remedies.map((remedy, idx) => {
+            const ev = EVIDENCE_COLOR[remedy.tag] ?? EVIDENCE_COLOR['Medium evidence'];
+            const imgSrc = resolveImage(remedy);
+            return (
+              <div key={remedy.id} className="sk-remedy-card"
+                style={{
+                  background: '#fff',
+                  border: '1.5px solid #E6E3D8',
+                  borderRadius: 20,
+                  overflow: 'hidden',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  boxShadow: '0 4px 18px rgba(35,36,28,.08)',
+                  animationDelay: `${idx * 80}ms`,
+                }}
+              >
+                {/* ── Image header ── */}
+                <div style={{ height: 200, position: 'relative', overflow: 'hidden', background: remedy.tint }}>
+                  {imgSrc && (
+                    <img
+                      src={imgSrc}
+                      alt={remedy.name}
+                      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block' }}
+                      onError={(e) => { e.target.style.display = 'none'; }}
+                    />
+                  )}
+                  {/* Bottom gradient for text legibility */}
+                  <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(26,30,10,.62) 0%, rgba(26,30,10,.1) 55%, transparent 100%)' }} />
 
-              {/* Body */}
-              <div style={{ padding: 22, display: 'flex', flexDirection: 'column', flex: 1 }}>
-                <span style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, letterSpacing: '.1em', textTransform: 'uppercase', color: '#7E9A3E', marginBottom: 9 }}>
-                  {remedy.tag} · {remedy.match}% match
-                </span>
-                <h3 style={{ fontFamily: "'Newsreader',serif", fontWeight: 400, fontSize: 23, margin: '0 0 9px', lineHeight: 1.15 }}>{remedy.name}</h3>
-                <p style={{ fontSize: 13.5, color: '#6B6A60', lineHeight: 1.6, margin: '0 0 14px' }}>{remedy.desc}</p>
-                <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 10, letterSpacing: '.04em', color: '#9C9A8C', marginBottom: 18 }}>
-                  Best for · {remedy.for}
+                  {/* Remedy number — top left */}
+                  <div style={{ position: 'absolute', top: 12, left: 12, display: 'flex', alignItems: 'center', gap: 7, background: 'rgba(246,244,236,.92)', backdropFilter: 'blur(8px)', borderRadius: '999px', padding: '5px 11px 5px 6px', border: '1px solid rgba(200,208,104,.4)' }}>
+                    <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#23241C', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9, color: '#BECA5C', fontWeight: 700, lineHeight: 1 }}>{String(idx + 1).padStart(2, '0')}</span>
+                    </div>
+                    <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9, letterSpacing: '.09em', textTransform: 'uppercase', color: '#57564E' }}>Remedy</span>
+                  </div>
+
+                  {/* Match score — top right */}
+                  <div style={{ position: 'absolute', top: 12, right: 12, background: 'rgba(246,244,236,.92)', backdropFilter: 'blur(8px)', borderRadius: 12, padding: '6px 11px', textAlign: 'center', border: '1px solid rgba(200,208,104,.4)' }}>
+                    <div style={{ fontFamily: "'Newsreader',serif", fontSize: 22, color: '#3A4018', lineHeight: 1, fontWeight: 600 }}>{remedy.match}%</div>
+                    <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 8, letterSpacing: '.08em', textTransform: 'uppercase', color: '#7E9A3E', marginTop: 1 }}>match</div>
+                  </div>
+
+                  {/* Remedy name overlaid on image */}
+                  <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '12px 16px' }}>
+                    <h3 style={{ fontFamily: "'Newsreader',serif", fontWeight: 400, fontSize: 20, margin: 0, lineHeight: 1.2, color: '#F6F4EC', textShadow: '0 1px 6px rgba(0,0,0,.35)' }}>
+                      {remedy.name}
+                    </h3>
+                  </div>
                 </div>
-                <button onClick={() => selectRemedy(remedy)}
-                  style={{ marginTop: 'auto', width: '100%', background: '#F1EEE3', border: '1px solid #E0DCCC', color: '#23241C', borderRadius: 11, padding: 13, fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 14, cursor: 'pointer' }}>
-                  View &amp; select →
-                </button>
+
+                {/* ── Card body ── */}
+                <div style={{ padding: '18px 20px 20px', display: 'flex', flexDirection: 'column', flex: 1, gap: 12 }}>
+
+                  {/* Evidence tag + best-for */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                    <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9.5, letterSpacing: '.08em', textTransform: 'uppercase', color: ev.text, background: ev.bg, padding: '4px 10px', borderRadius: '999px', border: `1px solid ${ev.border}` }}>
+                      {remedy.tag}
+                    </span>
+                    <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9.5, letterSpacing: '.06em', color: '#9C9A8C' }}>
+                      {remedy.for}
+                    </span>
+                  </div>
+
+                  {/* Description */}
+                  <p style={{ fontSize: 13.5, color: '#57564E', lineHeight: 1.65, margin: 0 }}>
+                    {remedy.desc}
+                  </p>
+
+                  {/* Frequency pill */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: '#F8FAF0', border: '1px solid #E4E8CC', borderRadius: 10 }}>
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#7E9A3E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                    <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 10, letterSpacing: '.06em', color: '#5E6A2A', textTransform: 'uppercase' }}>
+                      {remedy.freq}
+                    </span>
+                  </div>
+
+                  {/* CTA */}
+                  <button
+                    onClick={() => selectRemedy(remedy)}
+                    className="sk-view-btn"
+                    style={{
+                      marginTop: 'auto', width: '100%',
+                      background: '#F4F6E8', border: '1.5px solid #C8D068',
+                      color: '#3A4018', borderRadius: 12, padding: '13px',
+                      fontFamily: "'Hanken Grotesk'", fontWeight: 700, fontSize: 14,
+                      cursor: 'pointer', letterSpacing: '.01em',
+                    }}
+                  >
+                    View full recipe →
+                  </button>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, justifyContent: 'center', marginTop: 30, fontSize: 13, color: '#9C9A8C' }}>
-          <span style={{ color: '#8B9633' }}>✓</span> Each remedy is backed by a cited, peer-reviewed source — open one to read it.
+        {/* Footer note */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, justifyContent: 'center', marginTop: 36, fontSize: 13, color: '#9C9A8C' }}>
+          <span style={{ width: 18, height: 18, borderRadius: '50%', background: '#EEF0DC', border: '1px solid #C8D068', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#7E9A3E" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          </span>
+          Each remedy is backed by a cited, peer-reviewed source — open one to read it.
         </div>
       </main>
     </div>

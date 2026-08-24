@@ -253,15 +253,6 @@ export default function Result() {
         );
       })()}
 
-      {/* ── Medical Disclaimer ── */}
-      <footer style={{ background: '#ECEADF', borderTop: '1px solid #E0DCCC', padding: '28px 44px' }}>
-        <div style={{ maxWidth: 1080, margin: '0 auto', display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-          <span style={{ fontSize: 18, lineHeight: 1, flexShrink: 0, color: '#9C9A8C' }}>⚕️</span>
-          <p style={{ fontSize: 12, color: '#9C9A8C', lineHeight: 1.7, margin: 0 }}>
-            <strong>Medical Disclaimer:</strong> The information and recommendations provided by Skinora are for educational purposes only and are not intended to diagnose, treat, cure, or prevent any medical condition. Skinora uses AI-based analysis to provide general skin insights and natural remedy suggestions. These results should not replace professional medical advice, diagnosis, or treatment. If you experience severe, persistent, or worsening skin symptoms, please consult a qualified dermatologist or healthcare professional.
-          </p>
-        </div>
-      </footer>
     </div>
   );
 }
