@@ -3,124 +3,192 @@ import { useNavigate } from 'react-router-dom';
 import { STRIP_ITEMS } from '../data/remedies';
 
 const PROCESS_STEPS = [
-  { n: '01', title: 'Secure Identity',     body: 'Sign in with Google. Your data stays encrypted and private.' },
-  { n: '02', title: 'Dermal Capture',      body: 'Upload a clear, naturally-lit selfie. Live guidelines on screen.' },
-  { n: '03', title: 'AI Classification',   body: 'Two models read skin type & acne grade with confidence in seconds.' },
-  { n: '04', title: 'Lifestyle Context',   body: 'A short questionnaire: sleep, diet, climate, hydration, stress.' },
-  { n: '05', title: 'Botanical Remedies',  body: 'Three personalized remedies with usage guides and trusted sources.' },
-  { n: '06', title: 'Progress Tracking',   body: 'Weekly or monthly check-ins. Our model compares scans and adapts.' },
+  { n: '01', icon: '🔐', title: 'Secure Identity',    body: 'Sign in with Google. Encrypted, private, never sold or shared.' },
+  { n: '02', icon: '📸', title: 'Dermal Capture',     body: 'Upload a clear selfie. Alignment guides keep shots consistent.' },
+  { n: '03', icon: '🔬', title: 'AI Classification',  body: 'Two CNNs classify skin type and acne grade in seconds.' },
+  { n: '04', icon: '📋', title: 'Lifestyle Context',  body: 'Sleep, diet, hydration and stress factors included.' },
+  { n: '05', icon: '🌿', title: 'Botanical Remedies', body: 'Three personalised plant-based remedies, sourced from nature.' },
+  { n: '06', icon: '📈', title: 'Progress Tracking',  body: 'Periodic check-ins. AI adapts your protocol over time.' },
 ];
 
-export default function Landing() {
-  const navigate    = useNavigate();
-  const processRef  = useRef(null);
-  const stripItems  = [...STRIP_ITEMS, ...STRIP_ITEMS]; // duplicate for seamless loop
+function LogoMark({ size = 72 }) {
+  /* PNG has large transparent padding — render at 2.4× so the actual mark
+     fills the clipped viewport. No background, no border. */
+  return (
+    <div style={{
+      width: size, height: size, flexShrink: 0,
+      overflow: 'hidden', background: 'transparent',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+    }}>
+      <img src="/assets/skinora_logo.png" alt="Skinora"
+        style={{ width: size * 2.4, height: size * 2.4, objectFit: 'contain', flexShrink: 0 }}
+        onError={e => {
+          e.target.style.display = 'none';
+          e.target.parentElement.innerHTML = `<span style="font-family:'Newsreader',serif;font-size:${Math.round(size*.65)}px;color:#6E7733;font-weight:700;line-height:1">S</span>`;
+        }} />
+    </div>
+  );
+}
 
-  const scrollToProcess = () =>
-    processRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+export default function Landing() {
+  const navigate   = useNavigate();
+  const processRef = useRef(null);
+  const stripItems = [...STRIP_ITEMS, ...STRIP_ITEMS];
 
   return (
-    <div style={{ background: '#F6F4EC', fontFamily: "'Hanken Grotesk',sans-serif", color: '#20201B' }}>
+    <div style={{ background: '#F6F4EC', fontFamily: "'Hanken Grotesk',sans-serif", color: '#20201B', overflowX: 'hidden' }}>
 
-      {/* ── Landing Header ── */}
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;1,400;1,500&family=Hanken+Grotesk:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500&display=swap');
+
+        @keyframes sk-marquee  { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+        @keyframes sk-fadein   { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:none} }
+        @keyframes sk-pulsedot { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+        .sk-btn-primary { transition:filter .15s,transform .12s; }
+        .sk-btn-primary:hover { filter:brightness(1.06); transform:translateY(-1px); }
+        .sk-btn-outline { transition:background .15s,border-color .15s; }
+        .sk-btn-outline:hover { background:#ECEADF !important; border-color:#B8B4A0 !important; }
+        .sk-proc-card  { transition:transform .18s,box-shadow .18s,border-color .18s; }
+        .sk-proc-card:hover { transform:translateY(-4px); box-shadow:0 16px 36px rgba(35,36,28,.1); border-color:#C8D870 !important; }
+        .sk-img-card   { transition:transform .22s; }
+        .sk-img-card:hover { transform:scale(1.015); }
+        @media(prefers-reduced-motion:reduce){
+          @keyframes sk-marquee{} @keyframes sk-fadein{} .sk-btn-primary:hover,.sk-img-card:hover{transform:none}
+        }
+      `}</style>
+
+      {/* ══════════════════════════════════════════════
+          HEADER
+      ══════════════════════════════════════════════ */}
       <header style={{
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        padding: '20px 56px', borderBottom: '1px solid #E6E3D8',
-        background: 'rgba(246,244,236,.85)', backdropFilter: 'blur(8px)',
-        position: 'sticky', top: 0, zIndex: 100,
+        display:'flex', alignItems:'center', justifyContent:'space-between',
+        padding:'0 52px', height:80, borderBottom:'1px solid #E6E3D8',
+        background:'rgba(246,244,236,.94)', position:'sticky', top:0, zIndex:200,
+        backdropFilter:'blur(12px)',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-          <img src="/assets/skinora_logo.png" alt="Skinora" style={{ width: 68, height: 68, objectFit: 'contain', borderRadius: 10 }}
-            onError={(e) => { e.target.style.display = 'none'; }} />
-          <span style={{ fontFamily: "'Newsreader',serif", fontSize: 21, letterSpacing: '-.01em' }}>Skinora</span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 28 }}>
-          <button onClick={scrollToProcess}
-            style={{ background: 'none', border: 'none', cursor: 'pointer', fontFamily: "'Spline Sans Mono',monospace", fontSize: 12, letterSpacing: '.08em', color: '#6B6A60' }}>
-            The Science
-          </button>
-          <button onClick={() => navigate('/login')}
-            style={{ background: '#BECA5C', color: '#2A2D14', border: 'none', borderRadius: '999px', padding: '11px 22px', fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 13, cursor: 'pointer' }}>
-            Get Started
-          </button>
-        </div>
+        <button onClick={()=>navigate('/')} style={{display:'flex',alignItems:'center',height:'100%',background:'none',border:'none',cursor:'pointer',padding:'8px 0'}}>
+          <LogoMark size={64} />
+        </button>
+
+        <button className="sk-btn-primary" onClick={()=>navigate('/login')}
+          style={{background:'#6E7733',color:'#F6F4EC',border:'none',borderRadius:'999px',padding:'12px 26px',fontWeight:700,fontSize:14,fontFamily:"'Hanken Grotesk'",cursor:'pointer',letterSpacing:'.01em'}}>
+          Get Started
+        </button>
       </header>
 
-      {/* ── Hero ── */}
-      <section style={{ display: 'flex', flexWrap: 'wrap', gap: 56, alignItems: 'center', justifyContent: 'space-between', padding: '70px 56px 56px', maxWidth: 1320, margin: '0 auto' }}>
+      {/* ══════════════════════════════════════════════
+          HERO
+      ══════════════════════════════════════════════ */}
+      <section style={{maxWidth:1280,margin:'0 auto',padding:'52px 52px 56px',display:'grid',gridTemplateColumns:'1fr 1fr',gap:52,alignItems:'center'}}>
 
-        {/* Left: copy */}
-        <div style={{ flex: '1 1 480px', minWidth: 340, animation: 'sk-fadeup .7s ease both' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 7, border: '1px solid #DAD6C7', borderRadius: '999px', padding: '6px 13px', marginBottom: 30 }}>
-            <span style={{ color: '#9AA646' }}>✦</span>
-            <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 11, letterSpacing: '.16em', textTransform: 'uppercase', color: '#7A7A6C' }}>AI Dermal Intelligence</span>
+        {/* Left */}
+        <div style={{animation:'sk-fadein .7s ease both'}}>
+          <div style={{display:'inline-flex',alignItems:'center',gap:7,border:'1px solid #C8D068',background:'rgba(238,240,220,.6)',borderRadius:'999px',padding:'5px 14px',marginBottom:22}}>
+            <span style={{color:'#8B9633',fontSize:13}}>✦</span>
+            <span style={{fontFamily:"'Spline Sans Mono',monospace",fontSize:10,letterSpacing:'.16em',textTransform:'uppercase',color:'#6E7733'}}>AI Dermal Intelligence</span>
           </div>
 
-          <h1 style={{ fontFamily: "'Newsreader',serif", fontWeight: 400, fontSize: 'clamp(42px,5vw,62px)', lineHeight: 1.01, letterSpacing: '-.02em', margin: '0 0 26px' }}>
-            Your reflection,<br />
-            <span style={{ color: '#8B9633', fontStyle: 'italic' }}>refined</span> by botanical intelligence.
+          <h1 style={{fontFamily:"'Newsreader',serif",fontWeight:400,fontSize:'clamp(36px,3.8vw,54px)',lineHeight:1.05,letterSpacing:'-.02em',margin:'0 0 18px',textWrap:'balance',color:'#1A1C10'}}>
+            Nourish Deeply,<br />
+            <em style={{fontStyle:'italic',color:'#6E7733'}}>Glow Naturally,</em><br />
+            Know Your Skin.
           </h1>
 
-          <p style={{ fontSize: 16, lineHeight: 1.65, color: '#6B6A60', maxWidth: 430, margin: '0 0 34px' }}>
-            An adaptive diagnostic mirror that reads your unique dermal profile from a single photo, prescribes living remedies from the earth — then tracks your progress over time.
+          <p style={{fontSize:15.5,lineHeight:1.7,color:'#6B6A60',maxWidth:410,margin:'0 0 28px'}}>
+            A botanical AI that reads your unique skin profile from a single photo, prescribes plant-based remedies — then tracks your transformation over time.
           </p>
 
-          <div style={{ display: 'flex', gap: 12, marginBottom: 46, flexWrap: 'wrap' }}>
-            <button onClick={() => navigate('/login')}
-              style={{ background: '#BECA5C', color: '#2A2D14', border: 'none', borderRadius: '999px', padding: '14px 26px', fontWeight: 600, fontSize: 15, fontFamily: "'Hanken Grotesk'", cursor: 'pointer', boxShadow: '0 6px 18px rgba(190,202,92,.35)' }}>
+          <div style={{display:'flex',gap:11,marginBottom:32,flexWrap:'wrap'}}>
+            <button className="sk-btn-primary" onClick={()=>navigate('/login')}
+              style={{background:'#6E7733',color:'#F6F4EC',border:'none',borderRadius:'999px',padding:'14px 28px',fontWeight:700,fontSize:15,fontFamily:"'Hanken Grotesk'",cursor:'pointer',boxShadow:'0 6px 20px rgba(110,119,51,.28)',letterSpacing:'.01em'}}>
               Analyze My Skin
             </button>
-            <button onClick={scrollToProcess}
-              style={{ background: 'transparent', border: '1px solid #D5D1C2', color: '#20201B', borderRadius: '999px', padding: '14px 26px', fontWeight: 600, fontSize: 15, fontFamily: "'Hanken Grotesk'", cursor: 'pointer' }}>
+            <button className="sk-btn-outline" onClick={()=>processRef.current?.scrollIntoView({behavior:'smooth'})}
+              style={{background:'transparent',border:'1.5px solid #D0CCC0',color:'#20201B',borderRadius:'999px',padding:'14px 28px',fontWeight:600,fontSize:15,fontFamily:"'Hanken Grotesk'",cursor:'pointer'}}>
               How it Works
             </button>
           </div>
 
-          {/* Stats */}
-          <div style={{ display: 'flex', gap: 48, flexWrap: 'wrap' }}>
-            {[
-              { num: '98%', label: 'Classification\naccuracy' },
-              { num: '120+', label: 'Botanical\nremedies' },
-              { num: '4 wk', label: 'Avg. visible\nresult' },
-            ].map(({ num, label }) => (
-              <div key={num}>
-                <div style={{ fontFamily: "'Newsreader',serif", fontSize: 30 }}>{num}</div>
-                <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 10, letterSpacing: '.1em', textTransform: 'uppercase', color: '#9C9A8C', marginTop: 5, lineHeight: 1.5, whiteSpace: 'pre-line' }}>{label}</div>
-              </div>
-            ))}
+          {/* Scroll indicator */}
+          <div style={{display:'flex',alignItems:'center',gap:10,marginBottom:32,cursor:'pointer'}} onClick={()=>processRef.current?.scrollIntoView({behavior:'smooth'})}>
+            <div style={{width:32,height:32,borderRadius:'50%',border:'1.5px solid #C0BC9E',display:'flex',alignItems:'center',justifyContent:'center',color:'#6E7733',fontSize:13}}>›</div>
+            <span style={{fontFamily:"'Spline Sans Mono',monospace",fontSize:9.5,letterSpacing:'.18em',textTransform:'uppercase',color:'#9C9A8C'}}>Scroll to Discover</span>
+          </div>
+
+          {/* Single unified feature stat card */}
+          <div style={{
+            borderRadius:18,overflow:'hidden',
+            background:'linear-gradient(135deg,#1A1E0A 0%,#263012 55%,#1A2410 100%)',
+            border:'1px solid rgba(190,202,92,.22)',
+            boxShadow:'0 8px 32px rgba(10,14,4,.28), inset 0 1px 0 rgba(190,202,92,.12)',
+            position:'relative',
+          }}>
+            {/* Radial glow behind content */}
+            <div style={{position:'absolute',inset:0,background:'radial-gradient(ellipse 80% 60% at 50% 110%,rgba(190,202,92,.12) 0%,transparent 70%)',pointerEvents:'none'}} />
+
+            {/* Stats row */}
+            <div style={{display:'flex',borderBottom:'1px solid rgba(190,202,92,.14)',position:'relative'}}>
+              {[{n:'98%',l:'AI Accuracy'},{n:'4 wk',l:'Avg. Result'},{n:'2 CNN',l:'Models Used'}].map((s,i)=>(
+                <div key={s.n} style={{flex:1,padding:'14px 12px',textAlign:'center',borderLeft:i>0?'1px solid rgba(190,202,92,.12)':'none'}}>
+                  <div style={{fontFamily:"'Newsreader',serif",fontSize:22,color:'#E8F2A8',lineHeight:1,fontWeight:400}}>{s.n}</div>
+                  <div style={{fontFamily:"'Spline Sans Mono',monospace",fontSize:8.5,letterSpacing:'.1em',textTransform:'uppercase',color:'rgba(246,244,236,.78)',marginTop:4}}>{s.l}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Checklist — 2 col */}
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:0,padding:'14px 16px 16px',position:'relative'}}>
+              {['AI-Powered Scan','Acne Detection','Skin Typing','Botanical Remedy','Lifestyle Context','Progress Track'].map((item)=>(
+                <div key={item} style={{display:'flex',alignItems:'center',gap:8,padding:'5px 6px'}}>
+                  <span style={{width:15,height:15,borderRadius:'50%',background:'rgba(190,202,92,.18)',border:'1.5px solid rgba(190,202,92,.5)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,fontSize:7.5,color:'#BECA5C',fontWeight:700,lineHeight:1}}>✓</span>
+                  <span style={{fontSize:12,color:'rgba(246,244,236,.9)',lineHeight:1.3}}>{item}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
-        {/* Right: Mirror */}
-        <div style={{ flex: '0 0 auto', width: 380, animation: 'sk-fadeup .9s ease both' }}>
-          <div style={{ position: 'relative', width: 380, height: 480, borderRadius: 18, overflow: 'hidden', border: '1px solid #E6E3D8', boxShadow: '0 30px 60px -28px rgba(60,55,30,.4)', background: '#E9E6DA' }}>
+        {/* Right — Video with decorative circle */}
+        <div style={{position:'relative',animation:'sk-fadein .9s ease both'}}>
+          {/* Decorative circle background */}
+          <div style={{position:'absolute',width:'84%',height:'84%',background:'rgba(80,96,28,.28)',borderRadius:'50%',top:'50%',left:'50%',transform:'translate(-42%,-48%)',zIndex:0,border:'1px solid rgba(110,119,51,.35)',boxShadow:'0 0 60px rgba(80,96,28,.18)'}} />
 
-            {/* Video layer */}
-            <video
-              src="/assets/gif1.mp4"
-              autoPlay loop muted playsInline
-              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover' }}
-            />
+          {/* Small floating icon pills */}
+          <div style={{position:'absolute',right:-16,top:'22%',zIndex:3,background:'rgba(252,251,246,.95)',border:'1px solid #E6E3D8',borderRadius:12,padding:'8px 12px',boxShadow:'0 4px 14px rgba(0,0,0,.08)',whiteSpace:'nowrap'}}>
+            <div style={{fontSize:16,marginBottom:2}}>🌿</div>
+            <div style={{fontFamily:"'Spline Sans Mono',monospace",fontSize:9,color:'#6E7733',letterSpacing:'.06em',textTransform:'uppercase'}}>Botanical</div>
+          </div>
+          <div style={{position:'absolute',right:-16,top:'46%',zIndex:3,background:'rgba(252,251,246,.95)',border:'1px solid #E6E3D8',borderRadius:12,padding:'8px 12px',boxShadow:'0 4px 14px rgba(0,0,0,.08)',whiteSpace:'nowrap'}}>
+            <div style={{fontSize:16,marginBottom:2}}>💧</div>
+            <div style={{fontFamily:"'Spline Sans Mono',monospace",fontSize:9,color:'#6E7733',letterSpacing:'.06em',textTransform:'uppercase'}}>Hydration</div>
+          </div>
+          <div style={{position:'absolute',right:-16,top:'68%',zIndex:3,background:'rgba(252,251,246,.95)',border:'1px solid #E6E3D8',borderRadius:12,padding:'8px 12px',boxShadow:'0 4px 14px rgba(0,0,0,.08)',whiteSpace:'nowrap'}}>
+            <div style={{fontSize:16,marginBottom:2}}>♻️</div>
+            <div style={{fontFamily:"'Spline Sans Mono',monospace",fontSize:9,color:'#6E7733',letterSpacing:'.06em',textTransform:'uppercase'}}>Natural</div>
+          </div>
 
-            {/* Gradient gloss */}
-            <div style={{ position: 'absolute', left: 0, right: 0, top: 0, height: '54%', background: 'linear-gradient(180deg,rgba(255,255,255,.18),transparent)', pointerEvents: 'none' }} />
+          {/* Video card */}
+          <div className="sk-img-card" style={{position:'relative',zIndex:1,borderRadius:26,overflow:'hidden',aspectRatio:'3/4.6',maxWidth:420,margin:'0 auto',boxShadow:'0 32px 72px -18px rgba(20,24,8,.48), 0 0 0 1px rgba(190,202,92,.18)',border:'2px solid rgba(255,255,255,.4)'}}>
+            <video src="/assets/gif1.mp4" autoPlay loop muted playsInline
+              style={{position:'absolute',inset:0,width:'100%',height:'100%',objectFit:'cover'}} />
+            <div style={{position:'absolute',inset:0,background:'linear-gradient(180deg,rgba(0,0,0,.04) 0%,transparent 30%,rgba(20,24,8,.18) 100%)',pointerEvents:'none'}} />
 
-            {/* MIRROR ACTIVE indicator */}
-            <div style={{ position: 'absolute', left: 14, top: 14, display: 'flex', alignItems: 'center', gap: 6, pointerEvents: 'none' }}>
-              <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#BECA5C', animation: 'sk-pulsedot 1.6s infinite', display: 'inline-block' }} />
-              <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 10, letterSpacing: '.12em', color: '#fff', textTransform: 'uppercase', textShadow: '0 1px 3px rgba(0,0,0,.5)' }}>Mirror Active</span>
+            {/* Mirror active pill */}
+            <div style={{position:'absolute',left:14,top:14,display:'flex',alignItems:'center',gap:6,background:'rgba(26,28,16,.65)',backdropFilter:'blur(8px)',borderRadius:'999px',padding:'5px 13px',pointerEvents:'none'}}>
+              <span style={{width:6,height:6,borderRadius:'50%',background:'#BECA5C',animation:'sk-pulsedot 1.8s infinite',display:'inline-block',flexShrink:0}} />
+              <span style={{fontFamily:"'Spline Sans Mono',monospace",fontSize:9.5,letterSpacing:'.12em',color:'#fff',textTransform:'uppercase'}}>Mirror Active</span>
             </div>
 
             {/* Live scan card */}
-            <div style={{ position: 'absolute', left: 16, right: 16, bottom: 16, background: 'rgba(252,251,246,.92)', backdropFilter: 'blur(6px)', borderRadius: 12, padding: '13px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', pointerEvents: 'none' }}>
+            <div style={{position:'absolute',left:14,right:14,bottom:14,background:'rgba(252,251,246,.95)',backdropFilter:'blur(10px)',borderRadius:14,padding:'12px 16px',display:'flex',alignItems:'center',justifyContent:'space-between',pointerEvents:'none',boxShadow:'0 2px 16px rgba(0,0,0,.1)'}}>
               <div>
-                <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: '#9AA646' }}>Live Scan</div>
-                <div style={{ fontFamily: "'Newsreader',serif", fontSize: 18, marginTop: 2 }}>94% Clarity</div>
+                <div style={{fontFamily:"'Spline Sans Mono',monospace",fontSize:9,letterSpacing:'.14em',textTransform:'uppercase',color:'#8B9633',marginBottom:3}}>Live Scan</div>
+                <div style={{fontFamily:"'Newsreader',serif",fontSize:18,color:'#20201B'}}>94% Clarity</div>
               </div>
-              {/* Mini bar chart */}
-              <div style={{ display: 'flex', alignItems: 'flex-end', gap: 3, height: 24 }}>
-                {[40, 70, 55, 100].map((h, i) => (
-                  <span key={i} style={{ width: 4, height: `${h}%`, background: i === 3 ? '#8B9633' : '#BECA5C', borderRadius: 2, display: 'inline-block' }} />
+              <div style={{display:'flex',alignItems:'flex-end',gap:3,height:22}}>
+                {[40,70,55,100].map((h,i)=>(
+                  <span key={i} style={{width:4,height:`${h}%`,background:i===3?'#6E7733':'#BECA5C',borderRadius:2,display:'inline-block'}} />
                 ))}
               </div>
             </div>
@@ -128,70 +196,197 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ── Archive divider ── */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 56px', borderTop: '1px solid #E6E3D8', borderBottom: '1px solid #E6E3D8' }}>
-        <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 11, letterSpacing: '.14em', textTransform: 'uppercase', color: '#9AA646' }}>What we observe &amp; how we heal</span>
-        <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 11, letterSpacing: '.14em', textTransform: 'uppercase', color: '#9C9A8C' }}>Live Archive →</span>
-      </div>
-
-      {/* ── Auto-scrolling strip ── */}
-      <div style={{ overflow: 'hidden', padding: '26px 0', background: '#F1EEE3' }}>
-        <div style={{ display: 'flex', gap: 18, width: 'max-content', animation: 'sk-marquee 34s linear infinite' }}>
-          {stripItems.map((item, i) => (
-            <div key={i} style={{ flex: '0 0 auto', width: 190, height: 148, borderRadius: 12, overflow: 'hidden', position: 'relative', border: '1px solid rgba(0,0,0,.05)' }}>
-              <img
-                src={item.image}
-                alt={item.label}
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                onError={(e) => { e.target.style.display = 'none'; e.target.parentElement.style.background = item.tint; }}
-              />
-              <div style={{ position: 'absolute', left: 10, bottom: 10, right: 10, fontFamily: "'Spline Sans Mono',monospace", fontSize: 10, letterSpacing: '.06em', textTransform: 'uppercase', color: '#3a3a30', background: 'rgba(252,251,246,.85)', padding: '5px 8px', borderRadius: 6 }}>
-                {item.label}
+      {/* ══════════════════════════════════════════════
+          SCROLLING INGREDIENT STRIP
+      ══════════════════════════════════════════════ */}
+      <div style={{borderTop:'1px solid #E6E3D8',borderBottom:'1px solid #E6E3D8'}}>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'9px 52px',background:'#F1EEE3'}}>
+          <span style={{fontFamily:"'Spline Sans Mono',monospace",fontSize:10,letterSpacing:'.14em',textTransform:'uppercase',color:'#8B9633'}}>What we observe &amp; how we heal</span>
+          <span style={{fontFamily:"'Spline Sans Mono',monospace",fontSize:10,letterSpacing:'.14em',textTransform:'uppercase',color:'#9C9A8C'}}>Live Archive →</span>
+        </div>
+        <div style={{overflow:'hidden',padding:'14px 0',background:'#ECEADF'}}>
+          <div style={{display:'flex',gap:12,width:'max-content',animation:'sk-marquee 36s linear infinite'}}>
+            {stripItems.map((item,i)=>(
+              <div key={i} style={{flex:'0 0 auto',width:210,height:158,borderRadius:12,overflow:'hidden',position:'relative',border:'1px solid rgba(0,0,0,.05)'}}>
+                <img src={item.image} alt={item.label} style={{width:'100%',height:'100%',objectFit:'cover'}}
+                  onError={e=>{e.target.style.display='none';e.target.parentElement.style.background=item.tint||'#DDE0C8';}} />
+                <div style={{position:'absolute',left:8,bottom:8,right:8,fontFamily:"'Spline Sans Mono',monospace",fontSize:9,letterSpacing:'.06em',textTransform:'uppercase',color:'#3a3a30',background:'rgba(252,251,246,.92)',padding:'4px 8px',borderRadius:5}}>
+                  {item.label}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* ── Process section ── */}
-      <section ref={processRef} style={{ padding: '84px 56px', maxWidth: 1180, margin: '0 auto' }}>
-        <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 11, letterSpacing: '.16em', textTransform: 'uppercase', color: '#9C9A8C', marginBottom: 16 }}>The Process</div>
-        <h2 style={{ fontFamily: "'Newsreader',serif", fontWeight: 400, fontSize: 44, letterSpacing: '-.02em', margin: '0 0 14px' }}>The journey to restoration.</h2>
-        <p style={{ color: '#6B6A60', fontSize: 16, maxWidth: 440, margin: '0 0 44px', lineHeight: 1.65 }}>
-          Six guided steps — from a single photograph to a sustained, botanical-led skin protocol.
-        </p>
-
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(280px,1fr))', gap: 18 }}>
-          {PROCESS_STEPS.map((step) => (
-            <div key={step.n} style={{ background: '#fff', border: '1px solid #E6E3D8', borderRadius: 14, padding: '26px 24px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                <span style={{ fontFamily: "'Newsreader',serif", fontSize: 30, color: '#C9C5B4' }}>{step.n}</span>
-                <span style={{ width: 24, height: 24, borderRadius: '50%', background: '#EEF0DC', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#BECA5C', display: 'inline-block' }} />
-                </span>
-              </div>
-              <div style={{ fontFamily: "'Newsreader',serif", fontSize: 21, margin: '14px 0 8px' }}>{step.title}</div>
-              <p style={{ fontSize: 13.5, color: '#6B6A60', lineHeight: 1.6, margin: 0 }}>{step.body}</p>
+      {/* ══════════════════════════════════════════════
+          SPLIT SECTION 1 — Real Ingredients
+      ══════════════════════════════════════════════ */}
+      <section style={{maxWidth:1280,margin:'0 auto',padding:'72px 52px',display:'grid',gridTemplateColumns:'1fr 1fr',gap:52,alignItems:'center'}}>
+        {/* Image */}
+        <div className="sk-img-card" style={{borderRadius:22,overflow:'hidden',height:480,background:'#DDE0C8',boxShadow:'0 20px 48px -16px rgba(35,36,28,.22)',position:'relative',flexShrink:0}}>
+          <img src={STRIP_ITEMS?.[1]?.image||''} alt="Botanical ingredients"
+            style={{width:'100%',height:'100%',objectFit:'cover'}}
+            onError={e=>{e.target.style.display='none';}} />
+          {/* Overlay card */}
+          <div style={{position:'absolute',left:16,bottom:16,right:16,background:'rgba(26,28,16,.72)',backdropFilter:'blur(8px)',borderRadius:14,padding:'14px 18px',display:'flex',alignItems:'center',gap:12}}>
+            <div style={{width:40,height:40,borderRadius:10,background:'#BECA5C',display:'flex',alignItems:'center',justifyContent:'center',fontSize:18,flexShrink:0}}>🌱</div>
+            <div>
+              <div style={{color:'#F6F4EC',fontWeight:600,fontSize:14}}>Plant-Based Formula</div>
+              <div style={{color:'rgba(246,244,236,.6)',fontSize:12,marginTop:2}}>Naturally sourced, scientifically verified</div>
             </div>
-          ))}
+          </div>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 52 }}>
-          <button onClick={() => navigate('/login')}
-            style={{ background: '#23241C', color: '#F6F4EC', border: 'none', borderRadius: '999px', padding: '16px 34px', fontWeight: 600, fontSize: 15, fontFamily: "'Hanken Grotesk'", cursor: 'pointer' }}>
-            Begin your analysis →
+        {/* Text */}
+        <div>
+          <div style={{fontFamily:"'Spline Sans Mono',monospace",fontSize:10,letterSpacing:'.16em',textTransform:'uppercase',color:'#8B9633',marginBottom:14}}>Real Ingredients</div>
+          <h2 style={{fontFamily:"'Newsreader',serif",fontWeight:400,fontSize:'clamp(30px,3.2vw,44px)',lineHeight:1.08,letterSpacing:'-.02em',margin:'0 0 18px',textWrap:'balance'}}>
+            Botanical Intelligence.<br /><em style={{fontStyle:'italic',color:'#6E7733'}}>Scientifically Verified.</em>
+          </h2>
+          <p style={{fontSize:15.5,lineHeight:1.72,color:'#6B6A60',maxWidth:380,margin:'0 0 20px'}}>
+            Our AI cross-references your unique skin profile against a curated database of plant-based compounds — aloe, neem, turmeric, and beyond — to generate remedies backed by skin science, not guesswork.
+          </p>
+          <ul style={{listStyle:'none',padding:0,margin:'0 0 28px',display:'flex',flexDirection:'column',gap:10}}>
+            {['Non-toxic, cruelty-free formulations','Personalised to your skin type & climate','Ingredient sourcing guides included'].map(item=>(
+              <li key={item} style={{display:'flex',alignItems:'center',gap:10}}>
+                <span style={{width:20,height:20,borderRadius:'50%',background:'#EEF0DC',border:'1.5px solid #BECA5C',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,fontSize:9,color:'#6E7733',fontWeight:700}}>✓</span>
+                <span style={{fontSize:14.5,color:'#57564E'}}>{item}</span>
+              </li>
+            ))}
+          </ul>
+          <button className="sk-btn-primary" onClick={()=>navigate('/login')}
+            style={{display:'inline-flex',alignItems:'center',gap:8,background:'#6E7733',color:'#F6F4EC',border:'none',borderRadius:'999px',padding:'13px 26px',fontWeight:700,fontSize:14,fontFamily:"'Hanken Grotesk'",cursor:'pointer'}}>
+            Discover Benefits <span style={{fontSize:16}}>→</span>
           </button>
         </div>
       </section>
 
-      {/* ── Footer ── */}
-      <footer style={{ display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'center', justifyContent: 'space-between', padding: '30px 56px', borderTop: '1px solid #E6E3D8' }}>
-        <span style={{ fontFamily: "'Newsreader',serif", fontSize: 18, color: '#8B9633' }}>Skinora</span>
-        <span style={{ fontSize: 12, color: '#9C9A8C' }}>© 2026 Skinora Botanical Labs · Natural beauty, scientifically verified.</span>
-        <div style={{ display: 'flex', gap: 20, fontFamily: "'Spline Sans Mono',monospace", fontSize: 11, letterSpacing: '.06em', color: '#9C9A8C' }}>
-          <span style={{ cursor: 'pointer' }}>Privacy</span>
-          <span style={{ cursor: 'pointer' }}>Terms</span>
-          <span style={{ cursor: 'pointer' }}>Medical Disclaimer</span>
+      {/* ══════════════════════════════════════════════
+          PROCESS SECTION
+      ══════════════════════════════════════════════ */}
+      <section ref={processRef} style={{background:'#ECEADF',padding:'64px 52px'}}>
+        <div style={{maxWidth:1280,margin:'0 auto'}}>
+          <div style={{textAlign:'center',marginBottom:44}}>
+            <div style={{fontFamily:"'Spline Sans Mono',monospace",fontSize:10,letterSpacing:'.18em',textTransform:'uppercase',color:'#8B9633',marginBottom:12}}>The Process</div>
+            <h2 style={{fontFamily:"'Newsreader',serif",fontWeight:400,fontSize:'clamp(28px,3vw,40px)',letterSpacing:'-.02em',margin:'0 0 12px'}}>
+              The journey to restoration.
+            </h2>
+            <p style={{fontSize:15,color:'#6B6A60',maxWidth:380,margin:'0 auto'}}>
+              Six guided steps from a single photograph to a sustained botanical protocol.
+            </p>
+          </div>
+
+          <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))',gap:14}}>
+            {PROCESS_STEPS.map(step=>(
+              <div key={step.n} className="sk-proc-card" style={{background:'#fff',border:'1.5px solid #E6E3D8',borderRadius:16,padding:'24px 20px 20px',position:'relative',overflow:'hidden'}}>
+                {/* Top lime bar */}
+                <div style={{position:'absolute',top:0,left:20,width:32,height:3,background:'#BECA5C',borderRadius:'0 0 4px 4px'}} />
+                <div style={{display:'flex',alignItems:'flex-start',justifyContent:'space-between',marginBottom:16}}>
+                  <div style={{width:42,height:42,borderRadius:11,background:'#23241C',display:'flex',alignItems:'center',justifyContent:'center',fontSize:19,flexShrink:0}}>
+                    {step.icon}
+                  </div>
+                  <span style={{fontFamily:"'Spline Sans Mono',monospace",fontSize:10.5,fontWeight:700,letterSpacing:'.06em',background:'#BECA5C',color:'#2A2D14',borderRadius:'999px',padding:'3px 9px',lineHeight:1,userSelect:'none'}}>
+                    {step.n}
+                  </span>
+                </div>
+                <div style={{fontFamily:"'Newsreader',serif",fontSize:19,letterSpacing:'-.01em',marginBottom:7,color:'#23241C'}}>{step.title}</div>
+                <div style={{width:26,height:2,background:'#BECA5C',borderRadius:2,marginBottom:10}} />
+                <p style={{fontSize:13,color:'#6B6A60',lineHeight:1.65,margin:0}}>{step.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════
+          SPLIT SECTION 2 — Self-Care
+      ══════════════════════════════════════════════ */}
+      <section style={{maxWidth:1280,margin:'0 auto',padding:'72px 52px',display:'grid',gridTemplateColumns:'1fr 1fr',gap:52,alignItems:'center'}}>
+        {/* Text */}
+        <div>
+          <div style={{fontFamily:"'Spline Sans Mono',monospace",fontSize:10,letterSpacing:'.16em',textTransform:'uppercase',color:'#8B9633',marginBottom:14}}>Progress Tracking</div>
+          <h2 style={{fontFamily:"'Newsreader',serif",fontWeight:400,fontSize:'clamp(30px,3.2vw,44px)',lineHeight:1.08,letterSpacing:'-.02em',margin:'0 0 18px',textWrap:'balance'}}>
+            Progress.<br /><em style={{fontStyle:'italic',color:'#6E7733'}}>Tracked. Adapted.</em>
+          </h2>
+          <p style={{fontSize:15.5,lineHeight:1.72,color:'#6B6A60',maxWidth:380,margin:'0 0 20px'}}>
+            Our adaptive check-in system compares your scans over time. Upload weekly or monthly, and the AI re-calibrates your botanical protocol based on visible dermal change.
+          </p>
+          <ul style={{listStyle:'none',padding:0,margin:'0 0 28px',display:'flex',flexDirection:'column',gap:10}}>
+            {['AI-compared skin scans over time','Personalised protocol adapts automatically','PDF progress report emailed after each check-in'].map(item=>(
+              <li key={item} style={{display:'flex',alignItems:'center',gap:10}}>
+                <span style={{width:20,height:20,borderRadius:'50%',background:'#EEF0DC',border:'1.5px solid #BECA5C',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,fontSize:9,color:'#6E7733',fontWeight:700}}>✓</span>
+                <span style={{fontSize:14.5,color:'#57564E'}}>{item}</span>
+              </li>
+            ))}
+          </ul>
+          <button className="sk-btn-primary" onClick={()=>navigate('/login')}
+            style={{display:'inline-flex',alignItems:'center',gap:8,background:'#6E7733',color:'#F6F4EC',border:'none',borderRadius:'999px',padding:'13px 26px',fontWeight:700,fontSize:14,fontFamily:"'Hanken Grotesk'",cursor:'pointer'}}>
+            Start Tracking <span style={{fontSize:16}}>→</span>
+          </button>
+        </div>
+
+        {/* Image — before/after skin progress */}
+        <div className="sk-img-card" style={{borderRadius:22,overflow:'hidden',height:480,background:'linear-gradient(160deg,#E8EDD8 0%,#D4DABC 100%)',boxShadow:'0 20px 48px -16px rgba(35,36,28,.28)',position:'relative',flexShrink:0}}>
+          <img src="/assets/skin_progress.jfif" alt="Skin before and after progress"
+            style={{width:'100%',height:'100%',objectFit:'cover',objectPosition:'center top',display:'block'}} />
+          {/* Subtle gradient overlay at bottom only */}
+          <div style={{position:'absolute',inset:0,background:'linear-gradient(180deg,transparent 55%,rgba(26,28,16,.48) 100%)',pointerEvents:'none'}} />
+          {/* Before/After labels */}
+          <div style={{position:'absolute',top:16,left:16,display:'flex',gap:8}}>
+            <span style={{background:'rgba(26,28,16,.7)',backdropFilter:'blur(6px)',color:'rgba(246,244,236,.9)',fontFamily:"'Spline Sans Mono',monospace",fontSize:10,letterSpacing:'.14em',textTransform:'uppercase',padding:'4px 10px',borderRadius:'999px'}}>Before</span>
+            <span style={{background:'rgba(110,119,51,.85)',backdropFilter:'blur(6px)',color:'#F6F4EC',fontFamily:"'Spline Sans Mono',monospace",fontSize:10,letterSpacing:'.14em',textTransform:'uppercase',padding:'4px 10px',borderRadius:'999px'}}>After</span>
+          </div>
+          {/* Stats row overlay */}
+          <div style={{position:'absolute',left:14,right:14,bottom:14,display:'flex',gap:8}}>
+            {[{n:'98%',l:'AI Accuracy'},{n:'+47%',l:'Clarity Gain'},{n:'4 wk',l:'First Results'}].map(s=>(
+              <div key={s.n} style={{flex:1,background:'rgba(252,251,246,.94)',backdropFilter:'blur(10px)',borderRadius:11,padding:'10px 10px',textAlign:'center',boxShadow:'0 2px 10px rgba(0,0,0,.1)'}}>
+                <div style={{fontFamily:"'Newsreader',serif",fontSize:19,color:'#23241C',lineHeight:1}}>{s.n}</div>
+                <div style={{fontFamily:"'Spline Sans Mono',monospace",fontSize:8,letterSpacing:'.08em',textTransform:'uppercase',color:'#8B9633',marginTop:3}}>{s.l}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════
+          CTA BANNER
+      ══════════════════════════════════════════════ */}
+      <section style={{background:'#23241C',margin:'0 52px 60px',borderRadius:24,padding:'56px 64px',display:'flex',flexWrap:'wrap',gap:32,alignItems:'center',justifyContent:'space-between',maxWidth:1176,marginLeft:'auto',marginRight:'auto'}}>
+        <div>
+          <div style={{fontFamily:"'Spline Sans Mono',monospace",fontSize:10,letterSpacing:'.18em',textTransform:'uppercase',color:'#BECA5C',marginBottom:12}}>Start Today — It's Free</div>
+          <h2 style={{fontFamily:"'Newsreader',serif",fontWeight:400,fontSize:'clamp(26px,2.8vw,38px)',color:'#F6F4EC',letterSpacing:'-.02em',margin:0,lineHeight:1.1}}>
+            Your skin. Your remedy.<br /><em style={{color:'#BECA5C',fontStyle:'italic'}}>Your ritual.</em>
+          </h2>
+        </div>
+        <div style={{display:'flex',gap:12,flexWrap:'wrap'}}>
+          <button className="sk-btn-primary" onClick={()=>navigate('/login')}
+            style={{background:'#BECA5C',color:'#2A2D14',border:'none',borderRadius:'999px',padding:'14px 30px',fontWeight:700,fontSize:15,fontFamily:"'Hanken Grotesk'",cursor:'pointer',letterSpacing:'.01em'}}>
+            Analyze My Skin →
+          </button>
+          <button className="sk-btn-outline" onClick={()=>processRef.current?.scrollIntoView({behavior:'smooth'})}
+            style={{background:'transparent',border:'1.5px solid rgba(246,244,236,.25)',color:'#F6F4EC',borderRadius:'999px',padding:'14px 30px',fontWeight:600,fontSize:15,fontFamily:"'Hanken Grotesk'",cursor:'pointer'}}>
+            Learn More
+          </button>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════════
+          FOOTER
+      ══════════════════════════════════════════════ */}
+      <footer style={{borderTop:'1px solid #E6E3D8',padding:'24px 52px',display:'flex',flexWrap:'wrap',gap:12,alignItems:'center',justifyContent:'space-between'}}>
+        <div style={{display:'flex',alignItems:'center',gap:10}}>
+          <LogoMark size={32} />
+          <div>
+            <div style={{fontFamily:"'Newsreader',serif",fontSize:16,color:'#6E7733',lineHeight:1.1}}>Skinora</div>
+            <div style={{fontFamily:"'Spline Sans Mono',monospace",fontSize:8,letterSpacing:'.1em',textTransform:'uppercase',color:'#9C9A8C'}}>Botanicals</div>
+          </div>
+        </div>
+        <span style={{fontSize:12,color:'#9C9A8C'}}>© 2026 Skinora Botanical Labs · Natural beauty, scientifically verified.</span>
+        <div style={{display:'flex',gap:20,fontFamily:"'Spline Sans Mono',monospace",fontSize:10,letterSpacing:'.06em',color:'#9C9A8C'}}>
+          {['Privacy','Terms','Medical Disclaimer'].map(l=>(
+            <span key={l} style={{cursor:'pointer',transition:'color .14s'}} onMouseEnter={e=>e.target.style.color='#6E7733'} onMouseLeave={e=>e.target.style.color='#9C9A8C'}>{l}</span>
+          ))}
         </div>
       </footer>
     </div>
