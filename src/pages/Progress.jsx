@@ -5,15 +5,33 @@ import { useApp } from '../context/AppContext';
 import { detect, compareProgress, checkTrackingDue, getNotificationCount, downloadProgressReport } from '../api';
 
 const STATUS_CONFIG = {
-  better:      { label: 'Improving',      color: '#3E7A2A', bg: '#F0FAF0', dot: '#5CB85C' },
-  no_progress: { label: 'No change yet',  color: '#8A6B1E', bg: '#FFF8E6', dot: '#F0AD4E' },
-  worse:       { label: 'Needs attention',color: '#B05E3C', bg: '#FDF4F0', dot: '#D9534F' },
+  better:      { label: 'Improving',       color: '#3E7A2A', bg: '#F0FAF0', dot: '#5CB85C' },
+  no_progress: { label: 'No change yet',   color: '#8A6B1E', bg: '#FFF8E6', dot: '#F0AD4E' },
+  worse:       { label: 'Needs attention', color: '#B05E3C', bg: '#FDF4F0', dot: '#D9534F' },
 };
 
 const PROGRESS_CONFIG = {
-  improved: { label: 'Improved',           icon: '↑', accent: '#3E7A2A', bg: '#F0FAF0', border: '#A8D5A2', msg: 'Your skin is responding well. Keep using your remedy!' },
-  no_change:{ label: 'No change yet',      icon: '→', accent: '#8A6B1E', bg: '#FFF8E6', border: '#F0DFA0', msg: 'Skin looks similar. Some remedies need more time — consider exploring alternatives.' },
-  worse:    { label: 'Regression detected',icon: '↓', accent: '#B05E3C', bg: '#FDF4F0', border: '#EDBBAA', msg: 'Skin appears to have reacted. Consider switching remedies or consulting a specialist.' },
+  improved:  {
+    label: 'Skin improved',
+    icon: '↑',
+    accent: '#3E7A2A', bg: '#F0FAF0', border: '#A8D5A2',
+    msg: 'Your skin is responding well to the remedy — keep going!',
+    badge: { bg: '#EBF7EB', text: '#3E7A2A', border: '#A8D5A2' },
+  },
+  no_change: {
+    label: 'No change yet',
+    icon: '→',
+    accent: '#8A6B1E', bg: '#FFF8E6', border: '#F0DFA0',
+    msg: 'Some remedies take 2–4 weeks to show results. Give it more time or explore alternatives.',
+    badge: { bg: '#FFF8E6', text: '#8A6B1E', border: '#F0DFA0' },
+  },
+  worse: {
+    label: 'Needs attention',
+    icon: '↓',
+    accent: '#B05E3C', bg: '#FDF4F0', border: '#EDBBAA',
+    msg: 'Your skin may have reacted. Consider switching remedies or consulting a specialist.',
+    badge: { bg: '#FDF0EC', text: '#B05E3C', border: '#EDBBAA' },
+  },
 };
 
 function formatDate(iso) {
@@ -29,24 +47,75 @@ function daysUntil(iso) {
   return `In ${diff} day${diff !== 1 ? 's' : ''}`;
 }
 
+// ── SVG Icons ──────────────────────────────────────────────
+const CameraIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+    <circle cx="12" cy="13" r="4"/>
+  </svg>
+);
+
+const UploadIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="16 16 12 12 8 16"/><line x1="12" y1="12" x2="12" y2="21"/>
+    <path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"/>
+  </svg>
+);
+
+const CheckIcon = ({ size = 12 }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="20 6 9 17 4 12"/>
+  </svg>
+);
+
+const ChevronIcon = ({ open }) => (
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+    style={{ transform: open ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform .22s ease' }}>
+    <polyline points="6 9 12 15 18 9"/>
+  </svg>
+);
+
+const InfoIcon = () => (
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+  </svg>
+);
+
+const CalendarIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+  </svg>
+);
+
+// Persist comparison results across page refreshes (within browser session)
+function loadStoredResults() {
+  try { return JSON.parse(sessionStorage.getItem('sk_checkin_results') ?? '{}'); }
+  catch { return {}; }
+}
+
+function saveStoredResults(obj) {
+  try { sessionStorage.setItem('sk_checkin_results', JSON.stringify(obj)); } catch {}
+}
+
 export default function Progress() {
   const navigate = useNavigate();
   const { state, dispatch } = useApp();
 
-  // Dashboard data
   const [tracking,   setTracking]   = useState(null);
   const [detections, setDetections] = useState([]);
   const [loading,    setLoading]    = useState(true);
 
-  // Check-in state
-  const [preview,     setPreview]     = useState(null);
-  const [scanning,    setScanning]    = useState(false);
-  const [scanResult,  setScanResult]  = useState(null);
-  const [faceError,   setFaceError]   = useState(null);
-  const [selectedDet,   setSelectedDet]   = useState(null);
+  const [preview,        setPreview]        = useState(null);
+  const [scanning,       setScanning]       = useState(false);
+  const [scanResult,     setScanResult]     = useState(null);
+  const [faceError,      setFaceError]      = useState(null);
+  const [expandedId,     setExpandedId]     = useState(null);
+  const [showAll,        setShowAll]        = useState(false);
   const [downloadingPdf, setDownloadingPdf] = useState(false);
 
-  // Camera state
+  // Comparison results keyed by detection_id — persisted in sessionStorage
+  const [checkinResults, setCheckinResults] = useState(loadStoredResults);
+
   const fileRef    = useRef(null);
   const videoRef   = useRef(null);
   const canvasRef  = useRef(null);
@@ -56,7 +125,6 @@ export default function Progress() {
   const [cameraReady, setCameraReady] = useState(false);
   const [facingMode,  setFacingMode]  = useState('user');
 
-  // ── Load dashboard on mount ────────────────────────────────
   useEffect(() => {
     if (!state.user) return;
     const token = sessionStorage.getItem('skinora_token');
@@ -71,7 +139,6 @@ export default function Progress() {
       .finally(() => setLoading(false));
   }, [state.user]);
 
-  // ── Camera wiring ──────────────────────────────────────────
   useEffect(() => {
     if (cameraOpen && videoRef.current && streamRef.current) {
       videoRef.current.srcObject = streamRef.current;
@@ -130,7 +197,6 @@ export default function Progress() {
     setPreview({ url: URL.createObjectURL(file), file });
   }, []);
 
-  // ── Run check-in scan + compare ───────────────────────────
   async function runCheckin() {
     if (!preview) return;
     setScanning(true); setFaceError(null);
@@ -146,7 +212,12 @@ export default function Progress() {
           const cmpRes = await compareProgress({ detection_id: data.detection_id });
           comparison = cmpRes.data;
           dispatch({ type: 'SET_CHECKIN_PROGRESS', payload: comparison });
-          // Resolve notifications → clear badge immediately
+
+          // ── Persist comparison result keyed by detection_id ────────────
+          const updated = { ...checkinResults, [data.detection_id]: { ...comparison, checkedAt: new Date().toISOString() } };
+          setCheckinResults(updated);
+          saveStoredResults(updated);
+
           getNotificationCount()
             .then(r => dispatch({ type: 'SET_PENDING_CHECKINS', payload: r.data.count }))
             .catch(() => {});
@@ -158,7 +229,7 @@ export default function Progress() {
 
       setScanResult({ detection: data, comparison });
 
-      // Refresh history + tracking status
+      // Refresh history
       const token = sessionStorage.getItem('skinora_token');
       fetch('/api/tracking/dashboard', { headers: { Authorization: `Bearer ${token}` } })
         .then(r => r.json())
@@ -195,14 +266,16 @@ export default function Progress() {
     }
   }
 
-  // ── Loading / empty states ─────────────────────────────────
+  // ── Loading ─────────────────────────────────────────────────
   if (loading) {
     return (
       <div style={{ background: '#F6F4EC', minHeight: '100vh', fontFamily: "'Hanken Grotesk'" }}>
         <AppHeader activeStep="track" />
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '60vh', color: '#9C9A8C', fontSize: 15 }}>
-          Loading your progress…
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '70vh', gap: 20 }}>
+          <div className="sk-loader-ring" />
+          <span style={{ color: '#9C9A8C', fontSize: 14, fontFamily: "'Spline Sans Mono'", letterSpacing: '.08em' }}>Loading your progress…</span>
         </div>
+        <style>{`@keyframes sk-spin { to { transform: rotate(360deg); } } .sk-loader-ring { width:40px;height:40px;border:3px solid #E6E3D8;border-top-color:#BECA5C;border-radius:50%;animation:sk-spin .8s linear infinite; }`}</style>
       </div>
     );
   }
@@ -211,16 +284,20 @@ export default function Progress() {
     return (
       <div style={{ background: '#F6F4EC', minHeight: '100vh', fontFamily: "'Hanken Grotesk'" }}>
         <AppHeader activeStep="track" />
-        <main style={{ maxWidth: 580, margin: '0 auto', padding: '90px 44px', textAlign: 'center' }}>
-          <div style={{ fontSize: 52, marginBottom: 22 }}>🌿</div>
-          <h2 style={{ fontFamily: "'Newsreader',serif", fontWeight: 400, fontSize: 34, letterSpacing: '-.02em', margin: '0 0 14px' }}>
+        <main style={{ maxWidth: 520, margin: '0 auto', padding: '100px 32px', textAlign: 'center' }}>
+          <div style={{ width: 72, height: 72, borderRadius: '50%', background: 'linear-gradient(135deg,#EEF0DC,#D4DEB8)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 28px', boxShadow: '0 8px 24px rgba(94,106,42,.18)' }}>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#5E6A2A" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <h2 style={{ fontFamily: "'Newsreader',serif", fontWeight: 400, fontSize: 32, letterSpacing: '-.02em', margin: '0 0 14px', color: '#23241C' }}>
             No active tracking yet.
           </h2>
-          <p style={{ fontSize: 15, color: '#6B6A60', lineHeight: 1.7, marginBottom: 30 }}>
+          <p style={{ fontSize: 14.5, color: '#6B6A60', lineHeight: 1.7, marginBottom: 32 }}>
             Complete a skin scan, select a remedy, and set up progress tracking to see your journey here.
           </p>
           <button onClick={() => navigate('/upload')}
-            style={{ background: '#BECA5C', color: '#2A2D14', border: 'none', borderRadius: '999px', padding: '14px 30px', fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 15, cursor: 'pointer' }}>
+            style={{ background: '#BECA5C', color: '#2A2D14', border: 'none', borderRadius: '999px', padding: '14px 32px', fontFamily: "'Hanken Grotesk'", fontWeight: 700, fontSize: 15, cursor: 'pointer', boxShadow: '0 4px 16px rgba(190,202,92,.35)' }}>
             Start a skin scan →
           </button>
         </main>
@@ -228,15 +305,77 @@ export default function Progress() {
     );
   }
 
-  const isDue    = state.trackingDue?.due ?? false;
+  const isDue     = state.trackingDue?.due ?? false;
   const statusCfg = STATUS_CONFIG[tracking.last_status] ?? { label: 'Tracking active', color: '#5E6A2A', bg: '#F4F6EA', dot: '#BECA5C' };
+  const comparedCount = Object.keys(checkinResults).length;
+  const displayedDetections = showAll ? detections : detections.slice(0, 5);
 
-  const ghostBtn = { background: 'rgba(255,255,255,.14)', backdropFilter: 'blur(4px)', border: '1px solid rgba(255,255,255,.3)', color: '#fff', borderRadius: 9, padding: '8px 16px', fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 13, cursor: 'pointer' };
+  const ghostBtn = {
+    background: 'rgba(255,255,255,.14)', backdropFilter: 'blur(4px)',
+    border: '1px solid rgba(255,255,255,.3)', color: '#fff',
+    borderRadius: 9, padding: '8px 16px', fontFamily: "'Hanken Grotesk'",
+    fontWeight: 600, fontSize: 13, cursor: 'pointer',
+  };
+
+  const css = `
+    @import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,300;0,400;0,600;1,400&family=Hanken+Grotesk:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500&display=swap');
+
+    @keyframes sk-spin     { to { transform: rotate(360deg); } }
+    @keyframes sk-card-in  { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes sk-expand   { from { opacity:0; transform:scaleY(.94); } to { opacity:1; transform:scaleY(1); } }
+    @keyframes sk-pulse-ring {
+      0%  { transform: scale(1);   opacity: .9; }
+      70% { transform: scale(2.4); opacity: 0;  }
+      100%{ transform: scale(1);   opacity: 0;  }
+    }
+
+    .sk-hist-card {
+      animation: sk-card-in .3s ease both;
+      cursor: pointer;
+      transition: box-shadow .18s, border-color .15s, background .15s;
+    }
+    .sk-hist-card:hover { box-shadow: 0 6px 22px rgba(35,36,28,.1) !important; }
+
+    .sk-expand-panel {
+      animation: sk-expand .22s cubic-bezier(.34,1.2,.64,1) both;
+      transform-origin: top;
+    }
+
+    .sk-pulse-dot {
+      position: relative;
+      display: inline-block;
+      border-radius: 50%;
+    }
+    .sk-pulse-dot::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: inherit;
+      animation: sk-pulse-ring 1.8s ease-out infinite;
+    }
+
+    .sk-view-all-btn { transition: background .15s, color .15s, transform .14s; }
+    .sk-view-all-btn:hover { background: #BECA5C !important; color: #1A1E0A !important; transform: translateY(-1px); }
+
+    .sk-upload-opt { transition: background .15s, border-color .15s, transform .15s, box-shadow .15s; }
+    .sk-upload-opt:hover { background: #EEF0DC !important; border-color: #BECA5C !important; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(94,106,42,.14); }
+
+    .sk-scan-btn { transition: background .15s, transform .14s, box-shadow .15s; }
+    .sk-scan-btn:hover:not(:disabled) { background: #AABA4A !important; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(190,202,92,.38); }
+
+    .sk-compared-badge { display: inline-flex; align-items: center; gap: 4px; font-family: 'Spline Sans Mono'; font-size: 9px; letter-spacing: .06em; text-transform: uppercase; color: #3E7A2A; background: #EBF7EB; border: 1px solid #A8D5A2; padding: 2px 8px; border-radius: 5px; }
+
+    @media (max-width: 800px) {
+      .sk-progress-grid { flex-direction: column !important; }
+    }
+  `;
 
   return (
     <div style={{ background: '#F6F4EC', minHeight: '100vh', fontFamily: "'Hanken Grotesk'" }}>
       <AppHeader activeStep="track" />
       <canvas ref={canvasRef} style={{ display: 'none' }} />
+      <style>{css}</style>
 
       {/* ── Camera modal ── */}
       {cameraOpen && (
@@ -247,9 +386,7 @@ export default function Progress() {
             <button onClick={() => openCamera(facingMode === 'user' ? 'environment' : 'user')} style={ghostBtn}>⇄ Flip</button>
           </div>
           <div style={{ position: 'relative', width: '100%', maxWidth: 560 }}>
-            {!cameraReady && (
-              <div style={{ height: 380, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9C9A8C', fontSize: 14 }}>Starting camera…</div>
-            )}
+            {!cameraReady && <div style={{ height: 380, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9C9A8C', fontSize: 14 }}>Starting camera…</div>}
             <video ref={videoRef} autoPlay playsInline muted
               onLoadedData={() => setCameraReady(true)}
               style={{ width: '100%', borderRadius: 16, transform: facingMode === 'user' ? 'scaleX(-1)' : 'none', display: cameraReady ? 'block' : 'none' }} />
@@ -257,29 +394,28 @@ export default function Progress() {
           </div>
           {cameraErr && <div style={{ color: '#F5A623', fontSize: 13, marginTop: 14, padding: '0 32px', textAlign: 'center' }}>{cameraErr}</div>}
           {cameraReady && (
-            <button onClick={capturePhoto}
-              style={{ marginTop: 28, width: 68, height: 68, borderRadius: '50%', background: '#BECA5C', border: '4px solid rgba(255,255,255,.5)', cursor: 'pointer', flexShrink: 0 }} />
+            <button onClick={capturePhoto} style={{ marginTop: 28, width: 68, height: 68, borderRadius: '50%', background: '#BECA5C', border: '4px solid rgba(255,255,255,.5)', cursor: 'pointer', flexShrink: 0 }} />
           )}
           <div style={{ marginTop: 14, fontFamily: "'Spline Sans Mono'", fontSize: 11, color: 'rgba(255,255,255,.5)', letterSpacing: '.08em' }}>
-            Same lighting as your original scan for best comparison
+            Same lighting as your baseline scan for best comparison
           </div>
         </div>
       )}
 
-      <main style={{ maxWidth: 1080, margin: '0 auto', padding: '40px 44px 70px' }}>
+      <main style={{ maxWidth: 1100, margin: '0 auto', padding: '40px 40px 70px' }}>
 
-        {/* ── Header ── */}
-        <div style={{ marginBottom: 32 }}>
+        {/* ── Page header ── */}
+        <div style={{ marginBottom: 36 }}>
           <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 11, letterSpacing: '.16em', textTransform: 'uppercase', color: '#9C9A8C', marginBottom: 10 }}>
             Progress Tracking
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 14 }}>
-            <h2 style={{ fontFamily: "'Newsreader',serif", fontWeight: 400, fontSize: 38, letterSpacing: '-.02em', margin: 0 }}>
+            <h2 style={{ fontFamily: "'Newsreader',serif", fontWeight: 400, fontSize: 40, letterSpacing: '-.025em', margin: 0, color: '#23241C', lineHeight: 1.1 }}>
               Your skin journey.
             </h2>
-            <div style={{ display: 'flex', gap: 9, flexWrap: 'wrap' }}>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: statusCfg.bg, color: statusCfg.color, fontSize: 12.5, fontWeight: 600, padding: '6px 14px', borderRadius: '999px', border: `1px solid ${statusCfg.dot}44` }}>
-                <span style={{ width: 7, height: 7, borderRadius: '50%', background: statusCfg.dot, display: 'inline-block' }} />
+            <div style={{ display: 'flex', gap: 9, flexWrap: 'wrap', alignItems: 'center' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: statusCfg.bg, color: statusCfg.color, fontSize: 12.5, fontWeight: 600, padding: '6px 14px', borderRadius: '999px', border: `1px solid ${statusCfg.dot}55` }}>
+                <span className="sk-pulse-dot" style={{ width: 8, height: 8, background: statusCfg.dot, display: 'inline-block' }} />
                 {statusCfg.label}
               </span>
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#F1EEE3', color: '#57564E', fontSize: 12.5, padding: '6px 14px', borderRadius: '999px', border: '1px solid #E0DCCC' }}>
@@ -292,167 +428,347 @@ export default function Progress() {
           </div>
         </div>
 
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 28, alignItems: 'flex-start' }}>
+        {/* ── How tracking works — only when there are no compared results yet ── */}
+        {comparedCount === 0 && detections.length > 1 && (
+          <div style={{ background: 'linear-gradient(135deg,#F4F6EA,#EDF1DC)', border: '1px solid #C8D068', borderRadius: 14, padding: '16px 20px', display: 'flex', gap: 14, alignItems: 'flex-start', marginBottom: 28 }}>
+            <div style={{ width: 36, height: 36, borderRadius: 9, background: '#BECA5C', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: '#23241C' }}>
+              <InfoIcon />
+            </div>
+            <div>
+              <div style={{ fontWeight: 700, fontSize: 13.5, color: '#23241C', marginBottom: 4 }}>How progress tracking works</div>
+              <div style={{ fontSize: 13, color: '#5E6A2A', lineHeight: 1.6 }}>
+                Each time a check-in is due, upload a new face photo on the right. Skinora's AI compares it to your
+                <strong> baseline scan</strong> and measures how your skin has changed. Results are saved in your history below.
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="sk-progress-grid" style={{ display: 'flex', gap: 28, alignItems: 'flex-start' }}>
 
           {/* ══════════════════════════════════════════
-              LEFT COLUMN — Scan History
+              LEFT — Scan History
           ══════════════════════════════════════════ */}
           <div style={{ flex: '1 1 340px', minWidth: 290 }}>
-            <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: '#9C9A8C', marginBottom: 14 }}>
-              Scan History · {detections.length} scan{detections.length !== 1 ? 's' : ''}
+
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 14 }}>
+              <div>
+                <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: '#9C9A8C' }}>
+                  Scan History
+                </div>
+                <div style={{ fontSize: 12, color: '#BCBAB0', marginTop: 2 }}>
+                  {detections.length} upload{detections.length !== 1 ? 's' : ''}
+                  {comparedCount > 0 && <span style={{ color: '#5CB85C', fontWeight: 600 }}> · {comparedCount} compared this session</span>}
+                </div>
+              </div>
+              {isDue && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 5, background: '#EEF0DC', border: '1px solid #BECA5C', borderRadius: '999px', padding: '4px 11px' }}>
+                  <span className="sk-pulse-dot" style={{ width: 7, height: 7, background: '#BECA5C', display: 'inline-block' }} />
+                  <span style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, letterSpacing: '.07em', textTransform: 'uppercase', color: '#5E6A2A', fontWeight: 600 }}>Check-in due</span>
+                </div>
+              )}
             </div>
 
             {detections.length === 0 ? (
-              <div style={{ background: '#fff', border: '1px solid #E6E3D8', borderRadius: 14, padding: '32px 24px', textAlign: 'center', color: '#9C9A8C', fontSize: 14 }}>
-                No scans yet — upload your first photo to get started.
+              <div style={{ background: '#fff', border: '1.5px dashed #D5D1C2', borderRadius: 16, padding: '36px 24px', textAlign: 'center' }}>
+                <div style={{ width: 48, height: 48, borderRadius: '50%', background: '#F0EDE3', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px', color: '#BCBAB0' }}>
+                  <CameraIcon />
+                </div>
+                <div style={{ fontSize: 14, color: '#9C9A8C', lineHeight: 1.6 }}>No scans yet — upload your first photo to get started.</div>
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {detections.map((det, idx) => {
-                  const isBaseline = det.id === tracking.detection_id;
-                  const isSelected = selectedDet?.id === det.id;
-                  return (
-                    <button key={det.id}
-                      onClick={() => setSelectedDet(isSelected ? null : det)}
-                      style={{ display: 'flex', gap: 13, alignItems: 'center', background: isSelected ? '#F4F6EA' : '#fff', border: `1.5px solid ${isBaseline ? '#BECA5C' : isSelected ? '#C8D88A' : '#E6E3D8'}`, borderRadius: 13, padding: '12px 14px', textAlign: 'left', cursor: 'pointer', width: '100%', transition: 'background .1s' }}>
+              <>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {displayedDetections.map((det, idx) => {
+                    const isBaseline = det.id === tracking.detection_id;
+                    const isExpanded = expandedId === det.id;
+                    const result     = checkinResults[det.id] ?? null; // comparison result if available
+                    const pc         = result ? (PROGRESS_CONFIG[result.progress] ?? PROGRESS_CONFIG.no_change) : null;
 
-                      {/* Thumbnail */}
-                      <div style={{ width: 58, height: 58, borderRadius: 10, overflow: 'hidden', flexShrink: 0, background: '#ECEADF', border: '1px solid #E0DCCC', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        {det.image_url
-                          ? <img src={det.image_url} alt="Scan" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                          : <span style={{ fontSize: 22 }}>📷</span>
-                        }
-                      </div>
+                    return (
+                      <div key={det.id} style={{ animationDelay: `${idx * 55}ms` }}>
 
-                      {/* Info */}
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 5 }}>
-                          <span style={{ fontFamily: "'Spline Sans Mono'", fontSize: 10, color: '#5E6A2A', background: '#EEF0DC', padding: '2px 8px', borderRadius: 5 }}>
-                            {det.final_condition}
+                        {/* History card row */}
+                        <div
+                          className="sk-hist-card"
+                          onClick={() => setExpandedId(isExpanded ? null : det.id)}
+                          style={{
+                            display: 'flex', gap: 13, alignItems: 'center',
+                            background: isExpanded ? '#F4F6EA' : '#fff',
+                            border: `1.5px solid ${
+                              isBaseline ? '#BECA5C'
+                              : pc       ? pc.border
+                              : isExpanded ? '#C8D88A' : '#E6E3D8'
+                            }`,
+                            borderRadius: isExpanded ? '13px 13px 0 0' : 13,
+                            padding: '12px 14px',
+                            boxShadow: isExpanded ? '0 4px 16px rgba(94,106,42,.1)' : '0 2px 8px rgba(35,36,28,.05)',
+                          }}
+                        >
+                          {/* Thumbnail */}
+                          <div style={{
+                            width: 60, height: 60, borderRadius: 11, overflow: 'hidden', flexShrink: 0,
+                            background: '#ECEADF', border: `1.5px solid ${pc ? pc.border : '#E0DCCC'}`,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            position: 'relative', transition: 'border-color .15s',
+                          }}>
+                            {det.image_url
+                              ? <img src={det.image_url} alt="Scan" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                              : <span style={{ color: '#BCBAB0' }}><CameraIcon /></span>
+                            }
+                            {/* Compared indicator — green circle check */}
+                            {pc && (
+                              <div style={{ position: 'absolute', top: -4, right: -4, width: 18, height: 18, borderRadius: '50%', background: pc.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #fff' }}>
+                                <CheckIcon size={9} />
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Info */}
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 5 }}>
+                              <span style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9.5, color: '#5E6A2A', background: '#EEF0DC', padding: '2px 8px', borderRadius: 5, border: '1px solid #C8D068' }}>
+                                {det.final_condition}
+                              </span>
+                              {isBaseline && (
+                                <span style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, letterSpacing: '.07em', textTransform: 'uppercase', color: '#8B9633', background: '#F4F6EA', border: '1px solid #BECA5C', padding: '2px 7px', borderRadius: 5 }}>
+                                  Baseline
+                                </span>
+                              )}
+                              {idx === 0 && !isBaseline && !pc && (
+                                <span style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, letterSpacing: '.07em', textTransform: 'uppercase', color: '#9AA646', background: '#F4F6EA', padding: '2px 7px', borderRadius: 5 }}>
+                                  Latest
+                                </span>
+                              )}
+                              {pc && (
+                                <span className="sk-compared-badge">
+                                  <CheckIcon size={9} /> {pc.label}
+                                </span>
+                              )}
+                            </div>
+                            <div style={{ fontSize: 13, color: '#23241C', fontWeight: 600, marginBottom: 3 }}>
+                              {det.skin_type} skin · {det.acne_status === 'Acne' ? 'Acne present' : 'No acne'}
+                            </div>
+                            <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 10, color: '#9C9A8C', letterSpacing: '.04em' }}>
+                              {formatDate(det.detected_at)}
+                              {pc && result.checkedAt && (
+                                <span style={{ color: '#7E9A3E' }}> · compared {formatDate(result.checkedAt)}</span>
+                              )}
+                            </div>
+                          </div>
+
+                          <span style={{ color: '#BECA5C', flexShrink: 0 }}>
+                            <ChevronIcon open={isExpanded} />
                           </span>
-                          {isBaseline && (
-                            <span style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, letterSpacing: '.07em', textTransform: 'uppercase', color: '#8B9633', background: '#F4F6EA', border: '1px solid #BECA5C', padding: '2px 7px', borderRadius: 5 }}>
-                              Baseline
-                            </span>
-                          )}
-                          {idx === 0 && !isBaseline && (
-                            <span style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, letterSpacing: '.07em', textTransform: 'uppercase', color: '#9AA646', background: '#F4F6EA', padding: '2px 7px', borderRadius: 5 }}>
-                              Latest
-                            </span>
-                          )}
                         </div>
-                        <div style={{ fontSize: 13, color: '#23241C', fontWeight: 600, marginBottom: 2 }}>
-                          {det.skin_type} skin · {det.acne_status === 'Acne' ? 'Acne present' : 'No acne'}
-                        </div>
-                        <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 10, color: '#9C9A8C', letterSpacing: '.04em' }}>
-                          {formatDate(det.detected_at)} · {Math.round((det.skin_conf ?? 0) * 100)}% / {Math.round((det.acne_conf ?? 0) * 100)}%
-                        </div>
-                      </div>
 
-                      {/* Expand chevron */}
-                      <span style={{ fontSize: 11, color: '#CFCBBC', flexShrink: 0 }}>
-                        {isSelected ? '▲' : '▼'}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            )}
+                        {/* ── Expanded panel ── */}
+                        {isExpanded && (
+                          <div className="sk-expand-panel"
+                            style={{ background: '#fff', border: `1.5px solid ${pc ? pc.border : '#C8D88A'}`, borderTop: 'none', borderRadius: '0 0 13px 13px', overflow: 'hidden', boxShadow: '0 8px 24px rgba(94,106,42,.1)' }}>
 
-            {/* ── Expanded scan detail ── */}
-            {selectedDet && (
-              <div style={{ marginTop: 14, background: '#fff', border: '1px solid #E6E3D8', borderRadius: 14, overflow: 'hidden' }}>
-                {selectedDet.image_url ? (
-                  <img src={selectedDet.image_url} alt="Scan detail"
-                    style={{ width: '100%', maxHeight: 340, objectFit: 'contain', background: '#ECEADF', display: 'block' }} />
-                ) : (
-                  <div style={{ height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#ECEADF', fontSize: 44 }}>📷</div>
-                )}
-                <div style={{ padding: '16px 18px' }}>
-                  <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 10, color: '#9C9A8C', letterSpacing: '.08em', textTransform: 'uppercase', marginBottom: 6 }}>{formatDate(selectedDet.detected_at)}</div>
-                  <div style={{ fontSize: 16, fontWeight: 600, color: '#23241C', marginBottom: 10 }}>
-                    {selectedDet.final_condition?.replace('_', ' · ')}
-                  </div>
-                  <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-                    {[
-                      ['Skin type',   `${selectedDet.skin_type} (${Math.round((selectedDet.skin_conf ?? 0) * 100)}%)`],
-                      ['Acne status', `${selectedDet.acne_status === 'Acne' ? 'Acne present' : 'No acne'} (${Math.round((selectedDet.acne_conf ?? 0) * 100)}%)`],
-                    ].map(([label, val]) => (
-                      <div key={label} style={{ background: '#F4F6EA', borderRadius: 8, padding: '8px 12px' }}>
-                        <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, letterSpacing: '.08em', textTransform: 'uppercase', color: '#9C9A8C', marginBottom: 3 }}>{label}</div>
-                        <div style={{ fontSize: 13, fontWeight: 600, color: '#3a3a2a' }}>{val}</div>
+                            {/* Detection photo */}
+                            {det.image_url ? (
+                              <div style={{ position: 'relative', height: 200, background: '#ECEADF' }}>
+                                <img src={det.image_url} alt="Scan" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                                <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(26,30,10,.5) 0%, transparent 55%)' }} />
+                                <div style={{ position: 'absolute', bottom: 14, left: 16 }}>
+                                  <div style={{ fontFamily: "'Newsreader',serif", fontSize: 17, color: '#F6F4EC' }}>
+                                    {isBaseline ? 'Baseline scan' : 'Check-in scan'}
+                                  </div>
+                                  <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 10, color: 'rgba(246,244,236,.65)', marginTop: 2 }}>{formatDate(det.detected_at)}</div>
+                                </div>
+                              </div>
+                            ) : (
+                              <div style={{ height: 160, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#ECEADF', color: '#BCBAB0' }}>
+                                <CameraIcon />
+                              </div>
+                            )}
+
+                            <div style={{ padding: '16px 18px 20px' }}>
+
+                              {/* Detection metrics */}
+                              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 9, marginBottom: 12 }}>
+                                {[
+                                  ['Skin type',   det.skin_type,   `${Math.round((det.skin_conf ?? 0) * 100)}% confidence`],
+                                  ['Acne status', det.acne_status === 'Acne' ? 'Acne present' : 'Clear', `${Math.round((det.acne_conf ?? 0) * 100)}% confidence`],
+                                ].map(([label, val, sub]) => (
+                                  <div key={label} style={{ background: '#F4F6EA', borderRadius: 10, padding: '10px 13px', border: '1px solid #E4E8CC' }}>
+                                    <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, letterSpacing: '.08em', textTransform: 'uppercase', color: '#9C9A8C', marginBottom: 4 }}>{label}</div>
+                                    <div style={{ fontSize: 13.5, fontWeight: 700, color: '#23241C', marginBottom: 2 }}>{val}</div>
+                                    <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, color: '#7E9A3E' }}>{sub}</div>
+                                  </div>
+                                ))}
+                              </div>
+
+                              {/* ── Comparison result (if available from this session) ── */}
+                              {pc && result ? (
+                                <div style={{ background: pc.bg, border: `1.5px solid ${pc.border}`, borderRadius: 12, padding: '14px 16px' }}>
+                                  <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9.5, letterSpacing: '.08em', textTransform: 'uppercase', color: pc.accent, marginBottom: 10 }}>
+                                    Progress comparison result
+                                  </div>
+
+                                  {/* What these scores mean */}
+                                  <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start', background: 'rgba(255,255,255,.5)', borderRadius: 9, padding: '10px 12px', marginBottom: 12, border: `1px solid ${pc.border}` }}>
+                                    <div style={{ color: pc.accent, flexShrink: 0, marginTop: 1 }}><InfoIcon /></div>
+                                    <div style={{ fontSize: 12, color: '#3a3a2a', lineHeight: 1.55 }}>
+                                      <strong>How scores work:</strong> Skinora compares your baseline scan to this check-in.
+                                      It checks skin condition and acne confidence — a higher skin confidence + lower acne confidence = healthier score.
+                                      The delta (%) shows how much it changed.
+                                    </div>
+                                  </div>
+
+                                  {/* Before / After labels */}
+                                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 12 }}>
+                                    {[
+                                      { label: 'Baseline scan', cond: result.old_condition, caption: 'Your starting skin condition' },
+                                      { label: 'This check-in', cond: result.new_condition, caption: 'Skin condition in this scan' },
+                                    ].map(({ label, cond, caption }) => (
+                                      <div key={label} style={{ background: 'rgba(255,255,255,.6)', borderRadius: 9, padding: '10px 12px', border: `1px solid ${pc.border}` }}>
+                                        <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, letterSpacing: '.07em', textTransform: 'uppercase', color: '#9C9A8C', marginBottom: 4 }}>{label}</div>
+                                        <div style={{ fontSize: 13, fontWeight: 700, color: '#23241C', marginBottom: 2 }}>{cond ?? '—'}</div>
+                                        <div style={{ fontSize: 10.5, color: '#9C9A8C' }}>{caption}</div>
+                                      </div>
+                                    ))}
+                                  </div>
+
+                                  {/* Delta */}
+                                  {result.delta != null && (
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', background: 'rgba(255,255,255,.6)', borderRadius: 10, border: `1px solid ${pc.border}` }}>
+                                      <div style={{ width: 38, height: 38, borderRadius: '50%', background: pc.accent, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0 }}>
+                                        {pc.icon}
+                                      </div>
+                                      <div>
+                                        <div style={{ fontFamily: "'Newsreader',serif", fontSize: 20, color: pc.accent, lineHeight: 1 }}>{pc.label}</div>
+                                        <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 10, color: pc.accent, marginTop: 3 }}>
+                                          {result.progress === 'improved' ? '+' : result.progress === 'worse' ? '−' : '±'}{Math.round(Math.abs(result.delta) * 100)}% skin health score change
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  <p style={{ fontSize: 12.5, color: '#3a3a2a', lineHeight: 1.6, margin: '12px 0 0' }}>{pc.msg}</p>
+                                </div>
+
+                              ) : isBaseline ? (
+                                /* Baseline info card */
+                                <div style={{ background: 'linear-gradient(135deg,#EEF0DC,#F4F6EA)', borderRadius: 11, padding: '13px 15px', border: '1px solid #C8D068', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                                  <div style={{ color: '#5E6A2A', flexShrink: 0, marginTop: 2 }}><InfoIcon /></div>
+                                  <div style={{ fontSize: 12.5, color: '#3A4018', lineHeight: 1.55 }}>
+                                    This is your <strong>baseline scan</strong> — the reference point all future check-ins are compared against.
+                                    No comparison is done on the baseline itself.
+                                  </div>
+                                </div>
+
+                              ) : (
+                                /* Non-baseline, result from a previous session (not in sessionStorage) */
+                                <div style={{ background: '#F8FAF0', borderRadius: 11, padding: '13px 15px', border: '1px solid #E4E8CC', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                                  <div style={{ color: '#7E9A3E', flexShrink: 0, marginTop: 2 }}><InfoIcon /></div>
+                                  <div style={{ fontSize: 12.5, color: '#57564E', lineHeight: 1.55 }}>
+                                    This scan was uploaded as a check-in. Its comparison result is stored in your account.
+                                    <br/>
+                                    <span style={{ color: '#9C9A8C', fontSize: 11.5 }}>Full history view with all results is coming soon.</span>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        )}
                       </div>
-                    ))}
-                  </div>
+                    );
+                  })}
                 </div>
-              </div>
+
+                {/* View all / collapse */}
+                {detections.length > 5 && (
+                  <button
+                    className="sk-view-all-btn"
+                    onClick={() => setShowAll(s => !s)}
+                    style={{ marginTop: 14, width: '100%', background: '#F4F6E8', border: '1.5px solid #C8D068', color: '#3A4018', borderRadius: 12, padding: '12px', fontFamily: "'Hanken Grotesk'", fontWeight: 700, fontSize: 13.5, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
+                  >
+                    {showAll
+                      ? (<><ChevronIcon open={true} /> Show less</>)
+                      : (<>View all {detections.length} scans <ChevronIcon open={false} /></>)
+                    }
+                  </button>
+                )}
+              </>
             )}
           </div>
 
           {/* ══════════════════════════════════════════
-              RIGHT COLUMN — Check-in upload & result
+              RIGHT — Check-in upload & result
           ══════════════════════════════════════════ */}
           <div style={{ flex: '1 1 340px', minWidth: 290 }}>
 
             {/* Due banner */}
             {isDue && !scanResult && (
-              <div style={{ background: 'linear-gradient(135deg,#EEF0DC,#F4F6EA)', border: '1.5px solid #BECA5C', borderRadius: 14, padding: '16px 20px', display: 'flex', gap: 14, alignItems: 'flex-start', marginBottom: 18 }}>
-                <div style={{ width: 42, height: 42, borderRadius: 11, background: '#BECA5C', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0 }}>📅</div>
+              <div style={{ background: 'linear-gradient(135deg,#23241C,#3A4018)', borderRadius: 16, padding: '20px 22px', display: 'flex', gap: 14, alignItems: 'flex-start', marginBottom: 18, boxShadow: '0 8px 28px rgba(35,36,28,.2)' }}>
+                <div style={{ width: 44, height: 44, borderRadius: 11, background: '#BECA5C', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: '#23241C' }}>
+                  <CalendarIcon />
+                </div>
                 <div>
-                  <div style={{ fontWeight: 700, fontSize: 14, color: '#23241C', marginBottom: 4 }}>
+                  <div style={{ fontWeight: 700, fontSize: 15, color: '#F6F4EC', marginBottom: 5 }}>
                     Your {tracking.frequency} check-in is due!
                   </div>
-                  <div style={{ fontSize: 13, color: '#6B6A60', lineHeight: 1.5 }}>
-                    Upload a new photo below. Our AI will compare it with your baseline and tell you how your skin has changed.
+                  <div style={{ fontSize: 13, color: 'rgba(246,244,236,.72)', lineHeight: 1.55 }}>
+                    Upload a new face photo. Our AI will compare it to your baseline and measure how your skin has changed.
                   </div>
                 </div>
               </div>
             )}
 
-            {/* ── Scan result (shown after check-in completes) ── */}
+            {/* ── Scan result (after check-in completes) ── */}
             {scanResult ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
 
-                {/* Progress result card */}
                 {scanResult.comparison && (() => {
                   const pc = PROGRESS_CONFIG[scanResult.comparison.progress] ?? PROGRESS_CONFIG.no_change;
                   const deltaPct = scanResult.comparison.delta != null ? Math.round(Math.abs(scanResult.comparison.delta) * 100) : null;
                   return (
-                    <div style={{ background: pc.bg, border: `1.5px solid ${pc.border}`, borderRadius: 16, padding: '22px 22px' }}>
+                    <div style={{ background: pc.bg, border: `2px solid ${pc.border}`, borderRadius: 18, padding: '22px', boxShadow: '0 8px 28px rgba(35,36,28,.1)' }}>
                       <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: pc.accent, marginBottom: 14 }}>
-                        Check-in Result
+                        Check-in result
                       </div>
 
-                      {/* Score row */}
+                      {/* Result headline */}
                       <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 18 }}>
-                        <div style={{ width: 56, height: 56, borderRadius: '50%', background: pc.accent, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, flexShrink: 0 }}>
+                        <div style={{ width: 58, height: 58, borderRadius: '50%', background: pc.accent, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, flexShrink: 0, boxShadow: `0 4px 14px ${pc.accent}55` }}>
                           {pc.icon}
                         </div>
                         <div>
-                          <div style={{ fontFamily: "'Newsreader',serif", fontSize: 26, color: pc.accent, lineHeight: 1 }}>{pc.label}</div>
+                          <div style={{ fontFamily: "'Newsreader',serif", fontSize: 28, color: pc.accent, lineHeight: 1 }}>{pc.label}</div>
                           {deltaPct != null && (
-                            <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 11, color: pc.accent, marginTop: 4 }}>
+                            <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 11, color: pc.accent, marginTop: 5 }}>
                               {scanResult.comparison.progress === 'improved' ? '+' : scanResult.comparison.progress === 'worse' ? '−' : '±'}{deltaPct}% skin health score
                             </div>
                           )}
                         </div>
                       </div>
 
+                      {/* Score explanation */}
+                      <div style={{ background: 'rgba(255,255,255,.5)', border: `1px solid ${pc.border}`, borderRadius: 10, padding: '11px 14px', marginBottom: 16, display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                        <div style={{ color: pc.accent, flexShrink: 0 }}><InfoIcon /></div>
+                        <div style={{ fontSize: 12, color: '#3a3a2a', lineHeight: 1.55 }}>
+                          <strong>Skin health score</strong> is computed by the AI from your skin type confidence and acne detection confidence —
+                          it measures how much your skin condition has improved since your baseline scan.
+                        </div>
+                      </div>
+
                       {/* Before / After */}
                       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 16 }}>
                         {[
-                          { label: 'Before', url: scanResult.comparison.old_image_url, cond: scanResult.comparison.old_condition },
-                          { label: 'After',  url: scanResult.comparison.new_image_url, cond: scanResult.comparison.new_condition },
-                        ].map(({ label, url, cond }) => (
+                          { label: 'Baseline scan',  url: scanResult.comparison.old_image_url, cond: scanResult.comparison.old_condition, caption: 'Your starting condition' },
+                          { label: 'This check-in',  url: scanResult.comparison.new_image_url, cond: scanResult.comparison.new_condition, caption: 'Your current condition' },
+                        ].map(({ label, url, cond, caption }) => (
                           <div key={label} style={{ textAlign: 'center' }}>
-                            <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, letterSpacing: '.1em', textTransform: 'uppercase', color: '#9C9A8C', marginBottom: 6 }}>{label}</div>
-                            <div style={{ height: 120, borderRadius: 10, overflow: 'hidden', background: '#ECEADF', border: `1px solid ${pc.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                              {url
-                                ? <img src={url} alt={label} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                                : <span style={{ fontSize: 28 }}>📷</span>
-                              }
+                            <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, letterSpacing: '.08em', textTransform: 'uppercase', color: '#9C9A8C', marginBottom: 6 }}>{label}</div>
+                            <div style={{ height: 110, borderRadius: 10, overflow: 'hidden', background: '#ECEADF', border: `1.5px solid ${pc.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              {url ? <img src={url} alt={label} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                   : <span style={{ color: '#BCBAB0' }}><CameraIcon /></span>}
                             </div>
-                            {cond && <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, color: '#7E9A3E', marginTop: 5 }}>{cond}</div>}
+                            {cond && <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9.5, color: pc.accent, marginTop: 5, fontWeight: 600 }}>{cond}</div>}
+                            <div style={{ fontSize: 10.5, color: '#9C9A8C', marginTop: 2 }}>{caption}</div>
                           </div>
                         ))}
                       </div>
@@ -460,121 +776,151 @@ export default function Progress() {
                       <p style={{ fontSize: 13.5, color: '#3a3a2a', lineHeight: 1.6, margin: '0 0 16px' }}>{pc.msg}</p>
 
                       {scanResult.comparison.progress === 'worse'
-                        ? <button onClick={() => navigate('/consult')} style={{ width: '100%', background: pc.accent, color: '#fff', border: 'none', borderRadius: '999px', padding: '12px', fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 14, cursor: 'pointer' }}>Talk to a specialist →</button>
+                        ? <button onClick={() => navigate('/consult')} style={{ width: '100%', background: pc.accent, color: '#fff', border: 'none', borderRadius: '999px', padding: '13px', fontFamily: "'Hanken Grotesk'", fontWeight: 700, fontSize: 14, cursor: 'pointer' }}>Talk to a specialist →</button>
                         : scanResult.comparison.progress === 'no_change'
-                        ? <button onClick={() => navigate('/remedies')} style={{ width: '100%', background: pc.accent, color: '#fff', border: 'none', borderRadius: '999px', padding: '12px', fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 14, cursor: 'pointer' }}>Explore other remedies →</button>
-                        : <div style={{ textAlign: 'center', fontSize: 14, color: pc.accent, fontWeight: 600 }}>✓ Keep using {tracking.remedy_name ?? 'your remedy'}!</div>
+                        ? <button onClick={() => navigate('/remedies')} style={{ width: '100%', background: pc.accent, color: '#fff', border: 'none', borderRadius: '999px', padding: '13px', fontFamily: "'Hanken Grotesk'", fontWeight: 700, fontSize: 14, cursor: 'pointer' }}>Explore other remedies →</button>
+                        : <div style={{ textAlign: 'center', padding: '11px', background: `${pc.accent}18`, borderRadius: 10, fontSize: 14, color: pc.accent, fontWeight: 700 }}>✓ Keep using {tracking.remedy_name ?? 'your remedy'}!</div>
                       }
 
-                      {/* ── Report section ── */}
+                      {/* Report section */}
                       <div style={{ marginTop: 16, borderTop: `1px solid ${pc.border}`, paddingTop: 16, display: 'flex', flexDirection: 'column', gap: 10 }}>
-
-                        {/* Email confirmation badge */}
                         {scanResult.comparison.report_emailed && (
                           <div style={{ display: 'flex', alignItems: 'center', gap: 9, background: 'rgba(255,255,255,.55)', border: `1px solid ${pc.border}`, borderRadius: 10, padding: '10px 14px' }}>
                             <span style={{ fontSize: 18, flexShrink: 0 }}>📧</span>
                             <div>
                               <div style={{ fontSize: 13, fontWeight: 600, color: pc.accent }}>Report emailed to you</div>
-                              <div style={{ fontSize: 11.5, color: '#9C9A8C', marginTop: 2 }}>A full PDF report with your results has been sent to your registered email.</div>
+                              <div style={{ fontSize: 11.5, color: '#9C9A8C', marginTop: 2 }}>Full PDF report has been sent to your email.</div>
                             </div>
                           </div>
                         )}
-
-                        {/* Download button */}
-                        <button
-                          onClick={handleDownloadPdf}
-                          disabled={downloadingPdf}
+                        <button onClick={handleDownloadPdf} disabled={downloadingPdf}
                           style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', background: 'rgba(255,255,255,.7)', border: `1.5px solid ${pc.border}`, borderRadius: '999px', padding: '11px', fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 14, color: pc.accent, cursor: downloadingPdf ? 'default' : 'pointer', opacity: downloadingPdf ? 0.7 : 1 }}>
-                          <span style={{ fontSize: 16 }}>⬇</span>
-                          {downloadingPdf ? 'Generating PDF…' : 'Download PDF Report'}
+                          ⬇ {downloadingPdf ? 'Generating PDF…' : 'Download PDF Report'}
                         </button>
                       </div>
                     </div>
                   );
                 })()}
 
-                {/* New detection summary */}
-                <div style={{ background: '#fff', border: '1px solid #E6E3D8', borderRadius: 14, padding: '16px 18px' }}>
-                  <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 10, letterSpacing: '.08em', textTransform: 'uppercase', color: '#9C9A8C', marginBottom: 10 }}>Latest scan</div>
-                  <div style={{ display: 'flex', gap: 13, alignItems: 'center' }}>
-                    {preview?.url && (
-                      <img src={preview.url} alt="New scan" style={{ width: 56, height: 56, borderRadius: 10, objectFit: 'cover', border: '1px solid #E0DCCC', flexShrink: 0 }} />
-                    )}
-                    <div>
-                      <div style={{ fontWeight: 600, fontSize: 14, color: '#23241C' }}>
-                        {scanResult.detection.final_condition?.replace('_', ' · ')}
-                      </div>
-                      <div style={{ fontSize: 12.5, color: '#9C9A8C', marginTop: 3 }}>
-                        Skin {Math.round((scanResult.detection.skin_conf ?? 0) * 100)}% · Acne {Math.round((scanResult.detection.acne_conf ?? 0) * 100)}%
-                      </div>
+                {/* Latest scan row */}
+                <div style={{ background: '#fff', border: '1.5px solid #E6E3D8', borderRadius: 14, padding: '14px 18px', display: 'flex', gap: 13, alignItems: 'center' }}>
+                  {preview?.url && <img src={preview.url} alt="New scan" style={{ width: 56, height: 56, borderRadius: 10, objectFit: 'cover', border: '1.5px solid #E0DCCC', flexShrink: 0 }} />}
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9.5, letterSpacing: '.08em', textTransform: 'uppercase', color: '#9C9A8C', marginBottom: 4 }}>Saved to your history</div>
+                    <div style={{ fontWeight: 700, fontSize: 14, color: '#23241C' }}>{scanResult.detection.final_condition?.replace('_', ' · ')}</div>
+                    <div style={{ fontSize: 11.5, color: '#9C9A8C', marginTop: 2 }}>
+                      Skin {Math.round((scanResult.detection.skin_conf ?? 0) * 100)}% · Acne {Math.round((scanResult.detection.acne_conf ?? 0) * 100)}%
                     </div>
+                  </div>
+                  <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#BECA5C', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#23241C', flexShrink: 0 }}>
+                    <CheckIcon size={12} />
                   </div>
                 </div>
 
                 <button onClick={() => { setPreview(null); setScanResult(null); setFaceError(null); }}
-                  style={{ width: '100%', background: 'transparent', border: '1px solid #D5D1C2', color: '#57564E', borderRadius: '999px', padding: '12px', fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 14, cursor: 'pointer' }}>
+                  style={{ width: '100%', background: 'transparent', border: '1.5px solid #D5D1C2', color: '#57564E', borderRadius: '999px', padding: '12px', fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 14, cursor: 'pointer' }}>
                   Upload another photo
                 </button>
               </div>
 
             ) : (
-              /* ── Upload area ── */
-              <div style={{ background: '#fff', border: '1px solid #E6E3D8', borderRadius: 16, overflow: 'hidden' }}>
-                <div style={{ padding: '18px 20px', borderBottom: '1px solid #F0EDE4' }}>
-                  <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: isDue ? '#7E9A3E' : '#9C9A8C', marginBottom: 6 }}>
-                    {isDue ? 'Check-in upload' : 'Upload new scan'}
+              /* ── Upload card ── */
+              <div style={{ background: '#fff', border: '1.5px solid #E6E3D8', borderRadius: 18, overflow: 'hidden', boxShadow: '0 4px 20px rgba(35,36,28,.08)' }}>
+
+                <div style={{ background: 'linear-gradient(135deg,#23241C,#3A4018)', padding: '18px 22px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: '#BECA5C', marginBottom: 4 }}>
+                      {isDue ? 'Check-in upload' : 'Upload anytime'}
+                    </div>
+                    <div style={{ fontSize: 15, color: '#F6F4EC', fontWeight: 600 }}>
+                      {isDue ? 'Time for your check-in!' : 'Track your skin progress.'}
+                    </div>
                   </div>
-                  <div style={{ fontSize: 14.5, color: '#23241C', fontWeight: 600 }}>
-                    {isDue ? 'Take or upload a photo to see your progress.' : 'You can scan your skin anytime.'}
+                  <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(190,202,92,.2)', border: '1.5px solid rgba(190,202,92,.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#BECA5C', flexShrink: 0 }}>
+                    <CameraIcon />
                   </div>
                 </div>
 
                 {preview ? (
-                  /* Preview state */
                   <div>
-                    <div style={{ position: 'relative', height: 240, background: '#ECEADF' }}>
+                    <div style={{ position: 'relative', height: 250, background: '#ECEADF' }}>
                       <img src={preview.url} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       <button onClick={() => { setPreview(null); setFaceError(null); }}
-                        style={{ position: 'absolute', top: 10, right: 10, width: 30, height: 30, borderRadius: '50%', background: 'rgba(0,0,0,.45)', border: 'none', color: '#fff', cursor: 'pointer', fontSize: 14 }}>✕</button>
+                        style={{ position: 'absolute', top: 12, right: 12, width: 32, height: 32, borderRadius: '50%', background: 'rgba(0,0,0,.5)', border: 'none', color: '#fff', cursor: 'pointer', fontSize: 14, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
                     </div>
                     {faceError && (
-                      <div style={{ margin: '14px 18px 0', padding: '11px 15px', background: '#FDF4F0', border: '1px solid #EDBBAA', borderRadius: 10, fontSize: 13, color: '#B05E3C' }}>
-                        {faceError}
-                      </div>
+                      <div style={{ margin: '14px 18px 0', padding: '12px 15px', background: '#FDF4F0', border: '1.5px solid #EDBBAA', borderRadius: 10, fontSize: 13, color: '#B05E3C' }}>{faceError}</div>
                     )}
-                    <div style={{ padding: '14px 18px 18px' }}>
+                    <div style={{ padding: '16px 20px 20px' }}>
                       <button onClick={runCheckin} disabled={scanning}
-                        style={{ width: '100%', background: scanning ? '#D8DC9A' : '#BECA5C', color: '#2A2D14', border: 'none', borderRadius: '999px', padding: '14px', fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 15, cursor: scanning ? 'default' : 'pointer', opacity: scanning ? 0.8 : 1 }}>
+                        className="sk-scan-btn"
+                        style={{ width: '100%', background: scanning ? '#D8DC9A' : '#BECA5C', color: '#2A2D14', border: 'none', borderRadius: '999px', padding: '15px', fontFamily: "'Hanken Grotesk'", fontWeight: 700, fontSize: 15, cursor: scanning ? 'default' : 'pointer', opacity: scanning ? 0.8 : 1 }}>
                         {scanning ? 'Analysing your skin…' : 'Analyse & compare →'}
                       </button>
                     </div>
                   </div>
 
                 ) : (
-                  /* Option cards */
-                  <div style={{ padding: '18px 18px 20px' }}>
-                    <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
-                      <button onClick={() => openCamera('user')}
-                        style={{ flex: 1, background: '#F6F4EC', border: '1.5px solid #E0DCCC', borderRadius: 12, padding: '18px 12px', cursor: 'pointer', textAlign: 'center' }}>
-                        <div style={{ fontSize: 28, marginBottom: 8 }}>📷</div>
-                        <div style={{ fontWeight: 600, fontSize: 13, color: '#23241C' }}>Take photo</div>
-                        <div style={{ fontSize: 11.5, color: '#9C9A8C', marginTop: 3 }}>Open camera</div>
+                  <div style={{ padding: '20px 20px 22px' }}>
+                    <div style={{ display: 'flex', gap: 13, marginBottom: 18 }}>
+                      <button onClick={() => openCamera('user')} className="sk-upload-opt"
+                        style={{ flex: 1, background: '#F6F4EC', border: '1.5px solid #E0DCCC', borderRadius: 14, padding: '20px 12px', cursor: 'pointer', textAlign: 'center' }}>
+                        <div style={{ width: 44, height: 44, borderRadius: 11, background: 'linear-gradient(135deg,#EEF0DC,#D4DEB8)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 11px', color: '#5E6A2A' }}>
+                          <CameraIcon />
+                        </div>
+                        <div style={{ fontWeight: 700, fontSize: 13.5, color: '#23241C', marginBottom: 3 }}>Take photo</div>
+                        <div style={{ fontSize: 11.5, color: '#9C9A8C' }}>Open camera</div>
                       </button>
-                      <button onClick={() => fileRef.current?.click()}
-                        style={{ flex: 1, background: '#F6F4EC', border: '1.5px solid #E0DCCC', borderRadius: 12, padding: '18px 12px', cursor: 'pointer', textAlign: 'center' }}>
-                        <div style={{ fontSize: 28, marginBottom: 8 }}>🖼</div>
-                        <div style={{ fontWeight: 600, fontSize: 13, color: '#23241C' }}>Upload photo</div>
-                        <div style={{ fontSize: 11.5, color: '#9C9A8C', marginTop: 3 }}>From device</div>
+                      <button onClick={() => fileRef.current?.click()} className="sk-upload-opt"
+                        style={{ flex: 1, background: '#F6F4EC', border: '1.5px solid #E0DCCC', borderRadius: 14, padding: '20px 12px', cursor: 'pointer', textAlign: 'center' }}>
+                        <div style={{ width: 44, height: 44, borderRadius: 11, background: 'linear-gradient(135deg,#EEF0DC,#D4DEB8)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 11px', color: '#5E6A2A' }}>
+                          <UploadIcon />
+                        </div>
+                        <div style={{ fontWeight: 700, fontSize: 13.5, color: '#23241C', marginBottom: 3 }}>Upload photo</div>
+                        <div style={{ fontSize: 11.5, color: '#9C9A8C' }}>From device</div>
                       </button>
                     </div>
                     {cameraErr && (
-                      <div style={{ padding: '10px 14px', background: '#FDF4F0', border: '1px solid #EDBBAA', borderRadius: 10, fontSize: 12.5, color: '#B05E3C', marginBottom: 12 }}>{cameraErr}</div>
+                      <div style={{ padding: '10px 14px', background: '#FDF4F0', border: '1.5px solid #EDBBAA', borderRadius: 10, fontSize: 12.5, color: '#B05E3C', marginBottom: 14 }}>{cameraErr}</div>
                     )}
-                    <div style={{ fontSize: 12, color: '#9C9A8C', textAlign: 'center', lineHeight: 1.5 }}>
-                      Use the same lighting as your previous scans for the best comparison.
+                    <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start', padding: '12px 14px', background: '#F4F6EA', borderRadius: 11, border: '1px solid #E4E8CC' }}>
+                      <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#BECA5C', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1, color: '#23241C' }}>
+                        <CheckIcon size={10} />
+                      </div>
+                      <div style={{ fontSize: 12, color: '#57564E', lineHeight: 1.55 }}>
+                        Use <strong>the same lighting</strong> as your baseline scan. Results are saved to your history automatically.
+                      </div>
                     </div>
-                    <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }}
-                      onChange={e => handleFile(e.target.files[0])} />
+                    <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={e => handleFile(e.target.files[0])} />
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Journey stats */}
+            {!scanResult && detections.length > 0 && (
+              <div style={{ marginTop: 18, background: 'linear-gradient(135deg,#23241C,#2D3010)', borderRadius: 16, padding: '18px 22px', boxShadow: '0 6px 24px rgba(35,36,28,.18)' }}>
+                <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: '#BECA5C', marginBottom: 16 }}>
+                  Journey stats
+                </div>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>
+                  {[
+                    ['Total scans',     detections.length],
+                    ['Check-ins done',  comparedCount],
+                    ['Days tracking',   tracking.created_at ? Math.max(0, Math.floor((Date.now() - new Date(tracking.created_at)) / 86400000)) : '—'],
+                  ].map(([label, val]) => (
+                    <div key={label} style={{ textAlign: 'center' }}>
+                      <div style={{ fontFamily: "'Newsreader',serif", fontSize: 30, color: '#F6F4EC', lineHeight: 1 }}>{val}</div>
+                      <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, letterSpacing: '.07em', textTransform: 'uppercase', color: 'rgba(246,244,236,.5)', marginTop: 6 }}>{label}</div>
+                    </div>
+                  ))}
+                </div>
+                {tracking.frequency && (
+                  <div style={{ marginTop: 16, paddingTop: 14, borderTop: '1px solid rgba(255,255,255,.08)', display: 'flex', alignItems: 'center', gap: 8 }}>
+                    <CalendarIcon />
+                    <span style={{ fontSize: 12, color: 'rgba(246,244,236,.55)' }}>
+                      {tracking.frequency} check-in schedule · next {daysUntil(tracking.next_reminder) ?? 'TBD'}
+                    </span>
                   </div>
                 )}
               </div>

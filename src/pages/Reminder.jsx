@@ -4,173 +4,213 @@ import AppHeader from '../components/AppHeader';
 import { useApp } from '../context/AppContext';
 import { sendTestReminder } from '../api';
 
+function CheckIcon()  { return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>; }
+function LeafIcon()   { return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 22s4-2 8-6 6-10 6-10-4 2-8 6-6 10-6 10z"/><path d="M22 2s-2 4-6 8"/></svg>; }
+function MailIcon()   { return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>; }
+function ClockIcon()  { return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>; }
+function FlaskIcon()  { return <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 3h6v7l3.5 6.5A2 2 0 0117 19H7a2 2 0 01-1.5-2.5L9 10V3z"/><line x1="6" y1="3" x2="18" y2="3"/></svg>; }
+function CamIcon()    { return <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>; }
+
 export default function Reminder() {
-  const navigate   = useNavigate();
-  const { state }  = useApp();
+  const navigate  = useNavigate();
+  const { state } = useApp();
   const remedy     = state.selectedRemedy ?? state.remedies?.[0];
-  const freq       = state.tracking.frequency ?? 'weekly';
-  const freqLabel  = freq === 'weekly' ? 'every week' : 'every month';
-  const freqPeriod = freq === 'weekly' ? 'weekly' : 'monthly';
-  const freqDays   = freq === 'weekly' ? '7 days' : '30 days';
+  const freq       = state.tracking?.frequency ?? 'weekly';
+  const freqLabel  = freq === 'weekly' ? 'every week'   : 'every month';
+  const freqPeriod = freq === 'weekly' ? 'weekly'        : 'monthly';
+  const freqDays   = freq === 'weekly' ? '7 days'        : '30 days';
   const userEmail  = state.user?.email ?? 'your email';
   const userName   = state.user?.name?.split(' ')[0] ?? 'there';
 
-  const [testState, setTestState] = useState('idle'); // 'idle' | 'sending' | 'sent' | 'error'
+  const [testState, setTestState] = useState('idle');
 
   async function handleTestReminder() {
     setTestState('sending');
-    try {
-      await sendTestReminder();
-      setTestState('sent');
-    } catch {
-      setTestState('error');
-    }
+    try { await sendTestReminder(); setTestState('sent'); }
+    catch { setTestState('error'); }
   }
 
   return (
     <div style={{ background: '#F6F4EC', minHeight: '100vh', fontFamily: "'Hanken Grotesk'" }}>
       <AppHeader activeStep="track" />
 
-      <main style={{ maxWidth: 640, margin: '0 auto', padding: '54px 44px 70px' }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,300;0,400;0,600;1,400&family=Hanken+Grotesk:wght@400;500;600;700&family=Spline+Sans+Mono:wght@400;500&display=swap');
 
-        {/* Success header */}
-        <div style={{ textAlign: 'center', marginBottom: 40 }}>
-          <div style={{
-            width: 68, height: 68, borderRadius: '50%',
-            background: '#EEF0DC', border: '2px solid #BECA5C',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            margin: '0 auto 22px', fontSize: 30, color: '#5E6A2A',
-          }}>✓</div>
-          <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 11, letterSpacing: '.16em', textTransform: 'uppercase', color: '#7E9A3E', marginBottom: 12 }}>
-            Tracking active
-          </div>
-          <h2 style={{ fontFamily: "'Newsreader',serif", fontWeight: 400, fontSize: 38, letterSpacing: '-.02em', margin: '0 0 14px' }}>
-            {"You're all set!"}
-          </h2>
-          <p style={{ fontSize: 15.5, color: '#6B6A60', lineHeight: 1.65, maxWidth: 420, margin: '0 auto' }}>
-            Your first reminder arrives in <strong>{freqDays}</strong> at{' '}
-            <strong>{userEmail}</strong>. Here's a preview of what it'll look like:
-          </p>
-        </div>
+        @keyframes sk-in    { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes sk-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(190,202,92,.45)} 50%{box-shadow:0 0 0 10px rgba(190,202,92,0)} }
+        @keyframes sk-ring  { 0%{transform:scale(1)} 50%{transform:scale(1.06)} 100%{transform:scale(1)} }
 
-        {/* Tracking summary pills */}
-        <div style={{ display: 'flex', gap: 10, justifyContent: 'center', marginBottom: 32, flexWrap: 'wrap' }}>
-          {[
-            { icon: '🌿', text: remedy?.name ?? 'Your remedy' },
-            { icon: '✉', text: `Reminder ${freqLabel}` },
-            { icon: '⏱', text: `First check-in in ${freqDays}` },
-          ].map(({ icon, text }) => (
-            <span key={text} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#F4F6EA', border: '1px solid #E2E7C9', borderRadius: '999px', padding: '7px 14px', fontSize: 13, color: '#4F5A2A' }}>
-              {icon} {text}
-            </span>
-          ))}
-        </div>
+        .sk-in     { animation: sk-in .32s ease both; }
+        .sk-check  { animation: sk-pulse 2.4s ease-in-out infinite; }
+        .sk-pill:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(94,106,42,.14) !important; }
+        .sk-pill   { transition: transform .14s, box-shadow .14s; }
+        .sk-lime   { transition: transform .14s, box-shadow .14s, filter .13s; }
+        .sk-lime:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(190,202,92,.4) !important; filter: brightness(1.06); }
+        .sk-test   { transition: background .13s, border-color .13s; }
+        .sk-test:hover { background: #EEF0DC !important; border-color: #BECA5C !important; }
 
-        {/* Email preview card */}
-        <div style={{ background: '#E9E6DB', borderRadius: 16, padding: '16px 16px 20px', marginBottom: 40 }}>
-          <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 10, letterSpacing: '.1em', textTransform: 'uppercase', color: '#9C9A8C', textAlign: 'center', marginBottom: 14 }}>
-            Email preview · arrives in {freqDays}
-          </div>
+        @media (max-width:780px) {
+          .sk-rem-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
 
-          <div style={{ background: '#fff', borderRadius: 12, overflow: 'hidden', boxShadow: '0 8px 24px rgba(50,46,25,.2)' }}>
-            {/* Mail header */}
-            <div style={{ padding: '14px 20px', borderBottom: '1px solid #EEEBE1', display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#6E7733', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Newsreader',serif", fontSize: 16, flexShrink: 0 }}>S</div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: 13, fontWeight: 600, color: '#23241C' }}>
-                  Skinora <span style={{ color: '#9C9A8C', fontWeight: 400 }}>· reminders@skinora.app</span>
-                </div>
-                <div style={{ fontSize: 11.5, color: '#9C9A8C' }}>to {userEmail}</div>
+      <main style={{ maxWidth: 1020, margin: '0 auto', padding: '28px 32px 48px' }}>
+
+        {/* ══ Two-column grid ══ */}
+        <div className="sk-rem-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 380px', gap: 24, alignItems: 'start' }}>
+
+          {/* ── LEFT: success + summary + test + CTA ── */}
+          <div>
+
+            {/* Success header */}
+            <div className="sk-in" style={{ display: 'flex', alignItems: 'center', gap: 18, marginBottom: 22 }}>
+              <div className="sk-check" style={{ width: 58, height: 58, borderRadius: '50%', background: 'linear-gradient(135deg,#EEF0DC,#D8E8A8)', border: '2px solid #BECA5C', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#5E6A2A', flexShrink: 0 }}>
+                <CheckIcon />
               </div>
-              <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 10, color: '#B6B4A8' }}>in {freqDays}</div>
-            </div>
-
-            {/* Subject */}
-            <div style={{ padding: '16px 20px 0' }}>
-              <div style={{ fontFamily: "'Newsreader',serif", fontSize: 20, color: '#23241C' }}>
-                Time for your {freqPeriod} skin check-in 🌿
+              <div>
+                <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9.5, letterSpacing: '.14em', textTransform: 'uppercase', color: '#7E9A3E', marginBottom: 5 }}>Tracking active</div>
+                <h2 style={{ fontFamily: "'Newsreader',serif", fontWeight: 400, fontSize: 32, letterSpacing: '-.02em', margin: 0, color: '#23241C', lineHeight: 1.1 }}>
+                  You're all set!
+                </h2>
               </div>
             </div>
 
-            {/* Hero band */}
-            <div style={{ margin: '14px 20px', height: 120, borderRadius: 10, position: 'relative', overflow: 'hidden', background: 'linear-gradient(135deg,#BECA5C,#8B9633)' }}>
-              <div style={{ position: 'absolute', left: 20, top: '50%', transform: 'translateY(-50%)', color: '#F6F4EC' }}>
-                <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 10, letterSpacing: '.1em', textTransform: 'uppercase', opacity: .85 }}>
-                  {freq === 'weekly' ? 'Week 1' : 'Month 1'} of your protocol
-                </div>
-                <div style={{ fontFamily: "'Newsreader',serif", fontSize: 22, marginTop: 4 }}>{"Let's see your progress."}</div>
-              </div>
-            </div>
+            <p className="sk-in" style={{ fontSize: 14, color: '#6B6A60', lineHeight: 1.65, margin: '0 0 20px', animationDelay: '50ms' }}>
+              Your first reminder arrives in <strong style={{ color: '#3A4018' }}>{freqDays}</strong> at{' '}
+              <strong style={{ color: '#3A4018' }}>{userEmail}</strong>. The email preview is shown on the right.
+            </p>
 
-            {/* Body */}
-            <div style={{ padding: '4px 20px 20px' }}>
-              <p style={{ fontSize: 13.5, color: '#4F4E45', lineHeight: 1.65, margin: '0 0 14px' }}>
-                Hi {userName}, it has been {freqDays} since you started{' '}
-                <strong>{remedy?.name ?? 'your remedy'}</strong>. A quick new photo lets
-                our AI compare your skin and tell you whether to continue, switch, or seek advice.
-              </p>
-              <div style={{ background: '#F7F8EC', borderRadius: 9, padding: '12px 16px', marginBottom: 16, display: 'flex', gap: 10, alignItems: 'center' }}>
-                <span style={{ color: '#7E9A3E' }}>📷</span>
-                <span style={{ fontSize: 12.5, color: '#5E6A2A' }}>
-                  Takes 30 seconds · same lighting as last time for best results.
+            {/* Summary pills */}
+            <div className="sk-in" style={{ display: 'flex', flexWrap: 'wrap', gap: 9, marginBottom: 22, animationDelay: '90ms' }}>
+              {[
+                { Icon: LeafIcon,  text: remedy?.name ?? 'Your remedy',      bg: 'linear-gradient(135deg,#EEF4DC,#E4ECC8)', border: '#B8CC70', color: '#3A4818' },
+                { Icon: MailIcon,  text: `Reminder ${freqLabel}`,             bg: 'linear-gradient(135deg,#E8EEF8,#D4DEF0)', border: '#90A8D0', color: '#1A3060' },
+                { Icon: ClockIcon, text: `First check-in in ${freqDays}`,     bg: 'linear-gradient(135deg,#FFF5E0,#FDECC8)', border: '#F0CFA0', color: '#5C3E08' },
+              ].map(({ Icon, text, bg, border, color }) => (
+                <span key={text} className="sk-pill" style={{ display: 'inline-flex', alignItems: 'center', gap: 7, background: bg, border: `1.5px solid ${border}`, borderRadius: '999px', padding: '8px 14px', fontSize: 12.5, color, fontWeight: 600, boxShadow: '0 2px 8px rgba(0,0,0,.06)' }}>
+                  <Icon /> {text}
                 </span>
-              </div>
-              <div style={{ textAlign: 'center' }}>
-                <span style={{ display: 'inline-block', background: '#23241C', color: '#F6F4EC', borderRadius: '999px', padding: '12px 28px', fontSize: 13.5, fontWeight: 600 }}>
-                  Re-scan my skin →
-                </span>
-              </div>
-              <p style={{ fontSize: 11, color: '#A8A698', lineHeight: 1.6, margin: '18px 0 0', textAlign: 'center' }}>
-                Receiving this because progress tracking is on ({freqLabel}). Manage reminders anytime.
-              </p>
+              ))}
             </div>
-          </div>
-        </div>
 
-        {/* Test reminder section */}
-        <div style={{ background: '#fff', border: '1px solid #E6E3D8', borderRadius: 14, padding: '20px 24px', marginBottom: 28 }}>
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14 }}>
-            <span style={{ fontSize: 22, flexShrink: 0, marginTop: 2 }}>🧪</span>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontWeight: 600, fontSize: 14, color: '#23241C', marginBottom: 4 }}>
-                Want to verify the reminder email now?
+            {/* What happens next */}
+            <div className="sk-in" style={{ background: '#fff', border: '1.5px solid #E6E3D8', borderLeft: '3.5px solid #BECA5C', borderRadius: 14, padding: '16px 18px', marginBottom: 16, animationDelay: '120ms' }}>
+              <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9, letterSpacing: '.12em', textTransform: 'uppercase', color: '#7E9A3E', marginBottom: 12 }}>What happens next</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {[
+                  { dot: '#BECA5C', text: `In ${freqDays} — reminder email arrives with a re-scan link` },
+                  { dot: '#90C8DC', text: 'You upload a new photo — AI compares before & after' },
+                  { dot: '#DCA878', text: 'We report: improved, same, or time to switch remedy' },
+                ].map(({ dot, text }, i) => (
+                  <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 11 }}>
+                    <div style={{ width: 8, height: 8, borderRadius: '50%', background: dot, flexShrink: 0, marginTop: 5 }} />
+                    <span style={{ fontSize: 13.5, color: '#3a3a2a', lineHeight: 1.5 }}>{text}</span>
+                  </div>
+                ))}
               </div>
-              <div style={{ fontSize: 13, color: '#6B6A60', lineHeight: 1.55, marginBottom: 14 }}>
-                Click below to immediately send a test reminder to <strong>{userEmail}</strong> — no need to wait {freqDays}.
+            </div>
+
+            {/* Test reminder */}
+            <div className="sk-in" style={{ background: 'linear-gradient(135deg,#F4F6EA,#EDF1DC)', border: '1.5px solid #C8D068', borderRadius: 14, padding: '15px 18px', marginBottom: 20, animationDelay: '155ms' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
+                <div style={{ width: 30, height: 30, borderRadius: 9, background: '#fff', border: '1.5px solid #C8D068', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#5E6A2A', flexShrink: 0 }}><FlaskIcon /></div>
+                <div style={{ fontWeight: 700, fontSize: 13.5, color: '#3A4018' }}>Want to verify the reminder email now?</div>
               </div>
+              <p style={{ fontSize: 12.5, color: '#5E6A2A', lineHeight: 1.55, margin: '0 0 12px' }}>
+                Send an immediate test to <strong>{userEmail}</strong> — no need to wait {freqDays}.
+              </p>
 
               {testState === 'sent' ? (
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#F4F8EE', border: '1px solid #B8D4A0', borderRadius: 10, padding: '10px 16px', fontSize: 13.5, color: '#3E7A2A' }}>
-                  <span>✓</span> Reminder email sent! Check <strong>{userEmail}</strong>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#EEF0DC', border: '1.5px solid #B8CC70', borderRadius: 10, padding: '9px 14px', fontSize: 13, color: '#3E7A2A', fontWeight: 600 }}>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  Sent! Check <strong>{userEmail}</strong>
                 </div>
               ) : testState === 'error' ? (
-                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#FDF4F0', border: '1px solid #EDBBAA', borderRadius: 10, padding: '10px 16px', fontSize: 13.5, color: '#B05E3C' }}>
-                  <span>✗</span> Failed to send — check Flask backend logs.
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#FDF4F0', border: '1.5px solid #EDBBAA', borderRadius: 10, padding: '9px 14px', fontSize: 13, color: '#B05E3C', fontWeight: 600 }}>
+                  ✗ Failed — check backend logs.
                 </div>
               ) : (
-                <button
-                  onClick={handleTestReminder}
-                  disabled={testState === 'sending'}
-                  style={{ background: testState === 'sending' ? '#ECEADF' : '#F1EEE3', color: '#3a3a2a', border: '1px solid #D5D1C2', borderRadius: '999px', padding: '10px 22px', fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 13.5, cursor: testState === 'sending' ? 'default' : 'pointer' }}
-                >
+                <button onClick={handleTestReminder} disabled={testState === 'sending'} className="sk-test"
+                  style={{ background: '#fff', color: '#3A4018', border: '1.5px solid #C8D068', borderRadius: '999px', padding: '9px 20px', fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 13, cursor: testState === 'sending' ? 'default' : 'pointer', opacity: testState === 'sending' ? 0.7 : 1 }}>
                   {testState === 'sending' ? 'Sending…' : 'Send test reminder now →'}
                 </button>
               )}
             </div>
-          </div>
-        </div>
 
-        {/* Single CTA — go to dashboard */}
-        <div style={{ textAlign: 'center' }}>
-          <button
-            onClick={() => navigate('/upload')}
-            style={{ background: '#BECA5C', color: '#2A2D14', border: 'none', borderRadius: '999px', padding: '16px 44px', fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 16, cursor: 'pointer' }}
-          >
-            Go to dashboard →
-          </button>
-          <p style={{ marginTop: 14, fontSize: 13, color: '#9C9A8C', lineHeight: 1.6 }}>
-            You can view your tracking status and history from your profile menu at any time.
-          </p>
+            {/* Dashboard CTA */}
+            <div className="sk-in" style={{ animationDelay: '190ms' }}>
+              <button onClick={() => navigate('/upload')} className="sk-lime"
+                style={{ background: '#BECA5C', color: '#1A1E0A', border: '1.5px solid #8A9A40', borderRadius: '999px', padding: '13px 32px', fontFamily: "'Hanken Grotesk'", fontWeight: 700, fontSize: 15, cursor: 'pointer', boxShadow: '0 4px 18px rgba(190,202,92,.32)' }}>
+                Go to dashboard →
+              </button>
+              <p style={{ marginTop: 10, fontSize: 12, color: '#9C9A8C', lineHeight: 1.55 }}>
+                View tracking status and history anytime from your profile menu.
+              </p>
+            </div>
+          </div>
+
+          {/* ── RIGHT: email preview ── */}
+          <div className="sk-in" style={{ animationDelay: '70ms' }}>
+            <div style={{ background: '#E4E1D4', borderRadius: 16, padding: '12px 12px 16px' }}>
+              <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9, letterSpacing: '.1em', textTransform: 'uppercase', color: '#9C9A8C', textAlign: 'center', marginBottom: 10 }}>
+                Email preview · arrives in {freqDays}
+              </div>
+
+              <div style={{ background: '#fff', borderRadius: 12, overflow: 'hidden', boxShadow: '0 6px 22px rgba(50,46,25,.18)' }}>
+
+                {/* Mail header */}
+                <div style={{ padding: '12px 16px', borderBottom: '1px solid #EEEBE1', display: 'flex', alignItems: 'center', gap: 9 }}>
+                  <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#6E7733', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Newsreader',serif", fontSize: 14, flexShrink: 0 }}>S</div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 12.5, fontWeight: 600, color: '#23241C' }}>
+                      Skinora <span style={{ color: '#9C9A8C', fontWeight: 400, fontSize: 11 }}>reminders@skinora.app</span>
+                    </div>
+                    <div style={{ fontSize: 11, color: '#9C9A8C', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>to {userEmail}</div>
+                  </div>
+                  <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9, color: '#B6B4A8', flexShrink: 0 }}>in {freqDays}</div>
+                </div>
+
+                {/* Subject */}
+                <div style={{ padding: '12px 16px 0' }}>
+                  <div style={{ fontFamily: "'Newsreader',serif", fontSize: 17, color: '#23241C', lineHeight: 1.3 }}>
+                    Time for your {freqPeriod} skin check-in 🌿
+                  </div>
+                </div>
+
+                {/* Hero band */}
+                <div style={{ margin: '10px 16px', height: 88, borderRadius: 10, position: 'relative', overflow: 'hidden', background: 'linear-gradient(135deg,#BECA5C,#7A8A28)' }}>
+                  <div style={{ position: 'absolute', inset: 0, background: 'repeating-linear-gradient(45deg,rgba(255,255,255,.03) 0px,rgba(255,255,255,.03) 2px,transparent 2px,transparent 10px)' }} />
+                  <div style={{ position: 'absolute', left: 16, top: '50%', transform: 'translateY(-50%)', color: '#F6F4EC' }}>
+                    <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9, letterSpacing: '.1em', textTransform: 'uppercase', opacity: .85 }}>
+                      {freq === 'weekly' ? 'Week 1' : 'Month 1'} of your protocol
+                    </div>
+                    <div style={{ fontFamily: "'Newsreader',serif", fontSize: 18, marginTop: 3 }}>Let's see your progress.</div>
+                  </div>
+                </div>
+
+                {/* Body */}
+                <div style={{ padding: '4px 16px 16px' }}>
+                  <p style={{ fontSize: 12.5, color: '#4F4E45', lineHeight: 1.65, margin: '0 0 10px' }}>
+                    Hi {userName}, it has been {freqDays} since you started{' '}
+                    <strong>{remedy?.name ?? 'your remedy'}</strong>. A quick new photo lets our AI compare your skin and tell you whether to continue, switch, or seek advice.
+                  </p>
+                  <div style={{ background: '#F7F8EC', border: '1px solid #E4E8CC', borderRadius: 8, padding: '9px 12px', marginBottom: 12, display: 'flex', gap: 8, alignItems: 'center' }}>
+                    <span style={{ color: '#7E9A3E', flexShrink: 0 }}><CamIcon /></span>
+                    <span style={{ fontSize: 12, color: '#5E6A2A' }}>Takes 30 seconds · same lighting as last time for best results.</span>
+                  </div>
+                  <div style={{ textAlign: 'center' }}>
+                    <span style={{ display: 'inline-block', background: '#23241C', color: '#F6F4EC', borderRadius: '999px', padding: '10px 22px', fontSize: 12.5, fontWeight: 600 }}>
+                      Re-scan my skin →
+                    </span>
+                  </div>
+                  <p style={{ fontSize: 10.5, color: '#A8A698', lineHeight: 1.55, margin: '12px 0 0', textAlign: 'center' }}>
+                    Tracking is on ({freqLabel}). Manage reminders anytime.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </main>
     </div>
