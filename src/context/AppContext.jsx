@@ -1,4 +1,7 @@
-import { createContext, useContext, useReducer, useEffect } from 'react';
+import { createContext, useContext, useReducer, useEffect, useState, useRef, useCallback } from 'react';
+
+const TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
+const WARN_MS    = 28 * 60 * 1000; // warn 2 minutes before logout
 
 const initialState = {
   user: null,              // { id, name, email }
@@ -75,6 +78,46 @@ export function AppProvider({ children }) {
   })();
 
   const [state, dispatch] = useReducer(reducer, { ...initialState, ...stored });
+  const [showWarning, setShowWarning] = useState(false);
+  const logoutTimer = useRef(null);
+  const warnTimer   = useRef(null);
+  const loggedIn    = useRef(false);
+
+  const doLogout = useCallback(() => {
+    clearTimeout(logoutTimer.current);
+    clearTimeout(warnTimer.current);
+    setShowWarning(false);
+    dispatch({ type: 'LOGOUT' });
+    sessionStorage.removeItem('skinora_user');
+    sessionStorage.removeItem('skinora_token');
+  }, []);
+
+  const resetTimer = useCallback(() => {
+    if (!loggedIn.current) return;
+    clearTimeout(logoutTimer.current);
+    clearTimeout(warnTimer.current);
+    setShowWarning(false);
+    warnTimer.current   = setTimeout(() => setShowWarning(true), WARN_MS);
+    logoutTimer.current = setTimeout(() => doLogout(),           TIMEOUT_MS);
+  }, [doLogout]);
+
+  useEffect(() => {
+    loggedIn.current = !!state.user;
+    if (!state.user) {
+      clearTimeout(logoutTimer.current);
+      clearTimeout(warnTimer.current);
+      setShowWarning(false);
+      return;
+    }
+    const events = ['mousemove', 'mousedown', 'keydown', 'scroll', 'touchstart', 'click'];
+    events.forEach(e => window.addEventListener(e, resetTimer, { passive: true }));
+    resetTimer();
+    return () => {
+      events.forEach(e => window.removeEventListener(e, resetTimer));
+      clearTimeout(logoutTimer.current);
+      clearTimeout(warnTimer.current);
+    };
+  }, [state.user, resetTimer]);
 
   useEffect(() => {
     if (state.user) {
@@ -89,6 +132,49 @@ export function AppProvider({ children }) {
   return (
     <AppContext.Provider value={{ state, dispatch }}>
       {children}
+
+      {/* ── Session timeout warning ── */}
+      {showWarning && (
+        <div style={{
+          position: 'fixed', inset: 0, zIndex: 9999,
+          background: 'rgba(35,36,28,.55)', backdropFilter: 'blur(6px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontFamily: "'Hanken Grotesk',sans-serif",
+        }}>
+          <div style={{
+            background: '#fff', borderRadius: 20, padding: '40px 44px',
+            maxWidth: 380, width: '90%', textAlign: 'center',
+            boxShadow: '0 20px 60px rgba(0,0,0,.22)', border: '2px solid #E6E3D8',
+          }}>
+            <div style={{
+              width: 60, height: 60, borderRadius: '50%',
+              background: '#FFF8E6', border: '2px solid #F0DFA0',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              margin: '0 auto 22px', fontSize: 28,
+            }}>⏱</div>
+            <h3 style={{ fontFamily: "'Newsreader',serif", fontWeight: 400, fontSize: 27, margin: '0 0 10px', color: '#23241C', letterSpacing: '-.01em' }}>
+              Still there?
+            </h3>
+            <p style={{ fontSize: 14, color: '#6B6A60', lineHeight: 1.65, margin: '0 0 28px' }}>
+              Your session will expire in <strong style={{ color: '#23241C' }}>2 minutes</strong> due to inactivity.
+            </p>
+            <div style={{ display: 'flex', gap: 12 }}>
+              <button
+                onClick={doLogout}
+                style={{ flex: 1, padding: '13px', background: '#F6F4EC', border: '1.5px solid #D0CDB8', borderRadius: 12, fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 14, color: '#6B6A60', cursor: 'pointer' }}
+              >
+                Log out
+              </button>
+              <button
+                onClick={resetTimer}
+                style={{ flex: 1, padding: '13px', background: '#BECA5C', border: 'none', borderRadius: 12, fontFamily: "'Hanken Grotesk'", fontWeight: 700, fontSize: 14, color: '#1A1E0A', cursor: 'pointer' }}
+              >
+                Stay logged in
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </AppContext.Provider>
   );
 }

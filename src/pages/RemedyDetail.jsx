@@ -6,14 +6,32 @@ import { getRemedyById } from '../data/remedies';
 import { getRemedy } from '../api';
 
 function resolveImage(remedy) {
+  if (remedy.image && !remedy.image.includes('remedi')) return remedy.image;
   const n = (remedy.name ?? '').toLowerCase();
-  if (n.includes('aloe'))                               return '/assets/remedi8.jfif';
-  if (n.includes('cucumber'))                           return '/assets/remedi1.jfif';
-  if (n.includes('honey') || n.includes('raw honey'))  return '/assets/remedi2.jfif';
-  if (n.includes('green tea'))                          return '/assets/remedi3.jfif';
-  if (n.includes('oat') || n.includes('oatmeal'))      return '/assets/remedi4.jfif';
+
+  // New remedies (specific checks first)
+  if (n.includes('yogurt'))                                return '/assets/Yogurt.jfif';
+  if (n.includes('oatmeal') && n.includes('jojoba'))      return '/assets/Oatmeal_Jojoba.jfif';
+  if (n.includes('colloidal oatmeal'))                    return '/assets/oatmilkk.jfif';
+  if (n.includes('shea butter'))                          return '/assets/Shea_Butter.jfif';
+  if (n.includes('chamomile'))                            return '/assets/Chamomile_Compress.jfif';
+  if (n.includes('tea tree') && n.includes('spot'))       return '/assets/Tea_Tree_Oil.jfif';
+  if (n.includes('tea tree'))                             return '/assets/Diluted_Tea.jfif';
+  if (n.includes('kaolin') && n.includes('balancing'))    return '/assets/Kaolin.jfif';
+  if (n.includes('kaolin'))                               return '/assets/Kaolin_Clay.jfif';
+  if (n.includes('jojoba') && n.includes('light'))        return '/assets/Jojoba.jfif';
+  if (n.includes('jojoba') && n.includes('hydrating'))    return '/assets/Jojoba_Oil.jfif';
+  if (n.includes('jojoba'))                               return '/assets/Jojoba1.jfif';
+
+  // Original remedies
+  if (n.includes('aloe'))                                 return '/assets/remedi8.jfif';
+  if (n.includes('cucumber'))                             return '/assets/remedi1.jfif';
+  if (n.includes('honey') || n.includes('raw honey'))    return '/assets/remedi2.jfif';
+  if (n.includes('green tea'))                            return '/assets/remedi3.jfif';
+  if (n.includes('oat') || n.includes('oatmeal'))        return '/assets/remedi4.jfif';
   if (n.includes('rose water') || n.includes('rosewater')) return '/assets/remedi5.jfif';
-  if (n.includes('avocado'))                            return '/assets/avacado.jfif';
+  if (n.includes('avocado'))                              return '/assets/avacado.jfif';
+
   return remedy.image ?? null;
 }
 

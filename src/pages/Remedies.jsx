@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AppHeader from '../components/AppHeader';
 import { useApp } from '../context/AppContext';
@@ -9,14 +9,30 @@ import { getRemedies as fetchRemedies } from '../api';
 function resolveImage(remedy) {
   if (remedy.image && !remedy.image.includes('remedi')) return remedy.image; // already a real override
   const name = (remedy.name ?? '').toLowerCase();
-  if (name.includes('aloe'))                          return '/assets/remedi8.jfif';
-  if (name.includes('cucumber'))                      return '/assets/remedi1.jfif';
-  if (name.includes('honey') || name.includes('raw honey')) return '/assets/remedi2.jfif';
-  if (name.includes('green tea'))                     return '/assets/remedi3.jfif';
-  if (name.includes('oat') || name.includes('oatmeal')) return '/assets/remedi4.jfif';
+
+  // ── New remedies (specific checks first) ──────────────────────
+  if (name.includes('yogurt'))                                  return '/assets/Yogurt.jfif';
+  if (name.includes('oatmeal') && name.includes('jojoba'))     return '/assets/Oatmeal_Jojoba.jfif';
+  if (name.includes('colloidal oatmeal'))                      return '/assets/oatmilkk.jfif';
+  if (name.includes('shea butter'))                            return '/assets/Shea_Butter.jfif';
+  if (name.includes('chamomile'))                              return '/assets/Chamomile_Compress.jfif';
+  if (name.includes('tea tree') && name.includes('spot'))      return '/assets/Tea_Tree_Oil.jfif';
+  if (name.includes('tea tree'))                               return '/assets/Diluted_Tea.jfif';
+  if (name.includes('kaolin') && name.includes('balancing'))   return '/assets/Kaolin.jfif';
+  if (name.includes('kaolin'))                                 return '/assets/Kaolin_Clay.jfif';
+  if (name.includes('jojoba') && name.includes('light'))       return '/assets/Jojoba.jfif';
+  if (name.includes('jojoba') && name.includes('hydrating'))   return '/assets/Jojoba_Oil.jfif';
+  if (name.includes('jojoba'))                                 return '/assets/Jojoba1.jfif';
+
+  // ── Original remedies ─────────────────────────────────────────
+  if (name.includes('aloe'))                                   return '/assets/remedi8.jfif';
+  if (name.includes('cucumber'))                               return '/assets/remedi1.jfif';
+  if (name.includes('honey') || name.includes('raw honey'))    return '/assets/remedi2.jfif';
+  if (name.includes('green tea'))                              return '/assets/remedi3.jfif';
+  if (name.includes('oat') || name.includes('oatmeal'))        return '/assets/remedi4.jfif';
   if (name.includes('rose water') || name.includes('rosewater')) return '/assets/remedi5.jfif';
-  if (name.includes('avocado'))                       return '/assets/avacado.jfif';
-  // fallback to whatever the data has
+  if (name.includes('avocado'))                                return '/assets/avacado.jfif';
+
   return remedy.image ?? null;
 }
 
@@ -29,6 +45,7 @@ const EVIDENCE_COLOR = {
 export default function Remedies() {
   const navigate = useNavigate();
   const { state, dispatch } = useApp();
+  const [showAll, setShowAll] = useState(false);
   const condition = state.detection?.final_condition ?? 'Oily_Acne';
 
   useEffect(() => {
@@ -105,7 +122,7 @@ export default function Remedies() {
 
         {/* ── Cards grid ── */}
         <div className="sk-remedies-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: 24 }}>
-          {remedies.map((remedy, idx) => {
+          {(showAll ? remedies : remedies.slice(0, 3)).map((remedy, idx) => {
             const ev = EVIDENCE_COLOR[remedy.tag] ?? EVIDENCE_COLOR['Medium evidence'];
             const imgSrc = resolveImage(remedy);
             return (
@@ -203,6 +220,41 @@ export default function Remedies() {
             );
           })}
         </div>
+
+        {/* See more / collapse */}
+        {remedies.length > 3 && (
+          <div style={{ display: 'flex', justifyContent: 'center', marginTop: 28 }}>
+            <button
+              onClick={() => setShowAll(p => !p)}
+              style={{
+                display: 'inline-flex', alignItems: 'center', gap: 8,
+                padding: '14px 32px',
+                background: showAll ? '#F4F6E8' : '#23241C',
+                border: showAll ? '2px solid #C8D068' : 'none',
+                borderRadius: '999px',
+                fontFamily: "'Hanken Grotesk'", fontWeight: 700, fontSize: 14,
+                color: showAll ? '#3A4018' : '#BECA5C',
+                cursor: 'pointer',
+                boxShadow: showAll ? '0 4px 14px rgba(94,106,42,.14)' : '0 4px 18px rgba(35,36,28,.22)',
+                transition: 'transform .15s, box-shadow .15s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.transform = 'translateY(-2px)'; }}
+              onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; }}
+            >
+              {showAll ? (
+                <>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+                  Show fewer remedies
+                </>
+              ) : (
+                <>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  See all {remedies.length} remedies
+                </>
+              )}
+            </button>
+          </div>
+        )}
 
         {/* Footer note */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, justifyContent: 'center', marginTop: 36, fontSize: 13, color: '#9C9A8C' }}>
