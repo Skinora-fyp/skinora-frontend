@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import AppHeader from '../components/AppHeader';
 import { useApp } from '../context/AppContext';
-import { detect, compareProgress, checkTrackingDue, getNotificationCount, downloadProgressReport } from '../api';
+import { detect, compareProgress, checkTrackingDue, getNotificationCount, downloadProgressReport, toggleReminders } from '../api';
 
 const STATUS_CONFIG = {
   better:      { label: 'Improving',       color: '#3E7A2A', bg: '#F0FAF0', dot: '#5CB85C' },
@@ -101,9 +101,11 @@ export default function Progress() {
   const navigate = useNavigate();
   const { state, dispatch } = useApp();
 
-  const [tracking,   setTracking]   = useState(null);
-  const [detections, setDetections] = useState([]);
-  const [loading,    setLoading]    = useState(true);
+  const [tracking,       setTracking]       = useState(null);
+  const [detections,     setDetections]     = useState([]);
+  const [loading,        setLoading]        = useState(true);
+  const [remindersPaused, setRemindersPaused] = useState(false);
+  const [togglingReminder, setTogglingReminder] = useState(false);
 
   const [preview,        setPreview]        = useState(null);
   const [scanning,       setScanning]       = useState(false);
@@ -133,6 +135,7 @@ export default function Progress() {
       .then(data => {
         const active = (data.trackings ?? []).find(t => t.is_active) ?? (data.trackings ?? [])[0] ?? null;
         setTracking(active);
+        setRemindersPaused(active?.reminders_paused ?? false);
         setDetections(data.detections ?? []);
       })
       .catch(() => {})
@@ -236,7 +239,7 @@ export default function Progress() {
         .then(d => {
           setDetections(d.detections ?? []);
           const upd = (d.trackings ?? []).find(t => t.is_active) ?? (d.trackings ?? [])[0] ?? null;
-          if (upd) setTracking(upd);
+          if (upd) { setTracking(upd); setRemindersPaused(upd.reminders_paused ?? false); }
         })
         .catch(() => {});
 
@@ -264,6 +267,17 @@ export default function Progress() {
     } finally {
       setDownloadingPdf(false);
     }
+  }
+
+  async function handleToggleReminders() {
+    if (!tracking || togglingReminder) return;
+    const next = !remindersPaused;
+    setTogglingReminder(true);
+    try {
+      await toggleReminders(tracking.id, next);
+      setRemindersPaused(next);
+    } catch {}
+    setTogglingReminder(false);
   }
 
   // ── Loading ─────────────────────────────────────────────────
@@ -424,6 +438,24 @@ export default function Progress() {
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: isDue ? '#EEF0DC' : '#F1EEE3', color: isDue ? '#5E6A2A' : '#57564E', fontSize: 12.5, padding: '6px 14px', borderRadius: '999px', border: `1px solid ${isDue ? '#BECA5C' : '#E0DCCC'}`, fontWeight: isDue ? 700 : 400 }}>
                 {isDue ? '📅 Check-in due now' : `🔔 Next: ${daysUntil(tracking.next_reminder) ?? '—'}`}
               </span>
+              <button
+                onClick={handleToggleReminders}
+                disabled={togglingReminder}
+                title={remindersPaused ? 'Turn email reminders back on' : 'Pause email reminders'}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', gap: 7,
+                  background: remindersPaused ? '#F6F4EC' : '#EEF0DC',
+                  color: remindersPaused ? '#9C9A8C' : '#5E6A2A',
+                  fontSize: 12.5, padding: '6px 14px', borderRadius: '999px',
+                  border: `1.5px solid ${remindersPaused ? '#D0CDB8' : '#B8CC70'}`,
+                  fontFamily: "'Hanken Grotesk'", fontWeight: 600,
+                  cursor: togglingReminder ? 'default' : 'pointer',
+                  opacity: togglingReminder ? 0.65 : 1,
+                  transition: 'background .14s, color .14s, border-color .14s',
+                }}
+              >
+                {remindersPaused ? '🔕 Reminders off' : '🔔 Reminders on'}
+              </button>
             </div>
           </div>
         </div>
