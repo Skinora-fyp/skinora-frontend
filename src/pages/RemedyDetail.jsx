@@ -60,7 +60,7 @@ export default function RemedyDetail() {
   const [remedy, setRemedy] = useState(state.selectedRemedy ?? null);
 
   useEffect(() => {
-    if (!remedy || remedy.id !== id) {
+    if (!remedy || String(remedy.id) !== String(id)) {
       getRemedy(id).then(r => setRemedy(r.data)).catch(() => setRemedy(getRemedyById(id)));
     }
   }, [id, remedy]);

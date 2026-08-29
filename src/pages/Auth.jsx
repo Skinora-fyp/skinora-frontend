@@ -16,13 +16,30 @@ const INPUT = (extra = {}) => ({
   ...extra,
 });
 
-function IconInput({ icon, children }) {
+function IconInput({ icon, children, onToggle, toggled }) {
   return (
     <div style={{ position: 'relative' }}>
       <span style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', fontSize: 15, color: 'var(--color-muted)', pointerEvents: 'none', lineHeight: 1 }}>
         {icon}
       </span>
       {children}
+      {onToggle && (
+        <button type="button" onClick={onToggle} tabIndex={-1}
+          style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', padding: 4, display: 'flex', alignItems: 'center', color: 'var(--color-muted)', lineHeight: 1 }}
+          aria-label={toggled ? 'Hide password' : 'Show password'}>
+          {toggled ? (
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a18.6 18.6 0 0 1 5.06-5.94M9.9 4.24A10.94 10.94 0 0 1 12 5c7 0 11 7 11 7a18.6 18.6 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
+              <line x1="1" y1="1" x2="23" y2="23"/>
+            </svg>
+          ) : (
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          )}
+        </button>
+      )}
     </div>
   );
 }
@@ -54,6 +71,7 @@ export default function Auth() {
   const [success,     setSuccess]     = useState('');
   const [cooldown,    setCooldown]    = useState(0);
   const [emailStatus, setEmailStatus] = useState('idle');
+  const [showPassword, setShowPassword] = useState(false);
 
   const otpRefs   = useRef([]);
   const debounceT = useRef(null);
@@ -270,7 +288,7 @@ export default function Auth() {
         {/* ════════════════════════════════
             LEFT — Form panel
         ════════════════════════════════ */}
-        <div className="sk-auth-form" style={{ flex: '1 1 52%', padding: '22px 40px', display: 'flex', flexDirection: 'column', overflowY: 'hidden', minHeight: 0 }}>
+        <div className="sk-auth-form" style={{ flex: '1 1 52%', minWidth: 0, padding: '22px 40px', display: 'flex', flexDirection: 'column', overflowY: 'hidden', minHeight: 0 }}>
 
           {/* Logo */}
           <div className="sk-logo-row" style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
@@ -308,7 +326,7 @@ export default function Auth() {
                       onKeyDown={e => handleOtpKeyDown(i, e)}
                       onPaste={i === 0 ? handleOtpPaste : undefined}
                       style={{
-                        flex: 1, height: 56, textAlign: 'center',
+                        flex: '1 1 0%', minWidth: 0, width: 0, height: 56, textAlign: 'center',
                         border: `1.5px solid ${digit ? 'var(--color-brand)' : 'var(--color-field-border)'}`,
                         borderRadius: 12, background: digit ? 'var(--color-surface-tint)' : 'var(--color-surface)',
                         fontSize: 22, fontWeight: 700, fontFamily: "'Spline Sans Mono',monospace",
@@ -439,10 +457,10 @@ export default function Auth() {
                         </span>
                       : null
                   }>Password</FieldLabel>
-                  <IconInput icon="🔒">
-                    <input type="password" value={password}
+                  <IconInput icon="🔒" onToggle={() => setShowPassword(v => !v)} toggled={showPassword}>
+                    <input type={showPassword ? 'text' : 'password'} value={password}
                       onChange={e => setPass(e.target.value)}
-                      placeholder="••••••••••" required style={INPUT()} />
+                      placeholder="••••••••••" required style={INPUT({ padding: '10px 40px 10px 42px' })} />
                   </IconInput>
                 </div>
 
@@ -474,7 +492,7 @@ export default function Auth() {
         {/* ════════════════════════════════
             RIGHT — Aloe vera image panel
         ════════════════════════════════ */}
-        <div style={{ flex: '1 1 48%', position: 'relative', overflow: 'hidden' }}
+        <div style={{ flex: '1 1 48%', minWidth: 0, position: 'relative', overflow: 'hidden' }}
           className="skinora-auth-img-panel">
           <style>{`.skinora-auth-img-panel { display: block; } @media (max-width: 640px) { .skinora-auth-img-panel { display: none; } }`}</style>
 

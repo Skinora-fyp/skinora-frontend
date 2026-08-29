@@ -62,7 +62,7 @@ export default function Consult() {
         {/* Medical disclaimer */}
         <div style={{ marginTop: 40, background: 'var(--color-alert-bg)', borderRadius: 14, padding: '18px 22px', textAlign: 'left', display: 'flex', gap: 13, maxWidth: 520, marginLeft: 'auto', marginRight: 'auto' }}>
           <span style={{ color: 'var(--color-alert)', fontSize: 18 }}>♡</span>
-          <p style={{ margin: 0, fontSize: 13, color: '#9E6347', lineHeight: 1.6 }}>
+          <p style={{ margin: 0, fontSize: 13, color: 'var(--color-alert-strong)', lineHeight: 1.6 }}>
             Skinora supports your skin journey but is not a substitute for medical diagnosis. For persistent or severe conditions, always consult a licensed professional.
           </p>
         </div>

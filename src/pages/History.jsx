@@ -780,9 +780,9 @@ export default function History() {
         )}
 
         {/* ── Medical disclaimer ── */}
-        <div style={{ marginTop: 36, background: 'var(--color-alert-bg)', border: '1px solid #F0D5C8', borderRadius: 14, padding: '16px 20px', display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-          <div style={{ width: 32, height: 32, borderRadius: 9, background: '#F5DDD0', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: 'var(--color-alert-strong)', fontSize: 16 }}>⚕</div>
-          <p style={{ fontSize: 12.5, color: '#7A4A38', lineHeight: 1.65, margin: 0 }}>
+        <div style={{ marginTop: 36, background: 'var(--color-alert-bg)', border: '1px solid color-mix(in srgb, var(--color-alert-strong) 25%, transparent)', borderRadius: 14, padding: '16px 20px', display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+          <div style={{ width: 32, height: 32, borderRadius: 9, background: 'color-mix(in srgb, var(--color-alert-strong) 15%, var(--color-alert-bg))', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: 'var(--color-alert-strong)', fontSize: 16 }}>⚕</div>
+          <p style={{ fontSize: 12.5, color: 'var(--color-alert-strong)', lineHeight: 1.65, margin: 0 }}>
             <strong>Medical Disclaimer:</strong> Skinora recommendations are for educational purposes only and are not a substitute for professional medical advice. Consult a qualified dermatologist for persistent skin conditions.
           </p>
         </div>

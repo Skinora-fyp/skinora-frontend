@@ -12,11 +12,14 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Handle 401 globally
+// Handle 401 globally — but not for the auth endpoints themselves, since
+// a wrong-password/no-account 401 there is an expected form error to show
+// inline, not an expired session to redirect away from.
 api.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err.response?.status === 401) {
+    const isAuthEndpoint = err.config?.url?.startsWith('/auth/');
+    if (err.response?.status === 401 && !isAuthEndpoint) {
       sessionStorage.removeItem('skinora_user');
       sessionStorage.removeItem('skinora_token');
       window.location.href = '/login';
