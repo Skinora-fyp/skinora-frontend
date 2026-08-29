@@ -2,6 +2,76 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Theme tokens ──
+   Light values live on :root (this is the app's original palette, unchanged).
+   Dark values override them when <html data-theme="dark">, set by ThemeContext. */
+:root {
+  color-scheme: light;
+
+  --color-canvas:        #F6F4EC;
+  --color-canvas-alt:    #F1EEE3;
+  --color-surface:       #FFFFFF;
+  --color-surface-tint:  #EEF0DC;
+  --color-tint-neutral:  #ECEADF;
+  --color-hairline:      #E6E3D8;
+  --color-field-border:  #DCD8C9;
+
+  --color-ink:           #23241C;
+  --color-body:          #6B6A60;
+  --color-text2:         #57564E;
+  --color-muted:         #9C9A8C;
+
+  --color-brand:         #BECA5C;
+  --color-brand-deep:    #6E7733;
+  --color-brand-deep2:   #8B9633;
+  --color-brand-text:    #5E6A2A;
+  --color-brand-ink:     #1A1E0A;
+  --color-header-line:   #C8D068;
+
+  --color-success:       #7E9A3E;
+  --color-warn:          #B08A3C;
+  --color-warn-strong:   #8A6B1E;
+  --color-warn-bg:       #FFF8E6;
+  --color-warn-border:   #F0DFA0;
+  --color-alert:         #C0744E;
+  --color-alert-strong:  #B05E3C;
+  --color-alert-bg:      #FBEFE8;
+  --color-notify:        #E8553F;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --color-canvas:        #1B1C15;
+  --color-canvas-alt:    #202216;
+  --color-surface:       #24261A;
+  --color-surface-tint:  #2F3320;
+  --color-tint-neutral:  #2A2C1F;
+  --color-hairline:      #3A3C2C;
+  --color-field-border:  #454736;
+
+  --color-ink:           #F1EFE4;
+  --color-body:          #C9C6B6;
+  --color-text2:         #B8B4A0;
+  --color-muted:         #9A9787;
+
+  --color-brand:         #C7D46E;
+  --color-brand-deep:    #9BAF4E;
+  --color-brand-deep2:   #A8B94A;
+  --color-brand-text:    #C7D46E;
+  --color-header-line:   #4A5230;
+
+  --color-success:       #93B25A;
+  --color-warn:          #D1A354;
+  --color-warn-strong:   #E0C078;
+  --color-warn-bg:       #3A3220;
+  --color-warn-border:   #5A4E2A;
+  --color-alert:         #D98F63;
+  --color-alert-strong:  #D9754C;
+  --color-alert-bg:      #3A2A22;
+  --color-notify:        #F0664E;
+}
+
 /* ── Base ── */
 *, *::before, *::after { box-sizing: border-box; }
 
@@ -9,13 +79,14 @@ html { scroll-behavior: smooth; }
 
 body {
   margin: 0;
-  background: #F6F4EC;
+  background: var(--color-canvas);
   font-family: 'Hanken Grotesk', system-ui, sans-serif;
-  color: #23241C;
+  color: var(--color-ink);
   -webkit-font-smoothing: antialiased;
+  transition: background-color .2s ease, color .2s ease;
 }
 
-::selection { background: #BECA5C; color: #23260F; }
+::selection { background: var(--color-brand); color: var(--color-brand-ink); }
 
 /* ── Scrollbar hide (for strip) ── */
 .scrollbar-hide::-webkit-scrollbar { display: none; }

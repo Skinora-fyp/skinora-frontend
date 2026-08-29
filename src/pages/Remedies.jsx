@@ -37,9 +37,9 @@ function resolveImage(remedy) {
 }
 
 const EVIDENCE_COLOR = {
-  'High evidence':   { bg: '#EEF0DC', text: '#5E6A2A', border: '#C8D068' },
-  'Medium evidence': { bg: '#FFF8E6', text: '#7A5C00', border: '#F0DFA0' },
-  'Low evidence':    { bg: '#FDF0EC', text: '#B05E3C', border: '#F0C0A8' },
+  'High evidence':   { bg: 'var(--color-surface-tint)', text: 'var(--color-brand-text)', border: 'var(--color-header-line)' },
+  'Medium evidence': { bg: 'var(--color-warn-bg)', text: 'var(--color-warn-strong)', border: 'var(--color-warn-border)' },
+  'Low evidence':    { bg: '#FDF0EC', text: 'var(--color-alert-strong)', border: '#F0C0A8' },
 };
 
 export default function Remedies() {
@@ -73,7 +73,7 @@ export default function Remedies() {
   }
 
   return (
-    <div style={{ background: '#F6F4EC', minHeight: '100vh', fontFamily: "'Hanken Grotesk'" }}>
+    <div style={{ background: 'var(--color-canvas)', minHeight: '100vh', fontFamily: "'Hanken Grotesk'" }}>
       <AppHeader activeStep="remedies" />
 
       <style>{`
@@ -85,7 +85,7 @@ export default function Remedies() {
         .sk-remedy-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(94,106,42,.16) !important; }
 
         .sk-view-btn { transition: background .15s, color .15s, transform .14s; }
-        .sk-view-btn:hover { background: #BECA5C !important; color: #1A1E0A !important; transform: translateY(-1px); }
+        .sk-view-btn:hover { background: var(--color-brand) !important; color: var(--color-brand-ink) !important; transform: translateY(-1px); }
 
         @media (max-width: 700px) {
           .sk-remedies-grid { grid-template-columns: 1fr !important; }
@@ -98,25 +98,25 @@ export default function Remedies() {
         {/* ── Page header ── */}
         <div className="sk-remedies-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 16, marginBottom: 40 }}>
           <div>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#23241C', borderRadius: '999px', padding: '4px 13px', marginBottom: 16 }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#BECA5C', display: 'inline-block' }} />
-              <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: '#BECA5C' }}>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'var(--color-ink)', borderRadius: '999px', padding: '4px 13px', marginBottom: 16 }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--color-brand)', display: 'inline-block' }} />
+              <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: 'var(--color-brand)' }}>
                 Step 5 · Remedies · {conditionLabel}
               </span>
             </div>
-            <h2 style={{ fontFamily: "'Newsreader',serif", fontWeight: 400, fontSize: 42, letterSpacing: '-.025em', margin: '0 0 10px', lineHeight: 1.1, color: '#23241C' }}>
+            <h2 style={{ fontFamily: "'Newsreader',serif", fontWeight: 400, fontSize: 42, letterSpacing: '-.025em', margin: '0 0 10px', lineHeight: 1.1, color: 'var(--color-ink)' }}>
               Botanical remedies,<br />ranked for your skin.
             </h2>
-            <p style={{ fontSize: 15, color: '#6B6A60', margin: 0, lineHeight: 1.65 }}>
+            <p style={{ fontSize: 15, color: 'var(--color-body)', margin: 0, lineHeight: 1.65 }}>
               Each remedy is backed by peer-reviewed evidence and tailored to your detected condition.
             </p>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'flex-end' }}>
-            <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 10.5, color: '#7E9A3E', background: '#EEF0DC', padding: '7px 14px', borderRadius: '999px', textTransform: 'uppercase', letterSpacing: '.08em', border: '1px solid #C8D068' }}>
+            <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 10.5, color: 'var(--color-success)', background: 'var(--color-surface-tint)', padding: '7px 14px', borderRadius: '999px', textTransform: 'uppercase', letterSpacing: '.08em', border: '1px solid var(--color-header-line)' }}>
               {personalizeChip}
             </span>
-            <span style={{ fontSize: 12, color: '#9C9A8C' }}>{remedies.length} remedies matched</span>
+            <span style={{ fontSize: 12, color: 'var(--color-muted)' }}>{remedies.length} remedies matched</span>
           </div>
         </div>
 
@@ -128,8 +128,8 @@ export default function Remedies() {
             return (
               <div key={remedy.id} className="sk-remedy-card"
                 style={{
-                  background: '#fff',
-                  border: '1.5px solid #E6E3D8',
+                  background: 'var(--color-surface)',
+                  border: '1.5px solid var(--color-hairline)',
                   borderRadius: 20,
                   overflow: 'hidden',
                   display: 'flex',
@@ -153,16 +153,16 @@ export default function Remedies() {
 
                   {/* Remedy number — top left */}
                   <div style={{ position: 'absolute', top: 12, left: 12, display: 'flex', alignItems: 'center', gap: 7, background: 'rgba(246,244,236,.92)', backdropFilter: 'blur(8px)', borderRadius: '999px', padding: '5px 11px 5px 6px', border: '1px solid rgba(200,208,104,.4)' }}>
-                    <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#23241C', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9, color: '#BECA5C', fontWeight: 700, lineHeight: 1 }}>{String(idx + 1).padStart(2, '0')}</span>
+                    <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'var(--color-ink)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9, color: 'var(--color-brand)', fontWeight: 700, lineHeight: 1 }}>{String(idx + 1).padStart(2, '0')}</span>
                     </div>
-                    <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9, letterSpacing: '.09em', textTransform: 'uppercase', color: '#57564E' }}>Remedy</span>
+                    <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9, letterSpacing: '.09em', textTransform: 'uppercase', color: 'var(--color-text2)' }}>Remedy</span>
                   </div>
 
                   {/* Match score — top right */}
                   <div style={{ position: 'absolute', top: 12, right: 12, background: 'rgba(246,244,236,.92)', backdropFilter: 'blur(8px)', borderRadius: 12, padding: '6px 11px', textAlign: 'center', border: '1px solid rgba(200,208,104,.4)' }}>
-                    <div style={{ fontFamily: "'Newsreader',serif", fontSize: 22, color: '#3A4018', lineHeight: 1, fontWeight: 600 }}>{remedy.match}%</div>
-                    <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 8, letterSpacing: '.08em', textTransform: 'uppercase', color: '#7E9A3E', marginTop: 1 }}>match</div>
+                    <div style={{ fontFamily: "'Newsreader',serif", fontSize: 22, color: 'var(--color-brand-text)', lineHeight: 1, fontWeight: 600 }}>{remedy.match}%</div>
+                    <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 8, letterSpacing: '.08em', textTransform: 'uppercase', color: 'var(--color-success)', marginTop: 1 }}>match</div>
                   </div>
 
                   {/* Remedy name overlaid on image */}
@@ -181,22 +181,22 @@ export default function Remedies() {
                     <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9.5, letterSpacing: '.08em', textTransform: 'uppercase', color: ev.text, background: ev.bg, padding: '4px 10px', borderRadius: '999px', border: `1px solid ${ev.border}` }}>
                       {remedy.tag}
                     </span>
-                    <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9.5, letterSpacing: '.06em', color: '#9C9A8C' }}>
+                    <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9.5, letterSpacing: '.06em', color: 'var(--color-muted)' }}>
                       {remedy.for}
                     </span>
                   </div>
 
                   {/* Description */}
-                  <p style={{ fontSize: 13.5, color: '#57564E', lineHeight: 1.65, margin: 0 }}>
+                  <p style={{ fontSize: 13.5, color: 'var(--color-text2)', lineHeight: 1.65, margin: 0 }}>
                     {remedy.desc}
                   </p>
 
                   {/* Frequency pill */}
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', background: '#F8FAF0', border: '1px solid #E4E8CC', borderRadius: 10 }}>
-                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#7E9A3E" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                       <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
                     </svg>
-                    <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 10, letterSpacing: '.06em', color: '#5E6A2A', textTransform: 'uppercase' }}>
+                    <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 10, letterSpacing: '.06em', color: 'var(--color-brand-text)', textTransform: 'uppercase' }}>
                       {remedy.freq}
                     </span>
                   </div>
@@ -207,8 +207,8 @@ export default function Remedies() {
                     className="sk-view-btn"
                     style={{
                       marginTop: 'auto', width: '100%',
-                      background: '#F4F6E8', border: '1.5px solid #C8D068',
-                      color: '#3A4018', borderRadius: 12, padding: '13px',
+                      background: '#F4F6E8', border: '1.5px solid var(--color-header-line)',
+                      color: 'var(--color-brand-text)', borderRadius: 12, padding: '13px',
                       fontFamily: "'Hanken Grotesk'", fontWeight: 700, fontSize: 14,
                       cursor: 'pointer', letterSpacing: '.01em',
                     }}
@@ -229,11 +229,11 @@ export default function Remedies() {
               style={{
                 display: 'inline-flex', alignItems: 'center', gap: 8,
                 padding: '14px 32px',
-                background: showAll ? '#F4F6E8' : '#23241C',
-                border: showAll ? '2px solid #C8D068' : 'none',
+                background: showAll ? '#F4F6E8' : 'var(--color-ink)',
+                border: showAll ? '2px solid var(--color-header-line)' : 'none',
                 borderRadius: '999px',
                 fontFamily: "'Hanken Grotesk'", fontWeight: 700, fontSize: 14,
-                color: showAll ? '#3A4018' : '#BECA5C',
+                color: showAll ? 'var(--color-brand-text)' : 'var(--color-brand)',
                 cursor: 'pointer',
                 boxShadow: showAll ? '0 4px 14px rgba(94,106,42,.14)' : '0 4px 18px rgba(35,36,28,.22)',
                 transition: 'transform .15s, box-shadow .15s',
@@ -257,9 +257,9 @@ export default function Remedies() {
         )}
 
         {/* Footer note */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, justifyContent: 'center', marginTop: 36, fontSize: 13, color: '#9C9A8C' }}>
-          <span style={{ width: 18, height: 18, borderRadius: '50%', background: '#EEF0DC', border: '1px solid #C8D068', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="#7E9A3E" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, justifyContent: 'center', marginTop: 36, fontSize: 13, color: 'var(--color-muted)' }}>
+          <span style={{ width: 18, height: 18, borderRadius: '50%', background: 'var(--color-surface-tint)', border: '1px solid var(--color-header-line)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="var(--color-success)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
           </span>
           Each remedy is backed by a cited, peer-reviewed source — open one to read it.
         </div>

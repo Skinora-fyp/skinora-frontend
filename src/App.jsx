@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { AppProvider, useApp } from './context/AppContext';
+import { ThemeProvider } from './context/ThemeContext';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 import Landing      from './pages/Landing';
@@ -48,12 +49,14 @@ function AppRoutes() {
 
 export default function App() {
   return (
-    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-      <AppProvider>
-        <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-          <AppRoutes />
-        </BrowserRouter>
-      </AppProvider>
-    </GoogleOAuthProvider>
+    <ThemeProvider>
+      <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+        <AppProvider>
+          <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+            <AppRoutes />
+          </BrowserRouter>
+        </AppProvider>
+      </GoogleOAuthProvider>
+    </ThemeProvider>
   );
 }

@@ -36,13 +36,13 @@ function resolveImage(remedy) {
 }
 
 const EV = {
-  'High evidence':   { bg: '#EEF0DC', text: '#5E6A2A', border: '#C8D068' },
-  'Medium evidence': { bg: '#FFF8E6', text: '#7A5C00', border: '#F0DFA0' },
-  'Low evidence':    { bg: '#FDF0EC', text: '#B05E3C', border: '#F0C0A8' },
+  'High evidence':   { bg: 'var(--color-surface-tint)', text: 'var(--color-brand-text)', border: 'var(--color-header-line)' },
+  'Medium evidence': { bg: 'var(--color-warn-bg)', text: 'var(--color-warn-strong)', border: 'var(--color-warn-border)' },
+  'Low evidence':    { bg: '#FDF0EC', text: 'var(--color-alert-strong)', border: '#F0C0A8' },
 };
 
 const ADVICE_PAL = [
-  { bg: 'linear-gradient(135deg,#EEF4DC,#E4ECC8)', border: '#B8CC70', lbl: '#5E6A2A' },
+  { bg: 'linear-gradient(135deg,#EEF4DC,#E4ECC8)', border: '#B8CC70', lbl: 'var(--color-brand-text)' },
   { bg: 'linear-gradient(135deg,#FFF5E0,#FDECC8)', border: '#F0CFA0', lbl: '#8A6010' },
   { bg: 'linear-gradient(135deg,#E8F4F8,#D4EAF4)', border: '#90C8DC', lbl: '#1A6680' },
   { bg: 'linear-gradient(135deg,#F4E8F8,#EAD4F0)', border: '#C090D0', lbl: '#6A2080' },
@@ -66,8 +66,8 @@ export default function RemedyDetail() {
   }, [id, remedy]);
 
   if (!remedy) return (
-    <div style={{ background: '#F6F4EC', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <span style={{ color: '#9C9A8C', fontFamily: "'Hanken Grotesk'", fontSize: 14 }}>Loading…</span>
+    <div style={{ background: 'var(--color-canvas)', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <span style={{ color: 'var(--color-muted)', fontFamily: "'Hanken Grotesk'", fontSize: 14 }}>Loading…</span>
     </div>
   );
 
@@ -79,7 +79,7 @@ export default function RemedyDetail() {
   const hasUrl  = remedy.sourceUrl?.startsWith('http');
 
   return (
-    <div style={{ background: '#F6F4EC', minHeight: '100vh', fontFamily: "'Hanken Grotesk'" }}>
+    <div style={{ background: 'var(--color-canvas)', minHeight: '100vh', fontFamily: "'Hanken Grotesk'" }}>
       <AppHeader activeStep="remedies" />
       <style>{css}</style>
 
@@ -98,7 +98,7 @@ export default function RemedyDetail() {
           <div className="sk-in">
 
             {/* Image */}
-            <div style={{ borderRadius: 14, overflow: 'hidden', position: 'relative', height: 190, background: remedy.tint ?? '#EEF0DC', border: '1.5px solid #D4DEB8', boxShadow: '0 5px 18px rgba(35,36,28,.12)', marginBottom: 10 }}>
+            <div style={{ borderRadius: 14, overflow: 'hidden', position: 'relative', height: 190, background: remedy.tint ?? 'var(--color-surface-tint)', border: '1.5px solid #D4DEB8', boxShadow: '0 5px 18px rgba(35,36,28,.12)', marginBottom: 10 }}>
               {imgSrc && (
                 <img className="sk-img" src={imgSrc} alt={remedy.name}
                   style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center' }}
@@ -107,8 +107,8 @@ export default function RemedyDetail() {
               <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(26,30,10,.58) 0%, transparent 52%)' }} />
               {/* Match */}
               <div style={{ position: 'absolute', top: 8, right: 8, background: 'rgba(246,244,236,.93)', backdropFilter: 'blur(8px)', borderRadius: 9, padding: '4px 9px', textAlign: 'center', border: '1px solid rgba(200,208,104,.35)' }}>
-                <div style={{ fontFamily: "'Newsreader',serif", fontSize: 18, color: '#3A4018', lineHeight: 1, fontWeight: 600 }}>{remedy.match}%</div>
-                <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 7, letterSpacing: '.08em', textTransform: 'uppercase', color: '#7E9A3E', marginTop: 1 }}>match</div>
+                <div style={{ fontFamily: "'Newsreader',serif", fontSize: 18, color: 'var(--color-brand-text)', lineHeight: 1, fontWeight: 600 }}>{remedy.match}%</div>
+                <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 7, letterSpacing: '.08em', textTransform: 'uppercase', color: 'var(--color-success)', marginTop: 1 }}>match</div>
               </div>
               {/* Evidence */}
               <div style={{ position: 'absolute', bottom: 8, left: 8 }}>
@@ -117,17 +117,17 @@ export default function RemedyDetail() {
             </div>
 
             {/* Meta card */}
-            <div style={{ background: '#fff', border: '1.5px solid #E6E3D8', borderLeft: '3px solid #BECA5C', borderRadius: 12, padding: '12px 13px', boxShadow: '0 2px 8px rgba(35,36,28,.06)' }}>
+            <div style={{ background: 'var(--color-surface)', border: '1.5px solid var(--color-hairline)', borderLeft: '3px solid var(--color-brand)', borderRadius: 12, padding: '12px 13px', boxShadow: '0 2px 8px rgba(35,36,28,.06)' }}>
               <div style={{ marginBottom: 10 }}>
-                <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 8, letterSpacing: '.1em', textTransform: 'uppercase', color: '#9C9A8C', marginBottom: 3 }}>Best for</div>
-                <div style={{ fontSize: 12.5, color: '#3a3a2a', lineHeight: 1.4 }}>{remedy.for}</div>
+                <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 8, letterSpacing: '.1em', textTransform: 'uppercase', color: 'var(--color-muted)', marginBottom: 3 }}>Best for</div>
+                <div style={{ fontSize: 12.5, color: 'var(--color-ink)', lineHeight: 1.4 }}>{remedy.for}</div>
               </div>
               <div>
-                <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 8, letterSpacing: '.1em', textTransform: 'uppercase', color: '#9C9A8C', marginBottom: 3 }}>Frequency</div>
-                <div style={{ fontSize: 12.5, color: '#3a3a2a', lineHeight: 1.4, marginBottom: 8 }}>{remedy.freq}</div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 9px', background: '#F8FAF0', border: '1px solid #D4E0A8', borderRadius: 8, color: '#5E6A2A' }}>
+                <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 8, letterSpacing: '.1em', textTransform: 'uppercase', color: 'var(--color-muted)', marginBottom: 3 }}>Frequency</div>
+                <div style={{ fontSize: 12.5, color: 'var(--color-ink)', lineHeight: 1.4, marginBottom: 8 }}>{remedy.freq}</div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 9px', background: '#F8FAF0', border: '1px solid #D4E0A8', borderRadius: 8, color: 'var(--color-brand-text)' }}>
                   <ClockIcon />
-                  <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 8.5, letterSpacing: '.06em', color: '#5E6A2A', textTransform: 'uppercase' }}>{remedy.freq}</span>
+                  <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 8.5, letterSpacing: '.06em', color: 'var(--color-brand-text)', textTransform: 'uppercase' }}>{remedy.freq}</span>
                 </div>
               </div>
             </div>
@@ -138,49 +138,49 @@ export default function RemedyDetail() {
 
             {/* Header */}
             <div style={{ marginBottom: 13 }}>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#23241C', borderRadius: '999px', padding: '3px 11px', marginBottom: 9 }}>
-                <span style={{ width: 5, height: 5, borderRadius: '50%', background: '#BECA5C', display: 'inline-block' }} />
-                <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 8.5, letterSpacing: '.12em', textTransform: 'uppercase', color: '#BECA5C' }}>Remedy · Selected</span>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'var(--color-ink)', borderRadius: '999px', padding: '3px 11px', marginBottom: 9 }}>
+                <span style={{ width: 5, height: 5, borderRadius: '50%', background: 'var(--color-brand)', display: 'inline-block' }} />
+                <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 8.5, letterSpacing: '.12em', textTransform: 'uppercase', color: 'var(--color-brand)' }}>Remedy · Selected</span>
               </div>
-              <h1 style={{ fontFamily: "'Newsreader',serif", fontWeight: 400, fontSize: 'clamp(20px,2.8vw,28px)', letterSpacing: '-.02em', margin: '0 0 7px', color: '#23241C', lineHeight: 1.15 }}>
+              <h1 style={{ fontFamily: "'Newsreader',serif", fontWeight: 400, fontSize: 'clamp(20px,2.8vw,28px)', letterSpacing: '-.02em', margin: '0 0 7px', color: 'var(--color-ink)', lineHeight: 1.15 }}>
                 {remedy.name}
               </h1>
-              <p style={{ fontSize: 13.5, color: '#6B6A60', lineHeight: 1.65, margin: 0 }}>{remedy.desc}</p>
+              <p style={{ fontSize: 13.5, color: 'var(--color-body)', lineHeight: 1.65, margin: 0 }}>{remedy.desc}</p>
             </div>
 
-            <div style={{ height: 1, background: 'linear-gradient(to right,#C8D068,#E6E3D8)', margin: '12px 0' }} />
+            <div style={{ height: 1, background: 'linear-gradient(to right,var(--color-header-line),var(--color-hairline))', margin: '12px 0' }} />
 
             {/* Steps */}
             <div style={{ marginBottom: 14 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 7, marginBottom: 10 }}>
-                <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#23241C', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#BECA5C', flexShrink: 0 }}>
+                <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'var(--color-ink)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-brand)', flexShrink: 0 }}>
                   <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
                 </div>
-                <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9.5, letterSpacing: '.11em', textTransform: 'uppercase', color: '#57564E' }}>How to use it</span>
+                <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9.5, letterSpacing: '.11em', textTransform: 'uppercase', color: 'var(--color-text2)' }}>How to use it</span>
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
                 {(remedy.steps ?? []).map((step, i) => (
                   <div key={i} className="sk-step"
-                    style={{ display: 'flex', gap: 11, alignItems: 'flex-start', background: '#fff', border: '1.5px solid #E6E3D8', borderLeft: '3px solid #BECA5C', borderRadius: 10, padding: '10px 13px', boxShadow: '0 1px 5px rgba(35,36,28,.05)' }}>
-                    <div style={{ flexShrink: 0, width: 22, height: 22, borderRadius: '50%', background: 'linear-gradient(135deg,#EEF0DC,#DDE8B8)', border: '1.5px solid #C8D068', color: '#5E6A2A', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Newsreader',serif", fontSize: 12, fontWeight: 600 }}>
+                    style={{ display: 'flex', gap: 11, alignItems: 'flex-start', background: 'var(--color-surface)', border: '1.5px solid var(--color-hairline)', borderLeft: '3px solid var(--color-brand)', borderRadius: 10, padding: '10px 13px', boxShadow: '0 1px 5px rgba(35,36,28,.05)' }}>
+                    <div style={{ flexShrink: 0, width: 22, height: 22, borderRadius: '50%', background: 'var(--color-surface-tint)', border: '1.5px solid var(--color-header-line)', color: 'var(--color-brand-text)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Newsreader',serif", fontSize: 12, fontWeight: 600 }}>
                       {i + 1}
                     </div>
-                    <span style={{ fontSize: 13, color: '#3a3a2a', lineHeight: 1.55, paddingTop: 2 }}>{step}</span>
+                    <span style={{ fontSize: 13, color: 'var(--color-ink)', lineHeight: 1.55, paddingTop: 2 }}>{step}</span>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Source */}
-            <div style={{ background: 'linear-gradient(135deg,#F4F6EA,#EDF1DC)', border: '1.5px solid #C8D068', borderLeft: '3px solid #7E9A3E', borderRadius: 11, padding: '11px 14px', marginBottom: 16 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6, color: '#7E9A3E' }}>
+            <div style={{ background: 'var(--color-surface-tint)', border: '1.5px solid var(--color-header-line)', borderLeft: '3px solid var(--color-success)', borderRadius: 11, padding: '11px 14px', marginBottom: 16 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6, color: 'var(--color-success)' }}>
                 <BookIcon />
-                <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 8, letterSpacing: '.1em', textTransform: 'uppercase', color: '#7E9A3E', fontWeight: 600 }}>Trusted source</span>
+                <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 8, letterSpacing: '.1em', textTransform: 'uppercase', color: 'var(--color-success)', fontWeight: 600 }}>Trusted source</span>
               </div>
               <p style={{ fontSize: 12, color: '#4F5A2A', lineHeight: 1.6, margin: '0 0 8px' }}>{remedy.source}</p>
               {hasUrl && (
                 <a href={remedy.sourceUrl} target="_blank" rel="noopener noreferrer" className="sk-src-link"
-                  style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: "'Spline Sans Mono',monospace", fontSize: 8.5, letterSpacing: '.07em', textTransform: 'uppercase', color: '#5E6A2A', background: 'rgba(255,255,255,.75)', border: '1px solid #C8D068', borderRadius: '999px', padding: '4px 10px', textDecoration: 'none' }}>
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: 4, fontFamily: "'Spline Sans Mono',monospace", fontSize: 8.5, letterSpacing: '.07em', textTransform: 'uppercase', color: 'var(--color-brand-text)', background: 'rgba(255,255,255,.75)', border: '1px solid var(--color-header-line)', borderRadius: '999px', padding: '4px 10px', textDecoration: 'none' }}>
                   ↗ Open source
                 </a>
               )}
@@ -189,11 +189,11 @@ export default function RemedyDetail() {
             {/* CTAs */}
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
               <button onClick={selectRemedy} className="sk-lime-btn"
-                style={{ background: '#BECA5C', color: '#1A1E0A', border: '1.5px solid #8A9A40', borderRadius: '999px', padding: '11px 24px', fontFamily: "'Hanken Grotesk'", fontWeight: 700, fontSize: 14, cursor: 'pointer', boxShadow: '0 4px 16px rgba(190,202,92,.3)' }}>
+                style={{ background: 'var(--color-brand)', color: 'var(--color-brand-ink)', border: '1.5px solid #8A9A40', borderRadius: '999px', padding: '11px 24px', fontFamily: "'Hanken Grotesk'", fontWeight: 700, fontSize: 14, cursor: 'pointer', boxShadow: '0 4px 16px rgba(190,202,92,.3)' }}>
                 Select this remedy →
               </button>
               <button onClick={() => navigate('/remedies')} className="sk-out-btn"
-                style={{ background: 'transparent', border: '1.5px solid #D5D1C2', color: '#57564E', borderRadius: '999px', padding: '11px 18px', fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 13, cursor: 'pointer' }}>
+                style={{ background: 'transparent', border: '1.5px solid var(--color-field-border)', color: 'var(--color-text2)', borderRadius: '999px', padding: '11px 18px', fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 13, cursor: 'pointer' }}>
                 Compare others
               </button>
             </div>
@@ -202,10 +202,10 @@ export default function RemedyDetail() {
           {/* ── COL 3: lifestyle tips ── */}
           <div className="sk-in" style={{ animationDelay: '130ms' }}>
             {advices.length > 0 ? (
-              <div style={{ borderRadius: 14, overflow: 'hidden', border: '1.5px solid #E0DCCC', boxShadow: '0 4px 16px rgba(35,36,28,.09)' }}>
+              <div style={{ borderRadius: 14, overflow: 'hidden', border: '1.5px solid var(--color-field-border)', boxShadow: '0 4px 16px rgba(35,36,28,.09)' }}>
                 {/* Section header */}
-                <div style={{ background: 'linear-gradient(135deg,#23241C,#3A4018)', padding: '12px 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'rgba(190,202,92,.2)', border: '1px solid rgba(190,202,92,.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#BECA5C', flexShrink: 0 }}><SparkIcon /></div>
+                <div style={{ background: 'linear-gradient(135deg,#23241C,#5E6A2A)', padding: '12px 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'rgba(190,202,92,.2)', border: '1px solid rgba(190,202,92,.4)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-brand)', flexShrink: 0 }}><SparkIcon /></div>
                   <div>
                     <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 8, letterSpacing: '.12em', textTransform: 'uppercase', color: 'rgba(190,202,92,.75)' }}>For you</div>
                     <div style={{ fontFamily: "'Newsreader',serif", fontSize: 15, color: '#F6F4EC', lineHeight: 1 }}>Lifestyle Tips</div>
@@ -216,20 +216,20 @@ export default function RemedyDetail() {
                   const pal = ADVICE_PAL[i % ADVICE_PAL.length];
                   return (
                     <div key={a.tag} className="sk-advice-row"
-                      style={{ padding: '11px 12px', background: '#fff', borderBottom: i < advices.length - 1 ? '1px solid #F0EDE4' : 'none', display: 'flex', gap: 9, alignItems: 'flex-start' }}>
+                      style={{ padding: '11px 12px', background: 'var(--color-surface)', borderBottom: i < advices.length - 1 ? '1px solid var(--color-hairline)' : 'none', display: 'flex', gap: 9, alignItems: 'flex-start' }}>
                       <div style={{ width: 30, height: 30, borderRadius: 9, background: pal.bg, border: `1.5px solid ${pal.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15, flexShrink: 0 }}>{a.icon}</div>
                       <div>
                         <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 7.5, letterSpacing: '.09em', textTransform: 'uppercase', color: pal.lbl, marginBottom: 3, fontWeight: 600 }}>{a.tag.replace(/_/g,' ')}</div>
-                        <p style={{ fontSize: 11.5, color: '#3a3a2a', lineHeight: 1.5, margin: 0 }}>{a.text}</p>
+                        <p style={{ fontSize: 11.5, color: 'var(--color-ink)', lineHeight: 1.5, margin: 0 }}>{a.text}</p>
                       </div>
                     </div>
                   );
                 })}
               </div>
             ) : (
-              <div style={{ background: '#fff', border: '1.5px solid #E6E3D8', borderRadius: 14, padding: '18px 14px', textAlign: 'center' }}>
-                <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9, letterSpacing: '.1em', textTransform: 'uppercase', color: '#9C9A8C' }}>No lifestyle tips yet</div>
-                <p style={{ fontSize: 12, color: '#9C9A8C', marginTop: 8, lineHeight: 1.5 }}>Complete the questionnaire to get personalised advice.</p>
+              <div style={{ background: 'var(--color-surface)', border: '1.5px solid var(--color-hairline)', borderRadius: 14, padding: '18px 14px', textAlign: 'center' }}>
+                <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9, letterSpacing: '.1em', textTransform: 'uppercase', color: 'var(--color-muted)' }}>No lifestyle tips yet</div>
+                <p style={{ fontSize: 12, color: 'var(--color-muted)', marginTop: 8, lineHeight: 1.5 }}>Complete the questionnaire to get personalised advice.</p>
               </div>
             )}
           </div>
@@ -250,11 +250,11 @@ const css = `
 .sk-step         { transition: background .13s, box-shadow .13s; }
 .sk-step:hover   { background: #F8FAF0 !important; box-shadow: 0 4px 12px rgba(94,106,42,.1) !important; }
 .sk-back         { transition: color .13s, background .13s; }
-.sk-back:hover   { color: #23241C !important; background: #ECEADF !important; }
+.sk-back:hover   { color: var(--color-ink) !important; background: var(--color-tint-neutral) !important; }
 .sk-lime-btn     { transition: transform .14s, box-shadow .14s, filter .13s; }
 .sk-lime-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(190,202,92,.4) !important; filter: brightness(1.06); }
 .sk-out-btn      { transition: background .13s, border-color .13s, color .13s; }
-.sk-out-btn:hover { background: #EEF0DC !important; border-color: #BECA5C !important; color: #3A4018 !important; }
+.sk-out-btn:hover { background: var(--color-surface-tint) !important; border-color: var(--color-brand) !important; color: var(--color-brand-text) !important; }
 .sk-src-link     { transition: background .13s; }
 .sk-src-link:hover { background: rgba(255,255,255,.98) !important; }
 @media (max-width: 860px) {

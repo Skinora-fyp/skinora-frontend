@@ -7,7 +7,7 @@ import { recordCheckin } from '../api';
 const OUTCOMES = {
   Improved: {
     label: 'Improved',
-    accent: '#7E9A3E',
+    accent: 'var(--color-success)',
     bg:     '#F4F8EE',
     delta:  '+18%',
     deltaLabel: 'improvement',
@@ -18,7 +18,7 @@ const OUTCOMES = {
   },
   'No change': {
     label: 'No change',
-    accent: '#B08A3C',
+    accent: 'var(--color-warn)',
     bg:     '#FBF6ED',
     delta:  '±0%',
     deltaLabel: 'change so far',
@@ -29,8 +29,8 @@ const OUTCOMES = {
   },
   Worse: {
     label: 'Worse',
-    accent: '#C0744E',
-    bg:     '#FBEFE8',
+    accent: 'var(--color-alert)',
+    bg:     'var(--color-alert-bg)',
     delta:  '−12%',
     deltaLabel: 'regression',
     headline: 'Time to speak to a specialist.',
@@ -56,14 +56,14 @@ export default function Checkin() {
   }
 
   return (
-    <div style={{ background: '#F6F4EC', minHeight: '100vh', fontFamily: "'Hanken Grotesk'" }}>
+    <div style={{ background: 'var(--color-canvas)', minHeight: '100vh', fontFamily: "'Hanken Grotesk'" }}>
       <AppHeader activeStep="track" />
 
       <main style={{ maxWidth: 980, margin: '0 auto', padding: '46px 44px 60px' }}>
         {/* Header row */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 16, marginBottom: 38 }}>
           <div>
-            <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 11, letterSpacing: '.16em', textTransform: 'uppercase', color: '#9C9A8C', marginBottom: 10 }}>
+            <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 11, letterSpacing: '.16em', textTransform: 'uppercase', color: 'var(--color-muted)', marginBottom: 10 }}>
               Step 07 · Progress Check-in
             </div>
             <h2 style={{ fontFamily: "'Newsreader',serif", fontWeight: 400, fontSize: 'clamp(28px,4vw,40px)', letterSpacing: '-.02em', margin: 0 }}>
@@ -72,13 +72,13 @@ export default function Checkin() {
           </div>
 
           {/* Outcome segmented control */}
-          <div style={{ display: 'flex', background: '#ECEADF', borderRadius: '999px', padding: 4, gap: 2 }}>
+          <div style={{ display: 'flex', background: 'var(--color-tint-neutral)', borderRadius: '999px', padding: 4, gap: 2 }}>
             {Object.keys(OUTCOMES).map((key) => (
               <button key={key} onClick={() => setOutcome(key)}
                 style={{ border: 'none', borderRadius: '999px', padding: '10px 18px',
                   fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 13.5, cursor: 'pointer',
-                  background: outcome === key ? '#fff' : 'transparent',
-                  color:      outcome === key ? OUTCOMES[key].accent : '#6B6A60',
+                  background: outcome === key ? 'var(--color-surface)' : 'transparent',
+                  color:      outcome === key ? OUTCOMES[key].accent : 'var(--color-body)',
                   boxShadow:  outcome === key ? '0 1px 4px rgba(0,0,0,.12)' : 'none',
                   transition: 'all .15s',
                 }}>
@@ -96,20 +96,20 @@ export default function Checkin() {
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
               {/* Before */}
               <div>
-                <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 10, letterSpacing: '.1em', textTransform: 'uppercase', color: '#9C9A8C', marginBottom: 8, textAlign: 'center' }}>
+                <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 10, letterSpacing: '.1em', textTransform: 'uppercase', color: 'var(--color-muted)', marginBottom: 8, textAlign: 'center' }}>
                   Before
                 </div>
-                <div style={{ height: 260, borderRadius: 16, background: '#ECEADF', position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ height: 260, borderRadius: 16, background: 'var(--color-tint-neutral)', position: 'relative', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                   {state.detection?.image_url ? (
                     <img src={state.detection.image_url} alt="Before"
                       style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   ) : (
                     <div style={{ textAlign: 'center' }}>
                       <div style={{ fontSize: 28, marginBottom: 8 }}>📷</div>
-                      <div style={{ fontSize: 12, color: '#9C9A8C' }}>Original scan</div>
+                      <div style={{ fontSize: 12, color: 'var(--color-muted)' }}>Original scan</div>
                     </div>
                   )}
-                  <span style={{ position: 'absolute', bottom: 11, left: 11, fontFamily: "'Spline Sans Mono'", fontSize: 9, letterSpacing: '.06em', textTransform: 'uppercase', color: '#3a3a2a', background: 'rgba(252,251,246,.9)', padding: '5px 9px', borderRadius: 6 }}>
+                  <span style={{ position: 'absolute', bottom: 11, left: 11, fontFamily: "'Spline Sans Mono'", fontSize: 9, letterSpacing: '.06em', textTransform: 'uppercase', color: '#23241C', background: 'rgba(252,251,246,.9)', padding: '5px 9px', borderRadius: 6 }}>
                     Week 0
                   </span>
                 </div>
@@ -124,9 +124,9 @@ export default function Checkin() {
                   <div style={{ textAlign: 'center' }}>
                     <div style={{ fontSize: 28, marginBottom: 8 }}>🌿</div>
                     <div style={{ fontSize: 12, color: o.accent, fontWeight: 600 }}>New scan here</div>
-                    <div style={{ fontSize: 11, color: '#9C9A8C', marginTop: 3 }}>Upload to compare</div>
+                    <div style={{ fontSize: 11, color: 'var(--color-muted)', marginTop: 3 }}>Upload to compare</div>
                   </div>
-                  <span style={{ position: 'absolute', bottom: 11, right: 11, fontFamily: "'Spline Sans Mono'", fontSize: 9, letterSpacing: '.06em', textTransform: 'uppercase', color: '#fff', background: o.accent, padding: '5px 9px', borderRadius: 6 }}>
+                  <span style={{ position: 'absolute', bottom: 11, right: 11, fontFamily: "'Spline Sans Mono'", fontSize: 9, letterSpacing: '.06em', textTransform: 'uppercase', color: 'var(--color-surface)', background: o.accent, padding: '5px 9px', borderRadius: 6 }}>
                     Week 1
                   </span>
                 </div>
@@ -139,13 +139,13 @@ export default function Checkin() {
                 { label: 'Active spots', before: '12', after: '7', unit: '' },
                 { label: 'Hydration',    before: 'Low', after: 'Mid', unit: '' },
               ].map(({ label, before, after }) => (
-                <div key={label} style={{ background: '#fff', border: '1px solid #E6E3D8', borderRadius: 14, padding: '16px 18px' }}>
-                  <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, letterSpacing: '.1em', textTransform: 'uppercase', color: '#9C9A8C', marginBottom: 8 }}>
+                <div key={label} style={{ background: 'var(--color-surface)', border: '1px solid var(--color-hairline)', borderRadius: 14, padding: '16px 18px' }}>
+                  <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, letterSpacing: '.1em', textTransform: 'uppercase', color: 'var(--color-muted)', marginBottom: 8 }}>
                     {label}
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ fontFamily: "'Newsreader',serif", fontSize: 22, color: '#9C9A8C', textDecoration: 'line-through' }}>{before}</span>
-                    <span style={{ color: '#9C9A8C', fontSize: 14 }}>→</span>
+                    <span style={{ fontFamily: "'Newsreader',serif", fontSize: 22, color: 'var(--color-muted)', textDecoration: 'line-through' }}>{before}</span>
+                    <span style={{ color: 'var(--color-muted)', fontSize: 14 }}>→</span>
                     <span style={{ fontFamily: "'Newsreader',serif", fontSize: 22, color: o.accent }}>{after}</span>
                   </div>
                 </div>
@@ -166,10 +166,10 @@ export default function Checkin() {
               <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 10, letterSpacing: '.12em', textTransform: 'uppercase', color: o.accent, marginBottom: 8 }}>
                 {o.label}
               </div>
-              <h3 style={{ fontFamily: "'Newsreader',serif", fontWeight: 400, fontSize: 26, letterSpacing: '-.01em', margin: '0 0 14px', color: '#23241C', lineHeight: 1.2 }}>
+              <h3 style={{ fontFamily: "'Newsreader',serif", fontWeight: 400, fontSize: 26, letterSpacing: '-.01em', margin: '0 0 14px', color: 'var(--color-ink)', lineHeight: 1.2 }}>
                 {o.headline}
               </h3>
-              <p style={{ fontSize: 14, color: '#6B6A60', lineHeight: 1.65, margin: '0 0 24px' }}>{o.body}</p>
+              <p style={{ fontSize: 14, color: 'var(--color-body)', lineHeight: 1.65, margin: '0 0 24px' }}>{o.body}</p>
 
               {/* Visual indicator bar */}
               <div style={{ height: 7, background: '#DFDBCC', borderRadius: 5, overflow: 'hidden', marginBottom: 28 }}>
@@ -177,11 +177,11 @@ export default function Checkin() {
               </div>
 
               <button onClick={handleSave}
-                style={{ background: o.accent, color: '#fff', border: 'none', borderRadius: '999px', padding: '15px 26px', fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 15, cursor: 'pointer', marginBottom: 12 }}>
+                style={{ background: o.accent, color: 'var(--color-surface)', border: 'none', borderRadius: '999px', padding: '15px 26px', fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 15, cursor: 'pointer', marginBottom: 12 }}>
                 {saved ? 'Saving…' : o.cta}
               </button>
               <button onClick={() => navigate('/upload')}
-                style={{ background: 'transparent', border: '1px solid #D5D1C2', color: '#57564E', borderRadius: '999px', padding: '12px 20px', fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 13.5, cursor: 'pointer' }}>
+                style={{ background: 'transparent', border: '1px solid var(--color-field-border)', color: 'var(--color-text2)', borderRadius: '999px', padding: '12px 20px', fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 13.5, cursor: 'pointer' }}>
                 Back to dashboard
               </button>
             </div>

@@ -6,8 +6,8 @@ import { detect, compareProgress, checkTrackingDue, getNotificationCount, downlo
 
 const STATUS_CONFIG = {
   better:      { label: 'Improving',       color: '#3E7A2A', bg: '#F0FAF0', dot: '#5CB85C' },
-  no_progress: { label: 'No change yet',   color: '#8A6B1E', bg: '#FFF8E6', dot: '#F0AD4E' },
-  worse:       { label: 'Needs attention', color: '#B05E3C', bg: '#FDF4F0', dot: '#D9534F' },
+  no_progress: { label: 'No change yet',   color: 'var(--color-warn-strong)', bg: 'var(--color-warn-bg)', dot: '#F0AD4E' },
+  worse:       { label: 'Needs attention', color: 'var(--color-alert-strong)', bg: 'var(--color-alert-bg)', dot: '#D9534F' },
 };
 
 const PROGRESS_CONFIG = {
@@ -21,16 +21,16 @@ const PROGRESS_CONFIG = {
   no_change: {
     label: 'No change yet',
     icon: '→',
-    accent: '#8A6B1E', bg: '#FFF8E6', border: '#F0DFA0',
+    accent: 'var(--color-warn-strong)', bg: 'var(--color-warn-bg)', border: 'var(--color-warn-border)',
     msg: 'Some remedies take 2–4 weeks to show results. Give it more time or explore alternatives.',
-    badge: { bg: '#FFF8E6', text: '#8A6B1E', border: '#F0DFA0' },
+    badge: { bg: 'var(--color-warn-bg)', text: 'var(--color-warn-strong)', border: 'var(--color-warn-border)' },
   },
   worse: {
     label: 'Needs attention',
     icon: '↓',
-    accent: '#B05E3C', bg: '#FDF4F0', border: '#EDBBAA',
+    accent: 'var(--color-alert-strong)', bg: 'var(--color-alert-bg)', border: '#EDBBAA',
     msg: 'Your skin may have reacted. Consider switching remedies or consulting a specialist.',
-    badge: { bg: '#FDF0EC', text: '#B05E3C', border: '#EDBBAA' },
+    badge: { bg: '#FDF0EC', text: 'var(--color-alert-strong)', border: '#EDBBAA' },
   },
 };
 
@@ -283,35 +283,35 @@ export default function Progress() {
   // ── Loading ─────────────────────────────────────────────────
   if (loading) {
     return (
-      <div style={{ background: '#F6F4EC', minHeight: '100vh', fontFamily: "'Hanken Grotesk'" }}>
+      <div style={{ background: 'var(--color-canvas)', minHeight: '100vh', fontFamily: "'Hanken Grotesk'" }}>
         <AppHeader activeStep="track" />
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '70vh', gap: 20 }}>
           <div className="sk-loader-ring" />
-          <span style={{ color: '#9C9A8C', fontSize: 14, fontFamily: "'Spline Sans Mono'", letterSpacing: '.08em' }}>Loading your progress…</span>
+          <span style={{ color: 'var(--color-muted)', fontSize: 14, fontFamily: "'Spline Sans Mono'", letterSpacing: '.08em' }}>Loading your progress…</span>
         </div>
-        <style>{`@keyframes sk-spin { to { transform: rotate(360deg); } } .sk-loader-ring { width:40px;height:40px;border:3px solid #E6E3D8;border-top-color:#BECA5C;border-radius:50%;animation:sk-spin .8s linear infinite; }`}</style>
+        <style>{`@keyframes sk-spin { to { transform: rotate(360deg); } } .sk-loader-ring { width:40px;height:40px;border:3px solid var(--color-hairline);border-top-color:var(--color-brand);border-radius:50%;animation:sk-spin .8s linear infinite; }`}</style>
       </div>
     );
   }
 
   if (!tracking) {
     return (
-      <div style={{ background: '#F6F4EC', minHeight: '100vh', fontFamily: "'Hanken Grotesk'" }}>
+      <div style={{ background: 'var(--color-canvas)', minHeight: '100vh', fontFamily: "'Hanken Grotesk'" }}>
         <AppHeader activeStep="track" />
         <main style={{ maxWidth: 520, margin: '0 auto', padding: '100px 32px', textAlign: 'center' }}>
-          <div style={{ width: 72, height: 72, borderRadius: '50%', background: 'linear-gradient(135deg,#EEF0DC,#D4DEB8)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 28px', boxShadow: '0 8px 24px rgba(94,106,42,.18)' }}>
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#5E6A2A" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+          <div style={{ width: 72, height: 72, borderRadius: '50%', background: 'var(--color-surface-tint)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 28px', boxShadow: '0 8px 24px rgba(94,106,42,.18)' }}>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand-text)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
             </svg>
           </div>
-          <h2 style={{ fontFamily: "'Newsreader',serif", fontWeight: 400, fontSize: 32, letterSpacing: '-.02em', margin: '0 0 14px', color: '#23241C' }}>
+          <h2 style={{ fontFamily: "'Newsreader',serif", fontWeight: 400, fontSize: 32, letterSpacing: '-.02em', margin: '0 0 14px', color: 'var(--color-ink)' }}>
             No active tracking yet.
           </h2>
-          <p style={{ fontSize: 14.5, color: '#6B6A60', lineHeight: 1.7, marginBottom: 32 }}>
+          <p style={{ fontSize: 14.5, color: 'var(--color-body)', lineHeight: 1.7, marginBottom: 32 }}>
             Complete a skin scan, select a remedy, and set up progress tracking to see your journey here.
           </p>
           <button onClick={() => navigate('/upload')}
-            style={{ background: '#BECA5C', color: '#2A2D14', border: 'none', borderRadius: '999px', padding: '14px 32px', fontFamily: "'Hanken Grotesk'", fontWeight: 700, fontSize: 15, cursor: 'pointer', boxShadow: '0 4px 16px rgba(190,202,92,.35)' }}>
+            style={{ background: 'var(--color-brand)', color: 'var(--color-brand-ink)', border: 'none', borderRadius: '999px', padding: '14px 32px', fontFamily: "'Hanken Grotesk'", fontWeight: 700, fontSize: 15, cursor: 'pointer', boxShadow: '0 4px 16px rgba(190,202,92,.35)' }}>
             Start a skin scan →
           </button>
         </main>
@@ -320,13 +320,13 @@ export default function Progress() {
   }
 
   const isDue     = state.trackingDue?.due ?? false;
-  const statusCfg = STATUS_CONFIG[tracking.last_status] ?? { label: 'Tracking active', color: '#5E6A2A', bg: '#F4F6EA', dot: '#BECA5C' };
+  const statusCfg = STATUS_CONFIG[tracking.last_status] ?? { label: 'Tracking active', color: 'var(--color-brand-text)', bg: 'var(--color-surface-tint)', dot: 'var(--color-brand)' };
   const comparedCount = Object.keys(checkinResults).length;
   const displayedDetections = showAll ? detections : detections.slice(0, 5);
 
   const ghostBtn = {
     background: 'rgba(255,255,255,.14)', backdropFilter: 'blur(4px)',
-    border: '1px solid rgba(255,255,255,.3)', color: '#fff',
+    border: '1px solid rgba(255,255,255,.3)', color: '#F6F4EC',
     borderRadius: 9, padding: '8px 16px', fontFamily: "'Hanken Grotesk'",
     fontWeight: 600, fontSize: 13, cursor: 'pointer',
   };
@@ -370,10 +370,10 @@ export default function Progress() {
     }
 
     .sk-view-all-btn { transition: background .15s, color .15s, transform .14s; }
-    .sk-view-all-btn:hover { background: #BECA5C !important; color: #1A1E0A !important; transform: translateY(-1px); }
+    .sk-view-all-btn:hover { background: var(--color-brand) !important; color: var(--color-brand-ink) !important; transform: translateY(-1px); }
 
     .sk-upload-opt { transition: background .15s, border-color .15s, transform .15s, box-shadow .15s; }
-    .sk-upload-opt:hover { background: #EEF0DC !important; border-color: #BECA5C !important; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(94,106,42,.14); }
+    .sk-upload-opt:hover { background: var(--color-surface-tint) !important; border-color: var(--color-brand) !important; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(94,106,42,.14); }
 
     .sk-scan-btn { transition: background .15s, transform .14s, box-shadow .15s; }
     .sk-scan-btn:hover:not(:disabled) { background: #AABA4A !important; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(190,202,92,.38); }
@@ -386,7 +386,7 @@ export default function Progress() {
   `;
 
   return (
-    <div style={{ background: '#F6F4EC', minHeight: '100vh', fontFamily: "'Hanken Grotesk'" }}>
+    <div style={{ background: 'var(--color-canvas)', minHeight: '100vh', fontFamily: "'Hanken Grotesk'" }}>
       <AppHeader activeStep="track" />
       <canvas ref={canvasRef} style={{ display: 'none' }} />
       <style>{css}</style>
@@ -400,7 +400,7 @@ export default function Progress() {
             <button onClick={() => openCamera(facingMode === 'user' ? 'environment' : 'user')} style={ghostBtn}>⇄ Flip</button>
           </div>
           <div style={{ position: 'relative', width: '100%', maxWidth: 560 }}>
-            {!cameraReady && <div style={{ height: 380, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9C9A8C', fontSize: 14 }}>Starting camera…</div>}
+            {!cameraReady && <div style={{ height: 380, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-muted)', fontSize: 14 }}>Starting camera…</div>}
             <video ref={videoRef} autoPlay playsInline muted
               onLoadedData={() => setCameraReady(true)}
               style={{ width: '100%', borderRadius: 16, transform: facingMode === 'user' ? 'scaleX(-1)' : 'none', display: cameraReady ? 'block' : 'none' }} />
@@ -408,7 +408,7 @@ export default function Progress() {
           </div>
           {cameraErr && <div style={{ color: '#F5A623', fontSize: 13, marginTop: 14, padding: '0 32px', textAlign: 'center' }}>{cameraErr}</div>}
           {cameraReady && (
-            <button onClick={capturePhoto} style={{ marginTop: 28, width: 68, height: 68, borderRadius: '50%', background: '#BECA5C', border: '4px solid rgba(255,255,255,.5)', cursor: 'pointer', flexShrink: 0 }} />
+            <button onClick={capturePhoto} style={{ marginTop: 28, width: 68, height: 68, borderRadius: '50%', background: 'var(--color-brand)', border: '4px solid rgba(255,255,255,.5)', cursor: 'pointer', flexShrink: 0 }} />
           )}
           <div style={{ marginTop: 14, fontFamily: "'Spline Sans Mono'", fontSize: 11, color: 'rgba(255,255,255,.5)', letterSpacing: '.08em' }}>
             Same lighting as your baseline scan for best comparison
@@ -420,11 +420,11 @@ export default function Progress() {
 
         {/* ── Page header ── */}
         <div style={{ marginBottom: 36 }}>
-          <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 11, letterSpacing: '.16em', textTransform: 'uppercase', color: '#9C9A8C', marginBottom: 10 }}>
+          <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 11, letterSpacing: '.16em', textTransform: 'uppercase', color: 'var(--color-muted)', marginBottom: 10 }}>
             Progress Tracking
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 14 }}>
-            <h2 style={{ fontFamily: "'Newsreader',serif", fontWeight: 400, fontSize: 40, letterSpacing: '-.025em', margin: 0, color: '#23241C', lineHeight: 1.1 }}>
+            <h2 style={{ fontFamily: "'Newsreader',serif", fontWeight: 400, fontSize: 40, letterSpacing: '-.025em', margin: 0, color: 'var(--color-ink)', lineHeight: 1.1 }}>
               Your skin journey.
             </h2>
             <div style={{ display: 'flex', gap: 9, flexWrap: 'wrap', alignItems: 'center' }}>
@@ -432,10 +432,10 @@ export default function Progress() {
                 <span className="sk-pulse-dot" style={{ width: 8, height: 8, background: statusCfg.dot, display: 'inline-block' }} />
                 {statusCfg.label}
               </span>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: '#F1EEE3', color: '#57564E', fontSize: 12.5, padding: '6px 14px', borderRadius: '999px', border: '1px solid #E0DCCC' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'var(--color-canvas-alt)', color: 'var(--color-text2)', fontSize: 12.5, padding: '6px 14px', borderRadius: '999px', border: '1px solid var(--color-field-border)' }}>
                 🌿 {tracking.remedy_name ?? 'Active remedy'}
               </span>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: isDue ? '#EEF0DC' : '#F1EEE3', color: isDue ? '#5E6A2A' : '#57564E', fontSize: 12.5, padding: '6px 14px', borderRadius: '999px', border: `1px solid ${isDue ? '#BECA5C' : '#E0DCCC'}`, fontWeight: isDue ? 700 : 400 }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: isDue ? 'var(--color-surface-tint)' : 'var(--color-canvas-alt)', color: isDue ? 'var(--color-brand-text)' : 'var(--color-text2)', fontSize: 12.5, padding: '6px 14px', borderRadius: '999px', border: `1px solid ${isDue ? 'var(--color-brand)' : 'var(--color-field-border)'}`, fontWeight: isDue ? 700 : 400 }}>
                 {isDue ? '📅 Check-in due now' : `🔔 Next: ${daysUntil(tracking.next_reminder) ?? '—'}`}
               </span>
               <button
@@ -444,10 +444,10 @@ export default function Progress() {
                 title={remindersPaused ? 'Turn email reminders back on' : 'Pause email reminders'}
                 style={{
                   display: 'inline-flex', alignItems: 'center', gap: 7,
-                  background: remindersPaused ? '#F6F4EC' : '#EEF0DC',
-                  color: remindersPaused ? '#9C9A8C' : '#5E6A2A',
+                  background: remindersPaused ? 'var(--color-canvas)' : 'var(--color-surface-tint)',
+                  color: remindersPaused ? 'var(--color-muted)' : 'var(--color-brand-text)',
                   fontSize: 12.5, padding: '6px 14px', borderRadius: '999px',
-                  border: `1.5px solid ${remindersPaused ? '#D0CDB8' : '#B8CC70'}`,
+                  border: `1.5px solid ${remindersPaused ? 'var(--color-field-border)' : '#B8CC70'}`,
                   fontFamily: "'Hanken Grotesk'", fontWeight: 600,
                   cursor: togglingReminder ? 'default' : 'pointer',
                   opacity: togglingReminder ? 0.65 : 1,
@@ -462,13 +462,13 @@ export default function Progress() {
 
         {/* ── How tracking works — only when there are no compared results yet ── */}
         {comparedCount === 0 && detections.length > 1 && (
-          <div style={{ background: 'linear-gradient(135deg,#F4F6EA,#EDF1DC)', border: '1px solid #C8D068', borderRadius: 14, padding: '16px 20px', display: 'flex', gap: 14, alignItems: 'flex-start', marginBottom: 28 }}>
-            <div style={{ width: 36, height: 36, borderRadius: 9, background: '#BECA5C', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: '#23241C' }}>
+          <div style={{ background: 'var(--color-surface-tint)', border: '1px solid var(--color-header-line)', borderRadius: 14, padding: '16px 20px', display: 'flex', gap: 14, alignItems: 'flex-start', marginBottom: 28 }}>
+            <div style={{ width: 36, height: 36, borderRadius: 9, background: 'var(--color-brand)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: 'var(--color-ink)' }}>
               <InfoIcon />
             </div>
             <div>
-              <div style={{ fontWeight: 700, fontSize: 13.5, color: '#23241C', marginBottom: 4 }}>How progress tracking works</div>
-              <div style={{ fontSize: 13, color: '#5E6A2A', lineHeight: 1.6 }}>
+              <div style={{ fontWeight: 700, fontSize: 13.5, color: 'var(--color-ink)', marginBottom: 4 }}>How progress tracking works</div>
+              <div style={{ fontSize: 13, color: 'var(--color-brand-text)', lineHeight: 1.6 }}>
                 Each time a check-in is due, upload a new face photo on the right. Skinora's AI compares it to your
                 <strong> baseline scan</strong> and measures how your skin has changed. Results are saved in your history below.
               </div>
@@ -485,7 +485,7 @@ export default function Progress() {
 
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 14 }}>
               <div>
-                <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: '#9C9A8C' }}>
+                <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: 'var(--color-muted)' }}>
                   Scan History
                 </div>
                 <div style={{ fontSize: 12, color: '#BCBAB0', marginTop: 2 }}>
@@ -494,19 +494,19 @@ export default function Progress() {
                 </div>
               </div>
               {isDue && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: 5, background: '#EEF0DC', border: '1px solid #BECA5C', borderRadius: '999px', padding: '4px 11px' }}>
-                  <span className="sk-pulse-dot" style={{ width: 7, height: 7, background: '#BECA5C', display: 'inline-block' }} />
-                  <span style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, letterSpacing: '.07em', textTransform: 'uppercase', color: '#5E6A2A', fontWeight: 600 }}>Check-in due</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 5, background: 'var(--color-surface-tint)', border: '1px solid var(--color-brand)', borderRadius: '999px', padding: '4px 11px' }}>
+                  <span className="sk-pulse-dot" style={{ width: 7, height: 7, background: 'var(--color-brand)', display: 'inline-block' }} />
+                  <span style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, letterSpacing: '.07em', textTransform: 'uppercase', color: 'var(--color-brand-text)', fontWeight: 600 }}>Check-in due</span>
                 </div>
               )}
             </div>
 
             {detections.length === 0 ? (
-              <div style={{ background: '#fff', border: '1.5px dashed #D5D1C2', borderRadius: 16, padding: '36px 24px', textAlign: 'center' }}>
+              <div style={{ background: 'var(--color-surface)', border: '1.5px dashed var(--color-field-border)', borderRadius: 16, padding: '36px 24px', textAlign: 'center' }}>
                 <div style={{ width: 48, height: 48, borderRadius: '50%', background: '#F0EDE3', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 14px', color: '#BCBAB0' }}>
                   <CameraIcon />
                 </div>
-                <div style={{ fontSize: 14, color: '#9C9A8C', lineHeight: 1.6 }}>No scans yet — upload your first photo to get started.</div>
+                <div style={{ fontSize: 14, color: 'var(--color-muted)', lineHeight: 1.6 }}>No scans yet — upload your first photo to get started.</div>
               </div>
             ) : (
               <>
@@ -526,11 +526,11 @@ export default function Progress() {
                           onClick={() => setExpandedId(isExpanded ? null : det.id)}
                           style={{
                             display: 'flex', gap: 13, alignItems: 'center',
-                            background: isExpanded ? '#F4F6EA' : '#fff',
+                            background: isExpanded ? 'var(--color-surface-tint)' : 'var(--color-surface)',
                             border: `1.5px solid ${
-                              isBaseline ? '#BECA5C'
+                              isBaseline ? 'var(--color-brand)'
                               : pc       ? pc.border
-                              : isExpanded ? '#C8D88A' : '#E6E3D8'
+                              : isExpanded ? '#C8D88A' : 'var(--color-hairline)'
                             }`,
                             borderRadius: isExpanded ? '13px 13px 0 0' : 13,
                             padding: '12px 14px',
@@ -540,7 +540,7 @@ export default function Progress() {
                           {/* Thumbnail */}
                           <div style={{
                             width: 60, height: 60, borderRadius: 11, overflow: 'hidden', flexShrink: 0,
-                            background: '#ECEADF', border: `1.5px solid ${pc ? pc.border : '#E0DCCC'}`,
+                            background: 'var(--color-tint-neutral)', border: `1.5px solid ${pc ? pc.border : 'var(--color-field-border)'}`,
                             display: 'flex', alignItems: 'center', justifyContent: 'center',
                             position: 'relative', transition: 'border-color .15s',
                           }}>
@@ -550,7 +550,7 @@ export default function Progress() {
                             }
                             {/* Compared indicator — green circle check */}
                             {pc && (
-                              <div style={{ position: 'absolute', top: -4, right: -4, width: 18, height: 18, borderRadius: '50%', background: pc.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid #fff' }}>
+                              <div style={{ position: 'absolute', top: -4, right: -4, width: 18, height: 18, borderRadius: '50%', background: pc.accent, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid var(--color-surface)' }}>
                                 <CheckIcon size={9} />
                               </div>
                             )}
@@ -559,16 +559,16 @@ export default function Progress() {
                           {/* Info */}
                           <div style={{ flex: 1, minWidth: 0 }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', marginBottom: 5 }}>
-                              <span style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9.5, color: '#5E6A2A', background: '#EEF0DC', padding: '2px 8px', borderRadius: 5, border: '1px solid #C8D068' }}>
+                              <span style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9.5, color: 'var(--color-brand-text)', background: 'var(--color-surface-tint)', padding: '2px 8px', borderRadius: 5, border: '1px solid var(--color-header-line)' }}>
                                 {det.final_condition}
                               </span>
                               {isBaseline && (
-                                <span style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, letterSpacing: '.07em', textTransform: 'uppercase', color: '#8B9633', background: '#F4F6EA', border: '1px solid #BECA5C', padding: '2px 7px', borderRadius: 5 }}>
+                                <span style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, letterSpacing: '.07em', textTransform: 'uppercase', color: 'var(--color-brand-deep2)', background: 'var(--color-surface-tint)', border: '1px solid var(--color-brand)', padding: '2px 7px', borderRadius: 5 }}>
                                   Baseline
                                 </span>
                               )}
                               {idx === 0 && !isBaseline && !pc && (
-                                <span style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, letterSpacing: '.07em', textTransform: 'uppercase', color: '#9AA646', background: '#F4F6EA', padding: '2px 7px', borderRadius: 5 }}>
+                                <span style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, letterSpacing: '.07em', textTransform: 'uppercase', color: '#9AA646', background: 'var(--color-surface-tint)', padding: '2px 7px', borderRadius: 5 }}>
                                   Latest
                                 </span>
                               )}
@@ -578,18 +578,18 @@ export default function Progress() {
                                 </span>
                               )}
                             </div>
-                            <div style={{ fontSize: 13, color: '#23241C', fontWeight: 600, marginBottom: 3 }}>
+                            <div style={{ fontSize: 13, color: 'var(--color-ink)', fontWeight: 600, marginBottom: 3 }}>
                               {det.skin_type} skin · {det.acne_status === 'Acne' ? 'Acne present' : 'No acne'}
                             </div>
-                            <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 10, color: '#9C9A8C', letterSpacing: '.04em' }}>
+                            <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 10, color: 'var(--color-muted)', letterSpacing: '.04em' }}>
                               {formatDate(det.detected_at)}
                               {pc && result.checkedAt && (
-                                <span style={{ color: '#7E9A3E' }}> · compared {formatDate(result.checkedAt)}</span>
+                                <span style={{ color: 'var(--color-success)' }}> · compared {formatDate(result.checkedAt)}</span>
                               )}
                             </div>
                           </div>
 
-                          <span style={{ color: '#BECA5C', flexShrink: 0 }}>
+                          <span style={{ color: 'var(--color-brand)', flexShrink: 0 }}>
                             <ChevronIcon open={isExpanded} />
                           </span>
                         </div>
@@ -597,11 +597,11 @@ export default function Progress() {
                         {/* ── Expanded panel ── */}
                         {isExpanded && (
                           <div className="sk-expand-panel"
-                            style={{ background: '#fff', border: `1.5px solid ${pc ? pc.border : '#C8D88A'}`, borderTop: 'none', borderRadius: '0 0 13px 13px', overflow: 'hidden', boxShadow: '0 8px 24px rgba(94,106,42,.1)' }}>
+                            style={{ background: 'var(--color-surface)', border: `1.5px solid ${pc ? pc.border : '#C8D88A'}`, borderTop: 'none', borderRadius: '0 0 13px 13px', overflow: 'hidden', boxShadow: '0 8px 24px rgba(94,106,42,.1)' }}>
 
                             {/* Detection photo */}
                             {det.image_url ? (
-                              <div style={{ position: 'relative', height: 200, background: '#ECEADF' }}>
+                              <div style={{ position: 'relative', height: 200, background: 'var(--color-tint-neutral)' }}>
                                 <img src={det.image_url} alt="Scan" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
                                 <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(26,30,10,.5) 0%, transparent 55%)' }} />
                                 <div style={{ position: 'absolute', bottom: 14, left: 16 }}>
@@ -612,7 +612,7 @@ export default function Progress() {
                                 </div>
                               </div>
                             ) : (
-                              <div style={{ height: 160, display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#ECEADF', color: '#BCBAB0' }}>
+                              <div style={{ height: 160, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'var(--color-tint-neutral)', color: '#BCBAB0' }}>
                                 <CameraIcon />
                               </div>
                             )}
@@ -625,10 +625,10 @@ export default function Progress() {
                                   ['Skin type',   det.skin_type,   `${Math.round((det.skin_conf ?? 0) * 100)}% confidence`],
                                   ['Acne status', det.acne_status === 'Acne' ? 'Acne present' : 'Clear', `${Math.round((det.acne_conf ?? 0) * 100)}% confidence`],
                                 ].map(([label, val, sub]) => (
-                                  <div key={label} style={{ background: '#F4F6EA', borderRadius: 10, padding: '10px 13px', border: '1px solid #E4E8CC' }}>
-                                    <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, letterSpacing: '.08em', textTransform: 'uppercase', color: '#9C9A8C', marginBottom: 4 }}>{label}</div>
-                                    <div style={{ fontSize: 13.5, fontWeight: 700, color: '#23241C', marginBottom: 2 }}>{val}</div>
-                                    <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, color: '#7E9A3E' }}>{sub}</div>
+                                  <div key={label} style={{ background: 'var(--color-surface-tint)', borderRadius: 10, padding: '10px 13px', border: '1px solid #E4E8CC' }}>
+                                    <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, letterSpacing: '.08em', textTransform: 'uppercase', color: 'var(--color-muted)', marginBottom: 4 }}>{label}</div>
+                                    <div style={{ fontSize: 13.5, fontWeight: 700, color: 'var(--color-ink)', marginBottom: 2 }}>{val}</div>
+                                    <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, color: 'var(--color-success)' }}>{sub}</div>
                                   </div>
                                 ))}
                               </div>
@@ -643,7 +643,7 @@ export default function Progress() {
                                   {/* What these scores mean */}
                                   <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start', background: 'rgba(255,255,255,.5)', borderRadius: 9, padding: '10px 12px', marginBottom: 12, border: `1px solid ${pc.border}` }}>
                                     <div style={{ color: pc.accent, flexShrink: 0, marginTop: 1 }}><InfoIcon /></div>
-                                    <div style={{ fontSize: 12, color: '#3a3a2a', lineHeight: 1.55 }}>
+                                    <div style={{ fontSize: 12, color: 'var(--color-ink)', lineHeight: 1.55 }}>
                                       <strong>How scores work:</strong> Skinora compares your baseline scan to this check-in.
                                       It checks skin condition and acne confidence — a higher skin confidence + lower acne confidence = healthier score.
                                       The delta (%) shows how much it changed.
@@ -657,9 +657,9 @@ export default function Progress() {
                                       { label: 'This check-in', cond: result.new_condition, caption: 'Skin condition in this scan' },
                                     ].map(({ label, cond, caption }) => (
                                       <div key={label} style={{ background: 'rgba(255,255,255,.6)', borderRadius: 9, padding: '10px 12px', border: `1px solid ${pc.border}` }}>
-                                        <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, letterSpacing: '.07em', textTransform: 'uppercase', color: '#9C9A8C', marginBottom: 4 }}>{label}</div>
-                                        <div style={{ fontSize: 13, fontWeight: 700, color: '#23241C', marginBottom: 2 }}>{cond ?? '—'}</div>
-                                        <div style={{ fontSize: 10.5, color: '#9C9A8C' }}>{caption}</div>
+                                        <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, letterSpacing: '.07em', textTransform: 'uppercase', color: 'var(--color-muted)', marginBottom: 4 }}>{label}</div>
+                                        <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--color-ink)', marginBottom: 2 }}>{cond ?? '—'}</div>
+                                        <div style={{ fontSize: 10.5, color: 'var(--color-muted)' }}>{caption}</div>
                                       </div>
                                     ))}
                                   </div>
@@ -667,7 +667,7 @@ export default function Progress() {
                                   {/* Delta */}
                                   {result.delta != null && (
                                     <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', background: 'rgba(255,255,255,.6)', borderRadius: 10, border: `1px solid ${pc.border}` }}>
-                                      <div style={{ width: 38, height: 38, borderRadius: '50%', background: pc.accent, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0 }}>
+                                      <div style={{ width: 38, height: 38, borderRadius: '50%', background: pc.accent, color: 'var(--color-surface)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, flexShrink: 0 }}>
                                         {pc.icon}
                                       </div>
                                       <div>
@@ -679,14 +679,14 @@ export default function Progress() {
                                     </div>
                                   )}
 
-                                  <p style={{ fontSize: 12.5, color: '#3a3a2a', lineHeight: 1.6, margin: '12px 0 0' }}>{pc.msg}</p>
+                                  <p style={{ fontSize: 12.5, color: 'var(--color-ink)', lineHeight: 1.6, margin: '12px 0 0' }}>{pc.msg}</p>
                                 </div>
 
                               ) : isBaseline ? (
                                 /* Baseline info card */
-                                <div style={{ background: 'linear-gradient(135deg,#EEF0DC,#F4F6EA)', borderRadius: 11, padding: '13px 15px', border: '1px solid #C8D068', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                                  <div style={{ color: '#5E6A2A', flexShrink: 0, marginTop: 2 }}><InfoIcon /></div>
-                                  <div style={{ fontSize: 12.5, color: '#3A4018', lineHeight: 1.55 }}>
+                                <div style={{ background: 'linear-gradient(135deg,var(--color-surface-tint),var(--color-surface-tint))', borderRadius: 11, padding: '13px 15px', border: '1px solid var(--color-header-line)', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                                  <div style={{ color: 'var(--color-brand-text)', flexShrink: 0, marginTop: 2 }}><InfoIcon /></div>
+                                  <div style={{ fontSize: 12.5, color: 'var(--color-brand-text)', lineHeight: 1.55 }}>
                                     This is your <strong>baseline scan</strong> — the reference point all future check-ins are compared against.
                                     No comparison is done on the baseline itself.
                                   </div>
@@ -695,11 +695,11 @@ export default function Progress() {
                               ) : (
                                 /* Non-baseline, result from a previous session (not in sessionStorage) */
                                 <div style={{ background: '#F8FAF0', borderRadius: 11, padding: '13px 15px', border: '1px solid #E4E8CC', display: 'flex', gap: 10, alignItems: 'flex-start' }}>
-                                  <div style={{ color: '#7E9A3E', flexShrink: 0, marginTop: 2 }}><InfoIcon /></div>
-                                  <div style={{ fontSize: 12.5, color: '#57564E', lineHeight: 1.55 }}>
+                                  <div style={{ color: 'var(--color-success)', flexShrink: 0, marginTop: 2 }}><InfoIcon /></div>
+                                  <div style={{ fontSize: 12.5, color: 'var(--color-text2)', lineHeight: 1.55 }}>
                                     This scan was uploaded as a check-in. Its comparison result is stored in your account.
                                     <br/>
-                                    <span style={{ color: '#9C9A8C', fontSize: 11.5 }}>Full history view with all results is coming soon.</span>
+                                    <span style={{ color: 'var(--color-muted)', fontSize: 11.5 }}>Full history view with all results is coming soon.</span>
                                   </div>
                                 </div>
                               )}
@@ -716,7 +716,7 @@ export default function Progress() {
                   <button
                     className="sk-view-all-btn"
                     onClick={() => setShowAll(s => !s)}
-                    style={{ marginTop: 14, width: '100%', background: '#F4F6E8', border: '1.5px solid #C8D068', color: '#3A4018', borderRadius: 12, padding: '12px', fontFamily: "'Hanken Grotesk'", fontWeight: 700, fontSize: 13.5, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
+                    style={{ marginTop: 14, width: '100%', background: '#F4F6E8', border: '1.5px solid var(--color-header-line)', color: 'var(--color-brand-text)', borderRadius: 12, padding: '12px', fontFamily: "'Hanken Grotesk'", fontWeight: 700, fontSize: 13.5, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}
                   >
                     {showAll
                       ? (<><ChevronIcon open={true} /> Show less</>)
@@ -735,8 +735,8 @@ export default function Progress() {
 
             {/* Due banner */}
             {isDue && !scanResult && (
-              <div style={{ background: 'linear-gradient(135deg,#23241C,#3A4018)', borderRadius: 16, padding: '20px 22px', display: 'flex', gap: 14, alignItems: 'flex-start', marginBottom: 18, boxShadow: '0 8px 28px rgba(35,36,28,.2)' }}>
-                <div style={{ width: 44, height: 44, borderRadius: 11, background: '#BECA5C', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: '#23241C' }}>
+              <div style={{ background: 'linear-gradient(135deg,#23241C,#5E6A2A)', borderRadius: 16, padding: '20px 22px', display: 'flex', gap: 14, alignItems: 'flex-start', marginBottom: 18, boxShadow: '0 8px 28px rgba(35,36,28,.2)' }}>
+                <div style={{ width: 44, height: 44, borderRadius: 11, background: 'var(--color-brand)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: 'var(--color-ink)' }}>
                   <CalendarIcon />
                 </div>
                 <div>
@@ -765,7 +765,7 @@ export default function Progress() {
 
                       {/* Result headline */}
                       <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 18 }}>
-                        <div style={{ width: 58, height: 58, borderRadius: '50%', background: pc.accent, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, flexShrink: 0, boxShadow: `0 4px 14px ${pc.accent}55` }}>
+                        <div style={{ width: 58, height: 58, borderRadius: '50%', background: pc.accent, color: 'var(--color-surface)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 28, flexShrink: 0, boxShadow: `0 4px 14px ${pc.accent}55` }}>
                           {pc.icon}
                         </div>
                         <div>
@@ -781,7 +781,7 @@ export default function Progress() {
                       {/* Score explanation */}
                       <div style={{ background: 'rgba(255,255,255,.5)', border: `1px solid ${pc.border}`, borderRadius: 10, padding: '11px 14px', marginBottom: 16, display: 'flex', gap: 10, alignItems: 'flex-start' }}>
                         <div style={{ color: pc.accent, flexShrink: 0 }}><InfoIcon /></div>
-                        <div style={{ fontSize: 12, color: '#3a3a2a', lineHeight: 1.55 }}>
+                        <div style={{ fontSize: 12, color: 'var(--color-ink)', lineHeight: 1.55 }}>
                           <strong>Skin health score</strong> is computed by the AI from your skin type confidence and acne detection confidence —
                           it measures how much your skin condition has improved since your baseline scan.
                         </div>
@@ -794,23 +794,23 @@ export default function Progress() {
                           { label: 'This check-in',  url: scanResult.comparison.new_image_url, cond: scanResult.comparison.new_condition, caption: 'Your current condition' },
                         ].map(({ label, url, cond, caption }) => (
                           <div key={label} style={{ textAlign: 'center' }}>
-                            <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, letterSpacing: '.08em', textTransform: 'uppercase', color: '#9C9A8C', marginBottom: 6 }}>{label}</div>
-                            <div style={{ height: 110, borderRadius: 10, overflow: 'hidden', background: '#ECEADF', border: `1.5px solid ${pc.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, letterSpacing: '.08em', textTransform: 'uppercase', color: 'var(--color-muted)', marginBottom: 6 }}>{label}</div>
+                            <div style={{ height: 110, borderRadius: 10, overflow: 'hidden', background: 'var(--color-tint-neutral)', border: `1.5px solid ${pc.border}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                               {url ? <img src={url} alt={label} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                    : <span style={{ color: '#BCBAB0' }}><CameraIcon /></span>}
                             </div>
                             {cond && <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9.5, color: pc.accent, marginTop: 5, fontWeight: 600 }}>{cond}</div>}
-                            <div style={{ fontSize: 10.5, color: '#9C9A8C', marginTop: 2 }}>{caption}</div>
+                            <div style={{ fontSize: 10.5, color: 'var(--color-muted)', marginTop: 2 }}>{caption}</div>
                           </div>
                         ))}
                       </div>
 
-                      <p style={{ fontSize: 13.5, color: '#3a3a2a', lineHeight: 1.6, margin: '0 0 16px' }}>{pc.msg}</p>
+                      <p style={{ fontSize: 13.5, color: 'var(--color-ink)', lineHeight: 1.6, margin: '0 0 16px' }}>{pc.msg}</p>
 
                       {scanResult.comparison.progress === 'worse'
-                        ? <button onClick={() => navigate('/consult')} style={{ width: '100%', background: pc.accent, color: '#fff', border: 'none', borderRadius: '999px', padding: '13px', fontFamily: "'Hanken Grotesk'", fontWeight: 700, fontSize: 14, cursor: 'pointer' }}>Talk to a specialist →</button>
+                        ? <button onClick={() => navigate('/consult')} style={{ width: '100%', background: pc.accent, color: 'var(--color-surface)', border: 'none', borderRadius: '999px', padding: '13px', fontFamily: "'Hanken Grotesk'", fontWeight: 700, fontSize: 14, cursor: 'pointer' }}>Talk to a specialist →</button>
                         : scanResult.comparison.progress === 'no_change'
-                        ? <button onClick={() => navigate('/remedies')} style={{ width: '100%', background: pc.accent, color: '#fff', border: 'none', borderRadius: '999px', padding: '13px', fontFamily: "'Hanken Grotesk'", fontWeight: 700, fontSize: 14, cursor: 'pointer' }}>Explore other remedies →</button>
+                        ? <button onClick={() => navigate('/remedies')} style={{ width: '100%', background: pc.accent, color: 'var(--color-surface)', border: 'none', borderRadius: '999px', padding: '13px', fontFamily: "'Hanken Grotesk'", fontWeight: 700, fontSize: 14, cursor: 'pointer' }}>Explore other remedies →</button>
                         : <div style={{ textAlign: 'center', padding: '11px', background: `${pc.accent}18`, borderRadius: 10, fontSize: 14, color: pc.accent, fontWeight: 700 }}>✓ Keep using {tracking.remedy_name ?? 'your remedy'}!</div>
                       }
 
@@ -821,7 +821,7 @@ export default function Progress() {
                             <span style={{ fontSize: 18, flexShrink: 0 }}>📧</span>
                             <div>
                               <div style={{ fontSize: 13, fontWeight: 600, color: pc.accent }}>Report emailed to you</div>
-                              <div style={{ fontSize: 11.5, color: '#9C9A8C', marginTop: 2 }}>Full PDF report has been sent to your email.</div>
+                              <div style={{ fontSize: 11.5, color: 'var(--color-muted)', marginTop: 2 }}>Full PDF report has been sent to your email.</div>
                             </div>
                           </div>
                         )}
@@ -835,58 +835,58 @@ export default function Progress() {
                 })()}
 
                 {/* Latest scan row */}
-                <div style={{ background: '#fff', border: '1.5px solid #E6E3D8', borderRadius: 14, padding: '14px 18px', display: 'flex', gap: 13, alignItems: 'center' }}>
-                  {preview?.url && <img src={preview.url} alt="New scan" style={{ width: 56, height: 56, borderRadius: 10, objectFit: 'cover', border: '1.5px solid #E0DCCC', flexShrink: 0 }} />}
+                <div style={{ background: 'var(--color-surface)', border: '1.5px solid var(--color-hairline)', borderRadius: 14, padding: '14px 18px', display: 'flex', gap: 13, alignItems: 'center' }}>
+                  {preview?.url && <img src={preview.url} alt="New scan" style={{ width: 56, height: 56, borderRadius: 10, objectFit: 'cover', border: '1.5px solid var(--color-field-border)', flexShrink: 0 }} />}
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9.5, letterSpacing: '.08em', textTransform: 'uppercase', color: '#9C9A8C', marginBottom: 4 }}>Saved to your history</div>
-                    <div style={{ fontWeight: 700, fontSize: 14, color: '#23241C' }}>{scanResult.detection.final_condition?.replace('_', ' · ')}</div>
-                    <div style={{ fontSize: 11.5, color: '#9C9A8C', marginTop: 2 }}>
+                    <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9.5, letterSpacing: '.08em', textTransform: 'uppercase', color: 'var(--color-muted)', marginBottom: 4 }}>Saved to your history</div>
+                    <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--color-ink)' }}>{scanResult.detection.final_condition?.replace('_', ' · ')}</div>
+                    <div style={{ fontSize: 11.5, color: 'var(--color-muted)', marginTop: 2 }}>
                       Skin {Math.round((scanResult.detection.skin_conf ?? 0) * 100)}% · Acne {Math.round((scanResult.detection.acne_conf ?? 0) * 100)}%
                     </div>
                   </div>
-                  <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#BECA5C', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#23241C', flexShrink: 0 }}>
+                  <div style={{ width: 28, height: 28, borderRadius: '50%', background: 'var(--color-brand)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-ink)', flexShrink: 0 }}>
                     <CheckIcon size={12} />
                   </div>
                 </div>
 
                 <button onClick={() => { setPreview(null); setScanResult(null); setFaceError(null); }}
-                  style={{ width: '100%', background: 'transparent', border: '1.5px solid #D5D1C2', color: '#57564E', borderRadius: '999px', padding: '12px', fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 14, cursor: 'pointer' }}>
+                  style={{ width: '100%', background: 'transparent', border: '1.5px solid var(--color-field-border)', color: 'var(--color-text2)', borderRadius: '999px', padding: '12px', fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 14, cursor: 'pointer' }}>
                   Upload another photo
                 </button>
               </div>
 
             ) : (
               /* ── Upload card ── */
-              <div style={{ background: '#fff', border: '1.5px solid #E6E3D8', borderRadius: 18, overflow: 'hidden', boxShadow: '0 4px 20px rgba(35,36,28,.08)' }}>
+              <div style={{ background: 'var(--color-surface)', border: '1.5px solid var(--color-hairline)', borderRadius: 18, overflow: 'hidden', boxShadow: '0 4px 20px rgba(35,36,28,.08)' }}>
 
-                <div style={{ background: 'linear-gradient(135deg,#23241C,#3A4018)', padding: '18px 22px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ background: 'linear-gradient(135deg,#23241C,#5E6A2A)', padding: '18px 22px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div>
-                    <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: '#BECA5C', marginBottom: 4 }}>
+                    <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: 'var(--color-brand)', marginBottom: 4 }}>
                       {isDue ? 'Check-in upload' : 'Upload anytime'}
                     </div>
                     <div style={{ fontSize: 15, color: '#F6F4EC', fontWeight: 600 }}>
                       {isDue ? 'Time for your check-in!' : 'Track your skin progress.'}
                     </div>
                   </div>
-                  <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(190,202,92,.2)', border: '1.5px solid rgba(190,202,92,.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#BECA5C', flexShrink: 0 }}>
+                  <div style={{ width: 40, height: 40, borderRadius: '50%', background: 'rgba(190,202,92,.2)', border: '1.5px solid rgba(190,202,92,.35)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-brand)', flexShrink: 0 }}>
                     <CameraIcon />
                   </div>
                 </div>
 
                 {preview ? (
                   <div>
-                    <div style={{ position: 'relative', height: 250, background: '#ECEADF' }}>
+                    <div style={{ position: 'relative', height: 250, background: 'var(--color-tint-neutral)' }}>
                       <img src={preview.url} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                       <button onClick={() => { setPreview(null); setFaceError(null); }}
-                        style={{ position: 'absolute', top: 12, right: 12, width: 32, height: 32, borderRadius: '50%', background: 'rgba(0,0,0,.5)', border: 'none', color: '#fff', cursor: 'pointer', fontSize: 14, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
+                        style={{ position: 'absolute', top: 12, right: 12, width: 32, height: 32, borderRadius: '50%', background: 'rgba(0,0,0,.5)', border: 'none', color: '#F6F4EC', cursor: 'pointer', fontSize: 14, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>✕</button>
                     </div>
                     {faceError && (
-                      <div style={{ margin: '14px 18px 0', padding: '12px 15px', background: '#FDF4F0', border: '1.5px solid #EDBBAA', borderRadius: 10, fontSize: 13, color: '#B05E3C' }}>{faceError}</div>
+                      <div style={{ margin: '14px 18px 0', padding: '12px 15px', background: 'var(--color-alert-bg)', border: '1.5px solid #EDBBAA', borderRadius: 10, fontSize: 13, color: 'var(--color-alert-strong)' }}>{faceError}</div>
                     )}
                     <div style={{ padding: '16px 20px 20px' }}>
                       <button onClick={runCheckin} disabled={scanning}
                         className="sk-scan-btn"
-                        style={{ width: '100%', background: scanning ? '#D8DC9A' : '#BECA5C', color: '#2A2D14', border: 'none', borderRadius: '999px', padding: '15px', fontFamily: "'Hanken Grotesk'", fontWeight: 700, fontSize: 15, cursor: scanning ? 'default' : 'pointer', opacity: scanning ? 0.8 : 1 }}>
+                        style={{ width: '100%', background: scanning ? '#D8DC9A' : 'var(--color-brand)', color: 'var(--color-brand-ink)', border: 'none', borderRadius: '999px', padding: '15px', fontFamily: "'Hanken Grotesk'", fontWeight: 700, fontSize: 15, cursor: scanning ? 'default' : 'pointer', opacity: scanning ? 0.8 : 1 }}>
                         {scanning ? 'Analysing your skin…' : 'Analyse & compare →'}
                       </button>
                     </div>
@@ -896,30 +896,30 @@ export default function Progress() {
                   <div style={{ padding: '20px 20px 22px' }}>
                     <div style={{ display: 'flex', gap: 13, marginBottom: 18 }}>
                       <button onClick={() => openCamera('user')} className="sk-upload-opt"
-                        style={{ flex: 1, background: '#F6F4EC', border: '1.5px solid #E0DCCC', borderRadius: 14, padding: '20px 12px', cursor: 'pointer', textAlign: 'center' }}>
-                        <div style={{ width: 44, height: 44, borderRadius: 11, background: 'linear-gradient(135deg,#EEF0DC,#D4DEB8)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 11px', color: '#5E6A2A' }}>
+                        style={{ flex: 1, background: 'var(--color-canvas)', border: '1.5px solid var(--color-field-border)', borderRadius: 14, padding: '20px 12px', cursor: 'pointer', textAlign: 'center' }}>
+                        <div style={{ width: 44, height: 44, borderRadius: 11, background: 'var(--color-surface-tint)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 11px', color: 'var(--color-brand-text)' }}>
                           <CameraIcon />
                         </div>
-                        <div style={{ fontWeight: 700, fontSize: 13.5, color: '#23241C', marginBottom: 3 }}>Take photo</div>
-                        <div style={{ fontSize: 11.5, color: '#9C9A8C' }}>Open camera</div>
+                        <div style={{ fontWeight: 700, fontSize: 13.5, color: 'var(--color-ink)', marginBottom: 3 }}>Take photo</div>
+                        <div style={{ fontSize: 11.5, color: 'var(--color-muted)' }}>Open camera</div>
                       </button>
                       <button onClick={() => fileRef.current?.click()} className="sk-upload-opt"
-                        style={{ flex: 1, background: '#F6F4EC', border: '1.5px solid #E0DCCC', borderRadius: 14, padding: '20px 12px', cursor: 'pointer', textAlign: 'center' }}>
-                        <div style={{ width: 44, height: 44, borderRadius: 11, background: 'linear-gradient(135deg,#EEF0DC,#D4DEB8)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 11px', color: '#5E6A2A' }}>
+                        style={{ flex: 1, background: 'var(--color-canvas)', border: '1.5px solid var(--color-field-border)', borderRadius: 14, padding: '20px 12px', cursor: 'pointer', textAlign: 'center' }}>
+                        <div style={{ width: 44, height: 44, borderRadius: 11, background: 'var(--color-surface-tint)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 11px', color: 'var(--color-brand-text)' }}>
                           <UploadIcon />
                         </div>
-                        <div style={{ fontWeight: 700, fontSize: 13.5, color: '#23241C', marginBottom: 3 }}>Upload photo</div>
-                        <div style={{ fontSize: 11.5, color: '#9C9A8C' }}>From device</div>
+                        <div style={{ fontWeight: 700, fontSize: 13.5, color: 'var(--color-ink)', marginBottom: 3 }}>Upload photo</div>
+                        <div style={{ fontSize: 11.5, color: 'var(--color-muted)' }}>From device</div>
                       </button>
                     </div>
                     {cameraErr && (
-                      <div style={{ padding: '10px 14px', background: '#FDF4F0', border: '1.5px solid #EDBBAA', borderRadius: 10, fontSize: 12.5, color: '#B05E3C', marginBottom: 14 }}>{cameraErr}</div>
+                      <div style={{ padding: '10px 14px', background: 'var(--color-alert-bg)', border: '1.5px solid #EDBBAA', borderRadius: 10, fontSize: 12.5, color: 'var(--color-alert-strong)', marginBottom: 14 }}>{cameraErr}</div>
                     )}
-                    <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start', padding: '12px 14px', background: '#F4F6EA', borderRadius: 11, border: '1px solid #E4E8CC' }}>
-                      <div style={{ width: 22, height: 22, borderRadius: '50%', background: '#BECA5C', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1, color: '#23241C' }}>
+                    <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start', padding: '12px 14px', background: 'var(--color-surface-tint)', borderRadius: 11, border: '1px solid #E4E8CC' }}>
+                      <div style={{ width: 22, height: 22, borderRadius: '50%', background: 'var(--color-brand)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1, color: 'var(--color-ink)' }}>
                         <CheckIcon size={10} />
                       </div>
-                      <div style={{ fontSize: 12, color: '#57564E', lineHeight: 1.55 }}>
+                      <div style={{ fontSize: 12, color: 'var(--color-text2)', lineHeight: 1.55 }}>
                         Use <strong>the same lighting</strong> as your baseline scan. Results are saved to your history automatically.
                       </div>
                     </div>
@@ -932,7 +932,7 @@ export default function Progress() {
             {/* Journey stats */}
             {!scanResult && detections.length > 0 && (
               <div style={{ marginTop: 18, background: 'linear-gradient(135deg,#23241C,#2D3010)', borderRadius: 16, padding: '18px 22px', boxShadow: '0 6px 24px rgba(35,36,28,.18)' }}>
-                <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: '#BECA5C', marginBottom: 16 }}>
+                <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: 'var(--color-brand)', marginBottom: 16 }}>
                   Journey stats
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 12 }}>

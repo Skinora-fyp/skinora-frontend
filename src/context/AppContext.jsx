@@ -1,26 +1,26 @@
 import { createContext, useContext, useReducer, useEffect, useState, useRef, useCallback } from 'react';
 
-const TIMEOUT_MS = 30 * 60 * 1000; // 30 minutes
-const WARN_MS    = 28 * 60 * 1000; // warn 2 minutes before logout
+const TIMEOUT_MS = 30 * 60 * 1000; 
+const WARN_MS    = 28 * 60 * 1000; 
 
 const initialState = {
-  user: null,              // { id, name, email }
+  user: null,              
   accessToken: null,
-  detection: null,         // { skin_type, skin_conf, acne_status, acne_conf, final_condition, image_url }
-  routing: null,           // 'direct' | 'questionnaire' | 'consultant'
-  answers: {},             // questionnaire key → chosen value
-  lifestyle: null,         // summarised lifestyle object
-  advices: [],             // generated advices from questionnaire answers
-  validationScore: null,   // numeric 0–6
-  validationStatus: null,  // 'Strongly Supports Prediction' | 'Moderately Supports Prediction' | 'Weakly Supports Prediction'
-  remedies: [],            // fetched remedy array
-  selectedRemedy: null,    // chosen remedy object
+  detection: null,        
+  routing: null,          
+  answers: {},            
+  lifestyle: null,        
+  advices: [],             
+  validationScore: null,   
+  validationStatus: null,  
+  remedies: [],            
+  selectedRemedy: null,    
   tracking: { enabled: false, frequency: 'weekly' },
-  trackingDue: null,       // null | { due: bool, tracking: {...}, old_detection: {...} }
-  checkinProgress: null,   // null | { progress, delta, old_image_url, new_image_url, ... }
-  pendingCheckins: 0,      // count of unresolved check-in notifications
+  trackingDue: null,      
+  checkinProgress: null,   
+  pendingCheckins: 0,     
   checkin: { outcome: 'better' },
-  history: [],             // past session records
+  history: [],            
 };
 
 function reducer(state, action) {
@@ -48,7 +48,6 @@ function reducer(state, action) {
 
 const AppContext = createContext(null);
 
-// Load history from localStorage keyed by userId
 export function loadHistory(userId) {
   try {
     const raw = localStorage.getItem(`skinora_history_${userId}`);
@@ -56,11 +55,10 @@ export function loadHistory(userId) {
   } catch { return []; }
 }
 
-// Persist history entry to localStorage
 export function saveHistoryEntry(userId, entry) {
   try {
     const existing = loadHistory(userId);
-    const updated = [entry, ...existing].slice(0, 50); // keep last 50
+    const updated = [entry, ...existing].slice(0, 50); 
     localStorage.setItem(`skinora_history_${userId}`, JSON.stringify(updated));
     return updated;
   } catch { return []; }
@@ -142,32 +140,32 @@ export function AppProvider({ children }) {
           fontFamily: "'Hanken Grotesk',sans-serif",
         }}>
           <div style={{
-            background: '#fff', borderRadius: 20, padding: '40px 44px',
+            background: 'var(--color-surface)', borderRadius: 20, padding: '40px 44px',
             maxWidth: 380, width: '90%', textAlign: 'center',
-            boxShadow: '0 20px 60px rgba(0,0,0,.22)', border: '2px solid #E6E3D8',
+            boxShadow: '0 20px 60px rgba(0,0,0,.22)', border: '2px solid var(--color-hairline)',
           }}>
             <div style={{
               width: 60, height: 60, borderRadius: '50%',
-              background: '#FFF8E6', border: '2px solid #F0DFA0',
+              background: 'var(--color-warn-bg)', border: '2px solid var(--color-warn-border)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               margin: '0 auto 22px', fontSize: 28,
             }}>⏱</div>
-            <h3 style={{ fontFamily: "'Newsreader',serif", fontWeight: 400, fontSize: 27, margin: '0 0 10px', color: '#23241C', letterSpacing: '-.01em' }}>
+            <h3 style={{ fontFamily: "'Newsreader',serif", fontWeight: 400, fontSize: 27, margin: '0 0 10px', color: 'var(--color-ink)', letterSpacing: '-.01em' }}>
               Still there?
             </h3>
-            <p style={{ fontSize: 14, color: '#6B6A60', lineHeight: 1.65, margin: '0 0 28px' }}>
-              Your session will expire in <strong style={{ color: '#23241C' }}>2 minutes</strong> due to inactivity.
+            <p style={{ fontSize: 14, color: 'var(--color-body)', lineHeight: 1.65, margin: '0 0 28px' }}>
+              Your session will expire in <strong style={{ color: 'var(--color-ink)' }}>2 minutes</strong> due to inactivity.
             </p>
             <div style={{ display: 'flex', gap: 12 }}>
               <button
                 onClick={doLogout}
-                style={{ flex: 1, padding: '13px', background: '#F6F4EC', border: '1.5px solid #D0CDB8', borderRadius: 12, fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 14, color: '#6B6A60', cursor: 'pointer' }}
+                style={{ flex: 1, padding: '13px', background: 'var(--color-canvas)', border: '1.5px solid var(--color-field-border)', borderRadius: 12, fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 14, color: 'var(--color-body)', cursor: 'pointer' }}
               >
                 Log out
               </button>
               <button
                 onClick={resetTimer}
-                style={{ flex: 1, padding: '13px', background: '#BECA5C', border: 'none', borderRadius: 12, fontFamily: "'Hanken Grotesk'", fontWeight: 700, fontSize: 14, color: '#1A1E0A', cursor: 'pointer' }}
+                style={{ flex: 1, padding: '13px', background: 'var(--color-brand)', border: 'none', borderRadius: 12, fontFamily: "'Hanken Grotesk'", fontWeight: 700, fontSize: 14, color: 'var(--color-brand-ink)', cursor: 'pointer' }}
               >
                 Stay logged in
               </button>

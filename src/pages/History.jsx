@@ -14,13 +14,13 @@ function formatTime(iso) {
   catch { return ''; }
 }
 function conditionColor(cond) {
-  if (!cond) return '#9C9A8C';
+  if (!cond) return 'var(--color-muted)';
   if (cond.includes('Oily')) return '#2B8A6C';
   if (cond.includes('Dry'))  return '#B06030';
-  return '#5E6A2A';
+  return 'var(--color-brand-text)';
 }
 function conditionGradient(cond) {
-  if (!cond) return 'linear-gradient(135deg,#ECEADF,#E0DCCC)';
+  if (!cond) return 'linear-gradient(135deg,var(--color-tint-neutral),var(--color-field-border))';
   if (cond.includes('Oily')) return 'linear-gradient(135deg,#C8E8DC,#9DCFBC)';
   if (cond.includes('Dry'))  return 'linear-gradient(135deg,#F0D8B8,#E0B888)';
   return 'linear-gradient(135deg,#D8E8A8,#BECA5C44)';
@@ -28,8 +28,8 @@ function conditionGradient(cond) {
 function conditionIcon(cond) {
   if (!cond) return null;
   if (cond.includes('Oily')) return '#6BAF92';
-  if (cond.includes('Dry'))  return '#C0744E';
-  return '#7E9A3E';
+  if (cond.includes('Dry'))  return 'var(--color-alert)';
+  return 'var(--color-success)';
 }
 
 // ── SVG Icons ─────────────────────────────────────────────────
@@ -87,22 +87,22 @@ const ZapIcon = () => (
 );
 
 // ── Shared sub-components ─────────────────────────────────────
-function ConfBar({ value, color = '#BECA5C', label, result }) {
+function ConfBar({ value, color = 'var(--color-brand)', label, result }) {
   const pct = Math.round((value ?? 0) * 100);
   return (
     <div style={{ marginBottom: 10 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 }}>
-        <span style={{ fontSize: 12, color: '#6B6A60' }}>{label}</span>
+        <span style={{ fontSize: 12, color: 'var(--color-body)' }}>{label}</span>
         <span style={{ fontSize: 12, fontWeight: 700, color }}>{result} · {pct}%</span>
       </div>
-      <div style={{ height: 6, background: '#ECEADF', borderRadius: 3, overflow: 'hidden' }}>
+      <div style={{ height: 6, background: 'var(--color-tint-neutral)', borderRadius: 3, overflow: 'hidden' }}>
         <div style={{ height: '100%', width: `${pct}%`, background: color, borderRadius: 3, transition: 'width .6s ease' }} />
       </div>
     </div>
   );
 }
 
-function Chip({ children, bg = '#F4F6EA', color = '#5E6A2A', border = '#E2E7C9' }) {
+function Chip({ children, bg = 'var(--color-surface-tint)', color = 'var(--color-brand-text)', border = '#E2E7C9' }) {
   return (
     <span style={{ background: bg, color, border: `1px solid ${border}`, borderRadius: '999px', padding: '3px 10px', fontFamily: "'Spline Sans Mono'", fontSize: 9.5, letterSpacing: '.06em', textTransform: 'uppercase', whiteSpace: 'nowrap', display: 'inline-block' }}>
       {children}
@@ -126,7 +126,7 @@ function ScanCard({ s, idx, total, apiImageUrl }) {
 
   return (
     <div className="sk-scan-card" style={{
-      background: '#fff', border: '2px solid #D0CDB8', borderRadius: 18,
+      background: 'var(--color-surface)', border: '2px solid var(--color-field-border)', borderRadius: 18,
       overflow: 'hidden', display: 'flex', flexDirection: 'column',
       boxShadow: '0 6px 22px rgba(35,36,28,.12)',
       animationDelay: `${idx * 70}ms`,
@@ -153,7 +153,7 @@ function ScanCard({ s, idx, total, apiImageUrl }) {
         <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(26,30,10,.55) 0%, transparent 55%)' }} />
         {/* Scan number badge */}
         <div style={{ position: 'absolute', top: 12, left: 12, background: 'rgba(35,36,28,.72)', backdropFilter: 'blur(6px)', borderRadius: '999px', padding: '4px 10px', display: 'flex', alignItems: 'center', gap: 5 }}>
-          <span style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, color: '#BECA5C', letterSpacing: '.06em' }}>#{total - idx}</span>
+          <span style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, color: 'var(--color-brand)', letterSpacing: '.06em' }}>#{total - idx}</span>
         </div>
         {/* Condition tag bottom-right */}
         <div style={{ position: 'absolute', bottom: 12, right: 12 }}>
@@ -173,28 +173,28 @@ function ScanCard({ s, idx, total, apiImageUrl }) {
       <div style={{ padding: '16px 18px 18px', flex: 1, display: 'flex', flexDirection: 'column', gap: 12 }}>
         {/* Date */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 10, color: '#9C9A8C', letterSpacing: '.04em' }}>
+          <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 10, color: 'var(--color-muted)', letterSpacing: '.04em' }}>
             {formatDate(s.date)} · {formatTime(s.date)}
           </div>
           <div style={{ display: 'flex', gap: 6 }}>
             {acne === 'Acne'
               ? <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#E8A86C', display: 'inline-block', boxShadow: '0 0 0 2px #F0D5A844' }} />
-              : <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#BECA5C', display: 'inline-block', boxShadow: '0 0 0 2px #BECA5C33' }} />
+              : <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'var(--color-brand)', display: 'inline-block', boxShadow: '0 0 0 2px #BECA5C33' }} />
             }
           </div>
         </div>
 
         {/* Confidence bars */}
         <div>
-          <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9, letterSpacing: '.14em', textTransform: 'uppercase', color: '#9C9A8C', marginBottom: 8 }}>AI Confidence</div>
+          <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9, letterSpacing: '.14em', textTransform: 'uppercase', color: 'var(--color-muted)', marginBottom: 8 }}>AI Confidence</div>
           <ConfBar label="Skin type" result={det.skin_type} value={det.skin_conf} color={cc} />
-          <ConfBar label="Acne detection" result={det.acne_status === 'Acne' ? 'Acne' : 'Clear'} value={det.acne_conf} color={acne === 'Acne' ? '#E8A86C' : '#BECA5C'} />
+          <ConfBar label="Acne detection" result={det.acne_status === 'Acne' ? 'Acne' : 'Clear'} value={det.acne_conf} color={acne === 'Acne' ? '#E8A86C' : 'var(--color-brand)'} />
         </div>
 
         {/* Remedy chip */}
         {s.selectedRemedy && (
-          <div style={{ paddingTop: 10, borderTop: '1px solid #F0EDE4' }}>
-            <Chip bg="#EEF0DC" color="#5E6A2A" border="#C8D068">🌿 {s.selectedRemedy.name}</Chip>
+          <div style={{ paddingTop: 10, borderTop: '1px solid var(--color-hairline)' }}>
+            <Chip bg="var(--color-surface-tint)" color="var(--color-brand-text)" border="var(--color-header-line)">🌿 {s.selectedRemedy.name}</Chip>
           </div>
         )}
       </div>
@@ -264,26 +264,26 @@ function RemediesPanel({ sessions }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
       {Object.values(byRemedy).map(({ remedy, sessions: rs }, i) => (
-        <div key={remedy.name} className="sk-panel-row" style={{ background: '#fff', border: '2px solid #D0CDB8', borderRadius: 16, overflow: 'hidden', boxShadow: '0 4px 16px rgba(35,36,28,.10)', animationDelay: `${i * 60}ms` }}>
+        <div key={remedy.name} className="sk-panel-row" style={{ background: 'var(--color-surface)', border: '2px solid var(--color-field-border)', borderRadius: 16, overflow: 'hidden', boxShadow: '0 4px 16px rgba(35,36,28,.10)', animationDelay: `${i * 60}ms` }}>
           {/* Header */}
-          <div style={{ background: 'linear-gradient(135deg,#F4F6EA,#EDF1DC)', padding: '18px 22px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #E4E8CC', flexWrap: 'wrap', gap: 12 }}>
+          <div style={{ background: 'var(--color-surface-tint)', padding: '18px 22px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #E4E8CC', flexWrap: 'wrap', gap: 12 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div style={{ width: 44, height: 44, borderRadius: 12, background: '#BECA5C', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#23241C' }}>
+              <div style={{ width: 44, height: 44, borderRadius: 12, background: 'var(--color-brand)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-ink)' }}>
                 <LeafIcon />
               </div>
               <div>
-                <div style={{ fontFamily: "'Newsreader',serif", fontSize: 20, color: '#23241C', lineHeight: 1.1 }}>{remedy.name}</div>
-                {remedy.category && <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9.5, color: '#7E9A3E', marginTop: 3, letterSpacing: '.06em' }}>{remedy.category}</div>}
+                <div style={{ fontFamily: "'Newsreader',serif", fontSize: 20, color: 'var(--color-ink)', lineHeight: 1.1 }}>{remedy.name}</div>
+                {remedy.category && <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9.5, color: 'var(--color-success)', marginTop: 3, letterSpacing: '.06em' }}>{remedy.category}</div>}
               </div>
             </div>
             <div style={{ textAlign: 'right' }}>
-              <div style={{ fontFamily: "'Newsreader',serif", fontSize: 32, color: '#7E9A3E', lineHeight: 1 }}>{rs.length}</div>
-              <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, color: '#9C9A8C', marginTop: 2, letterSpacing: '.08em' }}>TIME{rs.length !== 1 ? 'S' : ''} SELECTED</div>
+              <div style={{ fontFamily: "'Newsreader',serif", fontSize: 32, color: 'var(--color-success)', lineHeight: 1 }}>{rs.length}</div>
+              <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, color: 'var(--color-muted)', marginTop: 2, letterSpacing: '.08em' }}>TIME{rs.length !== 1 ? 'S' : ''} SELECTED</div>
             </div>
           </div>
           {/* Body */}
           <div style={{ padding: '16px 22px' }}>
-            <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9, letterSpacing: '.14em', textTransform: 'uppercase', color: '#9C9A8C', marginBottom: 8 }}>Prescribed for</div>
+            <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9, letterSpacing: '.14em', textTransform: 'uppercase', color: 'var(--color-muted)', marginBottom: 8 }}>Prescribed for</div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 7, marginBottom: 16 }}>
               {[...new Set(rs.map(s => s.detection?.final_condition).filter(Boolean))].map(cond => (
                 <span key={cond} style={{ background: conditionGradient(cond), borderRadius: '999px', padding: '4px 12px', fontFamily: "'Spline Sans Mono'", fontSize: 10, color: conditionColor(cond), border: `1px solid ${conditionColor(cond)}44`, fontWeight: 600 }}>
@@ -291,16 +291,16 @@ function RemediesPanel({ sessions }) {
                 </span>
               ))}
             </div>
-            <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9, letterSpacing: '.14em', textTransform: 'uppercase', color: '#9C9A8C', marginBottom: 8 }}>Usage history</div>
+            <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9, letterSpacing: '.14em', textTransform: 'uppercase', color: 'var(--color-muted)', marginBottom: 8 }}>Usage history</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
               {rs.map((s, i) => (
-                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '9px 14px', background: '#F6F4EC', borderRadius: 10, border: '1px solid #ECEADF' }}>
+                <div key={i} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '9px 14px', background: 'var(--color-canvas)', borderRadius: 10, border: '1px solid var(--color-tint-neutral)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#BECA5C', flexShrink: 0 }} />
-                    <span style={{ fontSize: 12.5, color: '#23241C', fontWeight: 500 }}>{formatDate(s.date)}</span>
+                    <div style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--color-brand)', flexShrink: 0 }} />
+                    <span style={{ fontSize: 12.5, color: 'var(--color-ink)', fontWeight: 500 }}>{formatDate(s.date)}</span>
                   </div>
                   <div style={{ display: 'flex', gap: 7, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
-                    {s.tracking?.enabled && <Chip bg="#EEF0DC" color="#5E6A2A" border="#C8D068">{s.tracking.frequency}</Chip>}
+                    {s.tracking?.enabled && <Chip bg="var(--color-surface-tint)" color="var(--color-brand-text)" border="var(--color-header-line)">{s.tracking.frequency}</Chip>}
                     {s.detection?.final_condition && (
                       <span style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9.5, color: conditionColor(s.detection.final_condition) }}>
                         {s.detection.final_condition.split('_')[0]}
@@ -329,40 +329,40 @@ function TrackingPanel({ sessions }) {
       {/* Summary */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: 12, marginBottom: 4 }}>
         {[
-          { label: 'Weekly', val: weekly, color: '#BECA5C', bg: '#EEF0DC', border: '#C8D068', days: '7 days' },
-          { label: 'Monthly', val: monthly, color: '#9AA646', bg: '#F4F6EA', border: '#D5DBA8', days: '30 days' },
+          { label: 'Weekly', val: weekly, color: 'var(--color-brand)', bg: 'var(--color-surface-tint)', border: 'var(--color-header-line)', days: '7 days' },
+          { label: 'Monthly', val: monthly, color: '#9AA646', bg: 'var(--color-surface-tint)', border: '#D5DBA8', days: '30 days' },
         ].filter(r => r.val > 0).map(r => (
           <div key={r.label} style={{ background: r.bg, border: `1.5px solid ${r.border}`, borderRadius: 14, padding: '16px 20px', display: 'flex', alignItems: 'center', gap: 14 }}>
             <div style={{ textAlign: 'center', minWidth: 40 }}>
               <div style={{ fontFamily: "'Newsreader',serif", fontSize: 34, color: r.color, lineHeight: 1 }}>{r.val}</div>
             </div>
             <div>
-              <div style={{ fontWeight: 700, fontSize: 14, color: '#23241C' }}>{r.label}</div>
-              <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9.5, color: '#7E9A3E', marginTop: 2 }}>check-in · every {r.days}</div>
+              <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--color-ink)' }}>{r.label}</div>
+              <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9.5, color: 'var(--color-success)', marginTop: 2 }}>check-in · every {r.days}</div>
             </div>
           </div>
         ))}
       </div>
 
       {tracked.map((s, i) => (
-        <div key={s.id ?? i} className="sk-panel-row" style={{ background: '#fff', border: '2px solid #D0CDB8', borderRadius: 14, padding: '16px 20px', display: 'flex', gap: 16, alignItems: 'flex-start', flexWrap: 'wrap', boxShadow: '0 4px 14px rgba(35,36,28,.10)', animationDelay: `${i * 60}ms` }}>
-          <div style={{ width: 56, height: 56, borderRadius: 13, flexShrink: 0, background: s.tracking.frequency === 'weekly' ? '#EEF0DC' : '#F4F6EA', border: '1.5px solid #D5DBA8', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-            <div style={{ fontFamily: "'Newsreader',serif", fontSize: 20, color: '#5E6A2A', lineHeight: 1 }}>{s.tracking.frequency === 'weekly' ? '7' : '30'}</div>
-            <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 7.5, color: '#7E9A3E', letterSpacing: '.05em' }}>DAYS</div>
+        <div key={s.id ?? i} className="sk-panel-row" style={{ background: 'var(--color-surface)', border: '2px solid var(--color-field-border)', borderRadius: 14, padding: '16px 20px', display: 'flex', gap: 16, alignItems: 'flex-start', flexWrap: 'wrap', boxShadow: '0 4px 14px rgba(35,36,28,.10)', animationDelay: `${i * 60}ms` }}>
+          <div style={{ width: 56, height: 56, borderRadius: 13, flexShrink: 0, background: s.tracking.frequency === 'weekly' ? 'var(--color-surface-tint)' : 'var(--color-surface-tint)', border: '1.5px solid #D5DBA8', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ fontFamily: "'Newsreader',serif", fontSize: 20, color: 'var(--color-brand-text)', lineHeight: 1 }}>{s.tracking.frequency === 'weekly' ? '7' : '30'}</div>
+            <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 7.5, color: 'var(--color-success)', letterSpacing: '.05em' }}>DAYS</div>
           </div>
           <div style={{ flex: 1, minWidth: 160 }}>
             <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8, marginBottom: 7 }}>
-              <span style={{ fontWeight: 700, fontSize: 14.5, color: '#23241C' }}>
+              <span style={{ fontWeight: 700, fontSize: 14.5, color: 'var(--color-ink)' }}>
                 {s.tracking.frequency === 'weekly' ? 'Weekly' : 'Monthly'} tracking
               </span>
-              <Chip bg="#EEF0DC" color="#5E6A2A" border="#BECA5C">Active</Chip>
+              <Chip bg="var(--color-surface-tint)" color="var(--color-brand-text)" border="var(--color-brand)">Active</Chip>
             </div>
-            {s.selectedRemedy && <div style={{ fontSize: 13, color: '#57564E', marginBottom: 5 }}><span style={{ color: '#9C9A8C' }}>Remedy:</span> <strong>{s.selectedRemedy.name}</strong></div>}
-            {s.detection?.final_condition && <div style={{ fontSize: 13, color: '#57564E' }}><span style={{ color: '#9C9A8C' }}>Condition:</span> {s.detection.final_condition.replace('_', ' + ')}</div>}
+            {s.selectedRemedy && <div style={{ fontSize: 13, color: 'var(--color-text2)', marginBottom: 5 }}><span style={{ color: 'var(--color-muted)' }}>Remedy:</span> <strong>{s.selectedRemedy.name}</strong></div>}
+            {s.detection?.final_condition && <div style={{ fontSize: 13, color: 'var(--color-text2)' }}><span style={{ color: 'var(--color-muted)' }}>Condition:</span> {s.detection.final_condition.replace('_', ' + ')}</div>}
           </div>
           <div style={{ textAlign: 'right', flexShrink: 0 }}>
-            <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 10, color: '#9C9A8C' }}>{formatDate(s.date)}</div>
-            <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9.5, color: '#CFCCBE', marginTop: 2 }}>{formatTime(s.date)}</div>
+            <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 10, color: 'var(--color-muted)' }}>{formatDate(s.date)}</div>
+            <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9.5, color: 'var(--color-muted)', marginTop: 2 }}>{formatTime(s.date)}</div>
           </div>
         </div>
       ))}
@@ -373,10 +373,10 @@ function TrackingPanel({ sessions }) {
 function SessionsPanel({ sessions }) {
   if (sessions.length === 0) return <EmptyState icon={<ClipboardIcon />} msg="No sessions recorded yet." />;
   return (
-    <div style={{ background: '#fff', border: '2px solid #D0CDB8', borderRadius: 16, overflow: 'hidden', boxShadow: '0 4px 16px rgba(35,36,28,.10)' }}>
-      <div style={{ display: 'grid', gridTemplateColumns: '44px 1fr 1fr 1fr 90px', gap: 10, padding: '12px 20px', background: '#F6F4EC', borderBottom: '1px solid #D0CDB8' }}>
+    <div style={{ background: 'var(--color-surface)', border: '2px solid var(--color-field-border)', borderRadius: 16, overflow: 'hidden', boxShadow: '0 4px 16px rgba(35,36,28,.10)' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '44px 1fr 1fr 1fr 90px', gap: 10, padding: '12px 20px', background: 'var(--color-canvas)', borderBottom: '1px solid var(--color-field-border)' }}>
         {['#', 'Date', 'Condition', 'Remedy', 'Track'].map(h => (
-          <div key={h} style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, letterSpacing: '.1em', textTransform: 'uppercase', color: '#9C9A8C' }}>{h}</div>
+          <div key={h} style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, letterSpacing: '.1em', textTransform: 'uppercase', color: 'var(--color-muted)' }}>{h}</div>
         ))}
       </div>
       {sessions.map((s, i) => {
@@ -385,26 +385,26 @@ function SessionsPanel({ sessions }) {
         return (
           <div key={s.id ?? i} className="sk-panel-row" style={{
             display: 'grid', gridTemplateColumns: '44px 1fr 1fr 1fr 90px', gap: 10,
-            padding: '13px 20px', borderBottom: i < sessions.length - 1 ? '1px solid #F0EDE4' : 'none',
+            padding: '13px 20px', borderBottom: i < sessions.length - 1 ? '1px solid var(--color-hairline)' : 'none',
             alignItems: 'center', animationDelay: `${i * 40}ms`,
           }}>
             <div style={{ fontFamily: "'Newsreader',serif", fontSize: 15, color: '#C9C5B4' }}>{String(sessions.length - i).padStart(2, '0')}</div>
             <div>
-              <div style={{ fontSize: 12.5, color: '#23241C', fontWeight: 500 }}>{formatDate(s.date)}</div>
-              <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9.5, color: '#CFCCBE' }}>{formatTime(s.date)}</div>
+              <div style={{ fontSize: 12.5, color: 'var(--color-ink)', fontWeight: 500 }}>{formatDate(s.date)}</div>
+              <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9.5, color: 'var(--color-muted)' }}>{formatTime(s.date)}</div>
             </div>
             <div>
               {skin
-                ? <><div style={{ fontSize: 12.5, color: conditionColor(cond), fontWeight: 600 }}>{skin}</div><div style={{ fontSize: 11, color: '#9C9A8C' }}>{acne === 'Acne' ? 'Acne' : 'Clear'}</div></>
-                : <span style={{ fontSize: 11, color: '#CFCCBE' }}>—</span>
+                ? <><div style={{ fontSize: 12.5, color: conditionColor(cond), fontWeight: 600 }}>{skin}</div><div style={{ fontSize: 11, color: 'var(--color-muted)' }}>{acne === 'Acne' ? 'Acne' : 'Clear'}</div></>
+                : <span style={{ fontSize: 11, color: 'var(--color-muted)' }}>—</span>
               }
             </div>
-            <div style={{ fontSize: 12, color: s.selectedRemedy ? '#3E6A1A' : '#CFCCBE', fontWeight: s.selectedRemedy ? 600 : 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <div style={{ fontSize: 12, color: s.selectedRemedy ? '#3E6A1A' : 'var(--color-muted)', fontWeight: s.selectedRemedy ? 600 : 400, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {s.selectedRemedy ? s.selectedRemedy.name : '—'}
             </div>
             <div>
-              {s.tracking?.enabled ? <Chip bg="#EEF0DC" color="#5E6A2A" border="#BECA5C">{s.tracking.frequency}</Chip>
-                : <span style={{ fontSize: 11, color: '#CFCCBE' }}>—</span>}
+              {s.tracking?.enabled ? <Chip bg="var(--color-surface-tint)" color="var(--color-brand-text)" border="var(--color-brand)">{s.tracking.frequency}</Chip>
+                : <span style={{ fontSize: 11, color: 'var(--color-muted)' }}>—</span>}
             </div>
           </div>
         );
@@ -415,9 +415,9 @@ function SessionsPanel({ sessions }) {
 
 function EmptyState({ icon, msg }) {
   return (
-    <div style={{ padding: '52px 24px', textAlign: 'center', background: '#fff', border: '1.5px dashed #D5D1C2', borderRadius: 16 }}>
+    <div style={{ padding: '52px 24px', textAlign: 'center', background: 'var(--color-surface)', border: '1.5px dashed var(--color-field-border)', borderRadius: 16 }}>
       <div style={{ width: 60, height: 60, borderRadius: '50%', background: '#F0EDE3', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: '#BCBAB0' }}>{icon}</div>
-      <div style={{ fontSize: 14, color: '#9C9A8C', maxWidth: 320, margin: '0 auto', lineHeight: 1.6 }}>{msg}</div>
+      <div style={{ fontSize: 14, color: 'var(--color-muted)', maxWidth: 320, margin: '0 auto', lineHeight: 1.6 }}>{msg}</div>
     </div>
   );
 }
@@ -458,10 +458,10 @@ export default function History() {
   const latestCond    = sessions[0]?.detection?.final_condition ?? null;
 
   const CARDS = [
-    { id: 'scans',    label: 'Skin Scans',       value: totalScans,      Icon: ScanIcon,      grad: 'linear-gradient(135deg,#EEF0DC,#D8E4A8)', activeBorder: '#BECA5C', activeText: '#5E6A2A' },
+    { id: 'scans',    label: 'Skin Scans',       value: totalScans,      Icon: ScanIcon,      grad: 'var(--color-surface-tint)', activeBorder: 'var(--color-brand)', activeText: 'var(--color-brand-text)' },
     { id: 'remedies', label: 'Remedies Used',     value: totalRemedies,   Icon: LeafIcon,      grad: 'linear-gradient(135deg,#F0F4E8,#E4ECCC)', activeBorder: '#9AB862', activeText: '#4A5C1E' },
     { id: 'tracking', label: 'Tracking Plans',    value: trackingOn,      Icon: ChartIcon,     grad: 'linear-gradient(135deg,#F4F6EC,#E8EDCC)', activeBorder: '#B0B87A', activeText: '#575E1E' },
-    { id: 'sessions', label: 'Total Sessions',    value: sessions.length, Icon: ClipboardIcon, grad: 'linear-gradient(135deg,#F4F2EC,#ECEADF)', activeBorder: '#C8C4B0', activeText: '#57564E' },
+    { id: 'sessions', label: 'Total Sessions',    value: sessions.length, Icon: ClipboardIcon, grad: 'var(--color-tint-neutral)', activeBorder: '#C8C4B0', activeText: 'var(--color-text2)' },
   ];
 
   function toggleCard(id) { setSelectedCard(p => p === id ? null : id); }
@@ -485,7 +485,7 @@ export default function History() {
     .sk-detail-panel { animation: sk-panel-in .25s cubic-bezier(.34,1.2,.64,1) both; transform-origin: top; }
 
     .sk-timeline-row { transition: background .15s; cursor: pointer; }
-    .sk-timeline-row:hover { background: #F4F6EA !important; }
+    .sk-timeline-row:hover { background: var(--color-surface-tint) !important; }
 
     .sk-new-btn { transition: background .15s, transform .14s, box-shadow .15s; }
     .sk-new-btn:hover { background: #AABA4A !important; transform: translateY(-1px); box-shadow: 0 6px 20px rgba(190,202,92,.38); }
@@ -502,35 +502,35 @@ export default function History() {
   `;
 
   return (
-    <div style={{ background: '#F6F4EC', minHeight: '100vh', fontFamily: "'Hanken Grotesk'" }}>
+    <div style={{ background: 'var(--color-canvas)', minHeight: '100vh', fontFamily: "'Hanken Grotesk'" }}>
       <AppHeader activeStep="track" />
       <style>{css}</style>
 
       <main style={{ maxWidth: 1060, margin: '0 auto', padding: '36px 36px 72px' }}>
 
         {/* ── Profile header ── */}
-        <div style={{ background: '#FFFFFF', borderRadius: 22, padding: '32px 36px', marginBottom: 28, border: '2px solid #D4DEB8', boxShadow: '0 6px 28px rgba(94,106,42,.13)', overflow: 'hidden', position: 'relative' }}>
+        <div style={{ background: 'var(--color-surface)', borderRadius: 22, padding: '32px 36px', marginBottom: 28, border: '2px solid #D4DEB8', boxShadow: '0 6px 28px rgba(94,106,42,.13)', overflow: 'hidden', position: 'relative' }}>
           {/* Subtle decorative circles */}
           <div style={{ position: 'absolute', top: -50, right: -50, width: 200, height: 200, borderRadius: '50%', background: 'rgba(190,202,92,.12)', pointerEvents: 'none' }} />
           <div style={{ position: 'absolute', bottom: -30, left: 100, width: 140, height: 140, borderRadius: '50%', background: 'rgba(190,202,92,.08)', pointerEvents: 'none' }} />
 
           <div className="sk-profile-grid" style={{ display: 'flex', alignItems: 'center', gap: 24, flexWrap: 'wrap' }}>
             {/* Avatar */}
-            <div style={{ width: 76, height: 76, borderRadius: '50%', background: 'linear-gradient(135deg,#BECA5C,#8B9633)', color: '#23241C', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Newsreader',serif", fontSize: 36, flexShrink: 0, boxShadow: '0 4px 16px rgba(190,202,92,.35)', fontWeight: 400 }}>
+            <div style={{ width: 76, height: 76, borderRadius: '50%', background: 'linear-gradient(135deg,var(--color-brand),var(--color-brand-deep2))', color: 'var(--color-ink)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: "'Newsreader',serif", fontSize: 36, flexShrink: 0, boxShadow: '0 4px 16px rgba(190,202,92,.35)', fontWeight: 400 }}>
               {userInitial}
             </div>
 
             {/* Name + email */}
             <div style={{ flex: 1 }}>
-              <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: '#7E9A3E', marginBottom: 4 }}>Account</div>
-              <h2 style={{ fontFamily: "'Newsreader',serif", fontWeight: 400, fontSize: 34, margin: '0 0 5px', letterSpacing: '-.01em', color: '#23241C' }}>{userName}</h2>
-              <div style={{ fontSize: 13.5, color: '#9C9A8C' }}>{userEmail}</div>
+              <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: 'var(--color-success)', marginBottom: 4 }}>Account</div>
+              <h2 style={{ fontFamily: "'Newsreader',serif", fontWeight: 400, fontSize: 34, margin: '0 0 5px', letterSpacing: '-.01em', color: 'var(--color-ink)' }}>{userName}</h2>
+              <div style={{ fontSize: 13.5, color: 'var(--color-muted)' }}>{userEmail}</div>
             </div>
 
             {/* Latest condition */}
             {latestCond && (
               <div style={{ flexShrink: 0, textAlign: 'right' }}>
-                <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9, letterSpacing: '.12em', textTransform: 'uppercase', color: '#9C9A8C', marginBottom: 6 }}>Current condition</div>
+                <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9, letterSpacing: '.12em', textTransform: 'uppercase', color: 'var(--color-muted)', marginBottom: 6 }}>Current condition</div>
                 <div style={{ fontFamily: "'Newsreader',serif", fontSize: 24, color: conditionColor(latestCond), lineHeight: 1 }}>
                   {latestCond.replace('_', ' + ')}
                 </div>
@@ -542,7 +542,7 @@ export default function History() {
 
         {/* ── Stat cards ── */}
         <div style={{ marginBottom: 10 }}>
-          <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9.5, letterSpacing: '.12em', textTransform: 'uppercase', color: '#9C9A8C', marginBottom: 12 }}>
+          <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9.5, letterSpacing: '.12em', textTransform: 'uppercase', color: 'var(--color-muted)', marginBottom: 12 }}>
             Tap a card to view details
           </div>
           <div className="sk-stats-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 20 }}>
@@ -553,19 +553,19 @@ export default function History() {
                   onClick={() => toggleCard(id)}
                   style={{
                     display: 'flex', flexDirection: 'column', gap: 12,
-                    background: isActive ? grad : '#fff',
-                    border: `2px solid ${isActive ? activeBorder : '#D0CDB8'}`,
+                    background: isActive ? grad : 'var(--color-surface)',
+                    border: `2px solid ${isActive ? activeBorder : 'var(--color-field-border)'}`,
                     borderRadius: 16, padding: '20px 20px',
                     cursor: 'pointer', textAlign: 'left', width: '100%',
                     boxShadow: isActive ? `0 8px 28px ${activeBorder}44` : '0 4px 14px rgba(35,36,28,.10)',
                     animationDelay: `${i * 60}ms`,
                   }}>
-                  <div style={{ width: 44, height: 44, borderRadius: 12, background: isActive ? 'rgba(255,255,255,.6)' : '#F4F6EA', display: 'flex', alignItems: 'center', justifyContent: 'center', color: isActive ? activeText : '#7E9A3E', border: `1px solid ${isActive ? activeBorder + '44' : '#E4E8CC'}` }}>
+                  <div style={{ width: 44, height: 44, borderRadius: 12, background: isActive ? 'rgba(255,255,255,.6)' : 'var(--color-surface-tint)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: isActive ? activeText : 'var(--color-success)', border: `1px solid ${isActive ? activeBorder + '44' : '#E4E8CC'}` }}>
                     <Icon />
                   </div>
                   <div>
-                    <div style={{ fontFamily: "'Newsreader',serif", fontSize: 34, lineHeight: 1, color: isActive ? activeText : '#23241C' }}>{value}</div>
-                    <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9, letterSpacing: '.1em', textTransform: 'uppercase', color: isActive ? activeText : '#9C9A8C', marginTop: 5 }}>{label}</div>
+                    <div style={{ fontFamily: "'Newsreader',serif", fontSize: 34, lineHeight: 1, color: isActive ? activeText : 'var(--color-ink)' }}>{value}</div>
+                    <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9, letterSpacing: '.1em', textTransform: 'uppercase', color: isActive ? activeText : 'var(--color-muted)', marginTop: 5 }}>{label}</div>
                   </div>
                   {isActive && (
                     <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'center', gap: 5, color: activeBorder }}>
@@ -588,11 +588,11 @@ export default function History() {
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
                   <div style={{ color: cfg.activeText }}><cfg.Icon /></div>
                   <div>
-                    <div style={{ fontFamily: "'Newsreader',serif", fontSize: 22, color: '#23241C', lineHeight: 1 }}>{cfg.label}</div>
-                    <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9.5, color: '#9C9A8C', marginTop: 3 }}>{cfg.value} record{cfg.value !== 1 ? 's' : ''}</div>
+                    <div style={{ fontFamily: "'Newsreader',serif", fontSize: 22, color: 'var(--color-ink)', lineHeight: 1 }}>{cfg.label}</div>
+                    <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9.5, color: 'var(--color-muted)', marginTop: 3 }}>{cfg.value} record{cfg.value !== 1 ? 's' : ''}</div>
                   </div>
                 </div>
-                <button onClick={() => setSelectedCard(null)} style={{ width: 32, height: 32, borderRadius: '50%', background: 'rgba(0,0,0,.07)', border: 'none', cursor: 'pointer', color: '#57564E', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>✕</button>
+                <button onClick={() => setSelectedCard(null)} style={{ width: 32, height: 32, borderRadius: '50%', background: 'rgba(0,0,0,.07)', border: 'none', cursor: 'pointer', color: 'var(--color-text2)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 14 }}>✕</button>
               </div>
               <div style={{ padding: '22px 22px' }}>
                 {selectedCard === 'scans'    && <ScansPanel    sessions={sessions} apiDetections={apiDetections} />}
@@ -607,11 +607,11 @@ export default function History() {
         {/* ── Activity timeline ── */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, flexWrap: 'wrap', gap: 12 }}>
           <div>
-            <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: '#9C9A8C', marginBottom: 4 }}>Timeline</div>
-            <h3 style={{ fontFamily: "'Newsreader',serif", fontWeight: 400, fontSize: 28, margin: 0, letterSpacing: '-.01em', color: '#23241C' }}>Activity History</h3>
+            <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: 'var(--color-muted)', marginBottom: 4 }}>Timeline</div>
+            <h3 style={{ fontFamily: "'Newsreader',serif", fontWeight: 400, fontSize: 28, margin: 0, letterSpacing: '-.01em', color: 'var(--color-ink)' }}>Activity History</h3>
           </div>
           <button className="sk-new-btn" onClick={() => navigate('/guidelines')}
-            style={{ background: '#BECA5C', color: '#2A2D14', border: 'none', borderRadius: '999px', padding: '12px 24px', fontFamily: "'Hanken Grotesk'", fontWeight: 700, fontSize: 13.5, cursor: 'pointer', boxShadow: '0 4px 14px rgba(190,202,92,.3)' }}>
+            style={{ background: 'var(--color-brand)', color: 'var(--color-brand-ink)', border: 'none', borderRadius: '999px', padding: '12px 24px', fontFamily: "'Hanken Grotesk'", fontWeight: 700, fontSize: 13.5, cursor: 'pointer', boxShadow: '0 4px 14px rgba(190,202,92,.3)' }}>
             + New scan
           </button>
         </div>
@@ -631,56 +631,56 @@ export default function History() {
                 <div key={session.id} style={{ position: 'relative' }}>
                   {/* Timeline connector */}
                   {!isLast && (
-                    <div style={{ position: 'absolute', left: 33, top: 62, bottom: -14, width: 2, background: '#E6E3D8', zIndex: 0 }} />
+                    <div style={{ position: 'absolute', left: 33, top: 62, bottom: -14, width: 2, background: 'var(--color-hairline)', zIndex: 0 }} />
                   )}
 
-                  <div style={{ background: '#fff', border: `2px solid ${isExpanded ? '#B8CC60' : '#D0CDB8'}`, borderRadius: 16, overflow: 'hidden', marginBottom: 14, position: 'relative', zIndex: 1, boxShadow: isExpanded ? '0 8px 28px rgba(94,106,42,.16)' : '0 4px 14px rgba(35,36,28,.10)' }}>
+                  <div style={{ background: 'var(--color-surface)', border: `2px solid ${isExpanded ? '#B8CC60' : 'var(--color-field-border)'}`, borderRadius: 16, overflow: 'hidden', marginBottom: 14, position: 'relative', zIndex: 1, boxShadow: isExpanded ? '0 8px 28px rgba(94,106,42,.16)' : '0 4px 14px rgba(35,36,28,.10)' }}>
 
                     {/* Row header */}
                     <button className="sk-timeline-row"
                       onClick={() => setExpandedId(isExpanded ? null : session.id)}
-                      style={{ width: '100%', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 14, padding: '18px 22px', background: isExpanded ? '#F4F6EA' : '#fff', border: 'none', cursor: 'pointer', textAlign: 'left' }}>
+                      style={{ width: '100%', display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 14, padding: '18px 22px', background: isExpanded ? 'var(--color-surface-tint)' : 'var(--color-surface)', border: 'none', cursor: 'pointer', textAlign: 'left' }}>
 
                       {/* Session number dot */}
-                      <div style={{ width: 40, height: 40, borderRadius: '50%', background: isExpanded ? '#BECA5C' : '#F4F6EA', border: `2px solid ${isExpanded ? '#BECA5C' : '#E4E8CC'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'background .2s, border-color .2s' }}>
-                        <span style={{ fontFamily: "'Newsreader',serif", fontSize: 15, color: isExpanded ? '#23241C' : '#C9C5B4', lineHeight: 1 }}>
+                      <div style={{ width: 40, height: 40, borderRadius: '50%', background: isExpanded ? 'var(--color-brand)' : 'var(--color-surface-tint)', border: `2px solid ${isExpanded ? 'var(--color-brand)' : '#E4E8CC'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'background .2s, border-color .2s' }}>
+                        <span style={{ fontFamily: "'Newsreader',serif", fontSize: 15, color: isExpanded ? 'var(--color-ink)' : '#C9C5B4', lineHeight: 1 }}>
                           {String(sessions.length - idx).padStart(2, '0')}
                         </span>
                       </div>
 
                       {/* Date */}
                       <div style={{ flexShrink: 0, minWidth: 100 }}>
-                        <div style={{ fontSize: 12.5, color: '#23241C', fontWeight: 600 }}>{formatDate(session.date)}</div>
-                        <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9.5, color: '#9C9A8C', marginTop: 2 }}>{formatTime(session.date)}</div>
+                        <div style={{ fontSize: 12.5, color: 'var(--color-ink)', fontWeight: 600 }}>{formatDate(session.date)}</div>
+                        <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9.5, color: 'var(--color-muted)', marginTop: 2 }}>{formatTime(session.date)}</div>
                       </div>
 
                       {/* Condition */}
                       {cond ? (
                         <div style={{ flex: 1, minWidth: 130 }}>
                           <div style={{ fontFamily: "'Newsreader',serif", fontSize: 18, color: cc, lineHeight: 1.1 }}>{skinPart} skin</div>
-                          <div style={{ fontSize: 11.5, color: '#9C9A8C', marginTop: 2 }}>{acnePart === 'Acne' ? 'Acne present' : 'No acne'}</div>
+                          <div style={{ fontSize: 11.5, color: 'var(--color-muted)', marginTop: 2 }}>{acnePart === 'Acne' ? 'Acne present' : 'No acne'}</div>
                         </div>
                       ) : (
-                        <div style={{ flex: 1, fontSize: 13, color: '#9C9A8C' }}>No scan data</div>
+                        <div style={{ flex: 1, fontSize: 13, color: 'var(--color-muted)' }}>No scan data</div>
                       )}
 
                       {/* Remedy pill */}
                       {session.selectedRemedy ? (
-                        <span style={{ background: '#EEF0DC', border: '1px solid #C8D068', borderRadius: '999px', padding: '5px 13px', fontFamily: "'Spline Sans Mono'", fontSize: 10, letterSpacing: '.06em', textTransform: 'uppercase', color: '#5E6A2A', flexShrink: 0 }}>
+                        <span style={{ background: 'var(--color-surface-tint)', border: '1px solid var(--color-header-line)', borderRadius: '999px', padding: '5px 13px', fontFamily: "'Spline Sans Mono'", fontSize: 10, letterSpacing: '.06em', textTransform: 'uppercase', color: 'var(--color-brand-text)', flexShrink: 0 }}>
                           🌿 {session.selectedRemedy.name}
                         </span>
                       ) : (
-                        <span style={{ background: '#F4F2EC', borderRadius: '999px', padding: '5px 12px', fontFamily: "'Spline Sans Mono'", fontSize: 10, color: '#CFCCBE', flexShrink: 0 }}>No remedy</span>
+                        <span style={{ background: '#F4F2EC', borderRadius: '999px', padding: '5px 12px', fontFamily: "'Spline Sans Mono'", fontSize: 10, color: 'var(--color-muted)', flexShrink: 0 }}>No remedy</span>
                       )}
 
                       {/* Tracking badge */}
                       {session.tracking?.enabled && (
-                        <span style={{ background: '#F4F6EA', borderRadius: '999px', padding: '5px 12px', fontFamily: "'Spline Sans Mono'", fontSize: 10, letterSpacing: '.06em', textTransform: 'uppercase', color: '#7E9A3E', flexShrink: 0, border: '1px solid #D5DBA8' }}>
+                        <span style={{ background: 'var(--color-surface-tint)', borderRadius: '999px', padding: '5px 12px', fontFamily: "'Spline Sans Mono'", fontSize: 10, letterSpacing: '.06em', textTransform: 'uppercase', color: 'var(--color-success)', flexShrink: 0, border: '1px solid #D5DBA8' }}>
                           {session.tracking.frequency}
                         </span>
                       )}
 
-                      <span style={{ color: '#BECA5C', flexShrink: 0 }}><ChevronIcon open={isExpanded} /></span>
+                      <span style={{ color: 'var(--color-brand)', flexShrink: 0 }}><ChevronIcon open={isExpanded} /></span>
                     </button>
 
                     {/* Expanded detail */}
@@ -690,9 +690,9 @@ export default function History() {
                         {/* AI Analysis */}
                         {session.detection && (
                           <div>
-                            <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9, letterSpacing: '.14em', textTransform: 'uppercase', color: '#9C9A8C', marginBottom: 12 }}>AI Analysis</div>
+                            <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9, letterSpacing: '.14em', textTransform: 'uppercase', color: 'var(--color-muted)', marginBottom: 12 }}>AI Analysis</div>
                             <ConfBar label="Skin type"   result={session.detection.skin_type}   value={session.detection.skin_conf}  color={cc} />
-                            <ConfBar label="Acne status" result={session.detection.acne_status === 'Acne' ? 'Acne' : 'Clear'} value={session.detection.acne_conf} color={acnePart === 'Acne' ? '#E8A86C' : '#BECA5C'} />
+                            <ConfBar label="Acne status" result={session.detection.acne_status === 'Acne' ? 'Acne' : 'Clear'} value={session.detection.acne_conf} color={acnePart === 'Acne' ? '#E8A86C' : 'var(--color-brand)'} />
                             <div style={{ marginTop: 10, padding: '10px 14px', background: conditionGradient(cond), borderRadius: 10, border: `1px solid ${cc}33` }}>
                               <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9.5, color: cc, fontWeight: 600, letterSpacing: '.06em', textTransform: 'uppercase' }}>
                                 {cond?.replace('_', ' + ') ?? '—'}
@@ -704,12 +704,12 @@ export default function History() {
                         {/* Lifestyle Advice */}
                         {session.advices?.length > 0 && (
                           <div>
-                            <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9, letterSpacing: '.14em', textTransform: 'uppercase', color: '#9C9A8C', marginBottom: 12 }}>Lifestyle Advice</div>
+                            <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9, letterSpacing: '.14em', textTransform: 'uppercase', color: 'var(--color-muted)', marginBottom: 12 }}>Lifestyle Advice</div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 9 }}>
                               {session.advices.map(a => (
-                                <div key={a.tag} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', padding: '9px 12px', background: '#fff', borderRadius: 10, border: '1px solid #E6E3D8' }}>
+                                <div key={a.tag} style={{ display: 'flex', gap: 10, alignItems: 'flex-start', padding: '9px 12px', background: 'var(--color-surface)', borderRadius: 10, border: '1px solid var(--color-hairline)' }}>
                                   <span style={{ flexShrink: 0, fontSize: 16 }}>{a.icon}</span>
-                                  <span style={{ fontSize: 12.5, color: '#3a3a2a', lineHeight: 1.5 }}>{a.text}</span>
+                                  <span style={{ fontSize: 12.5, color: 'var(--color-ink)', lineHeight: 1.5 }}>{a.text}</span>
                                 </div>
                               ))}
                             </div>
@@ -719,20 +719,20 @@ export default function History() {
                         {/* Questionnaire answers */}
                         {session.answers && Object.keys(session.answers).length > 0 && (
                           <div>
-                            <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9, letterSpacing: '.14em', textTransform: 'uppercase', color: '#9C9A8C', marginBottom: 12 }}>Your Profile</div>
+                            <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9, letterSpacing: '.14em', textTransform: 'uppercase', color: 'var(--color-muted)', marginBottom: 12 }}>Your Profile</div>
                             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                               {[
                                 { key: 'water',  label: 'Water intake', Icon: DropIcon,  color: '#4A90D9' },
                                 { key: 'stress', label: 'Stress level',  Icon: ZapIcon,   color: '#E8A86C' },
                                 { key: 'sleep',  label: 'Sleep quality', Icon: MoonIcon,  color: '#7E6ABF' },
                               ].map(({ key, label, Icon, color }) => session.answers[key] ? (
-                                <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px', background: '#fff', borderRadius: 10, border: '1px solid #E6E3D8' }}>
+                                <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 12px', background: 'var(--color-surface)', borderRadius: 10, border: '1px solid var(--color-hairline)' }}>
                                   <div style={{ width: 28, height: 28, borderRadius: 8, background: `${color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', color, flexShrink: 0 }}>
                                     <Icon />
                                   </div>
                                   <div>
-                                    <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9.5, color: '#9C9A8C', textTransform: 'uppercase', letterSpacing: '.06em' }}>{label}</div>
-                                    <div style={{ fontSize: 13, fontWeight: 600, color: '#23241C', marginTop: 1 }}>{session.answers[key]}</div>
+                                    <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9.5, color: 'var(--color-muted)', textTransform: 'uppercase', letterSpacing: '.06em' }}>{label}</div>
+                                    <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--color-ink)', marginTop: 1 }}>{session.answers[key]}</div>
                                   </div>
                                 </div>
                               ) : null)}
@@ -753,15 +753,15 @@ export default function History() {
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
                   width: '100%', marginTop: 10, padding: '14px',
-                  background: showAllSessions ? '#F4F6EA' : '#fff',
-                  border: '2px solid #D0CDB8', borderRadius: 14,
+                  background: showAllSessions ? 'var(--color-surface-tint)' : 'var(--color-surface)',
+                  border: '2px solid var(--color-field-border)', borderRadius: 14,
                   fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 13.5,
-                  color: '#5E6A2A', cursor: 'pointer',
+                  color: 'var(--color-brand-text)', cursor: 'pointer',
                   boxShadow: '0 2px 8px rgba(35,36,28,.06)',
                   transition: 'background .15s, box-shadow .15s',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.background = '#EEF0DC'; e.currentTarget.style.boxShadow = '0 4px 14px rgba(94,106,42,.14)'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = showAllSessions ? '#F4F6EA' : '#fff'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(35,36,28,.06)'; }}
+                onMouseEnter={e => { e.currentTarget.style.background = 'var(--color-surface-tint)'; e.currentTarget.style.boxShadow = '0 4px 14px rgba(94,106,42,.14)'; }}
+                onMouseLeave={e => { e.currentTarget.style.background = showAllSessions ? 'var(--color-surface-tint)' : 'var(--color-surface)'; e.currentTarget.style.boxShadow = '0 2px 8px rgba(35,36,28,.06)'; }}
               >
                 {showAllSessions ? (
                   <>
@@ -780,8 +780,8 @@ export default function History() {
         )}
 
         {/* ── Medical disclaimer ── */}
-        <div style={{ marginTop: 36, background: '#FDF4F0', border: '1px solid #F0D5C8', borderRadius: 14, padding: '16px 20px', display: 'flex', gap: 12, alignItems: 'flex-start' }}>
-          <div style={{ width: 32, height: 32, borderRadius: 9, background: '#F5DDD0', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: '#B05E3C', fontSize: 16 }}>⚕</div>
+        <div style={{ marginTop: 36, background: 'var(--color-alert-bg)', border: '1px solid #F0D5C8', borderRadius: 14, padding: '16px 20px', display: 'flex', gap: 12, alignItems: 'flex-start' }}>
+          <div style={{ width: 32, height: 32, borderRadius: 9, background: '#F5DDD0', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, color: 'var(--color-alert-strong)', fontSize: 16 }}>⚕</div>
           <p style={{ fontSize: 12.5, color: '#7A4A38', lineHeight: 1.65, margin: 0 }}>
             <strong>Medical Disclaimer:</strong> Skinora recommendations are for educational purposes only and are not a substitute for professional medical advice. Consult a qualified dermatologist for persistent skin conditions.
           </p>

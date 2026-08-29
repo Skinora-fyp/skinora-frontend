@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../context/AppContext';
 import { getNotificationCount } from '../api';
+import ThemeToggle from './ThemeToggle';
 
 // activeStep: 'capture' | 'analyze' | 'personalize' | 'remedies' | 'track'
 // consultMode: boolean — turns Analyze step terracotta
@@ -37,11 +38,11 @@ export default function AppHeader({ activeStep = 'capture', consultMode = false 
 
   function stepStyle(stepId) {
     const isActive = stepId === activeStep;
-    if (!isActive) return { color: '#B6B4A8' };
+    if (!isActive) return { color: 'var(--color-muted)' };
     if (stepId === 'analyze' && consultMode) {
-      return { background: '#F7E5DC', color: '#B05E3C', borderRadius: '999px', padding: '6px 11px' };
+      return { background: 'var(--color-alert-bg)', color: 'var(--color-alert-strong)', borderRadius: '999px', padding: '6px 11px' };
     }
-    return { background: '#EEF0DC', color: '#5E6A2A', borderRadius: '999px', padding: '6px 11px' };
+    return { background: 'var(--color-surface-tint)', color: 'var(--color-brand-text)', borderRadius: '999px', padding: '6px 11px' };
   }
 
   function handleLogout() {
@@ -53,8 +54,8 @@ export default function AppHeader({ activeStep = 'capture', consultMode = false 
   return (
     <header style={{
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      padding: '0 44px', height: 80, borderBottom: '1px solid #C8D068',
-      background: 'rgba(220,228,140,.22)', position: 'sticky',
+      padding: '0 44px', height: 80, borderBottom: '1px solid var(--color-header-line)',
+      background: 'color-mix(in srgb, var(--color-brand) 22%, transparent)', position: 'sticky',
       top: 0, zIndex: 100, backdropFilter: 'blur(14px)',
     }}>
       {/* Logo */}
@@ -73,7 +74,7 @@ export default function AppHeader({ activeStep = 'capture', consultMode = false 
             style={{ width: 234, height: 234, objectFit: 'contain', flexShrink: 0 }}
             onError={(e) => {
               e.target.style.display = 'none';
-              e.target.parentElement.innerHTML = '<span style="font-family:\'Newsreader\',serif;font-size:32px;color:#6E7733;line-height:1;font-weight:700">S</span>';
+              e.target.parentElement.innerHTML = '<span style="font-family:\'Newsreader\',serif;font-size:32px;color:var(--color-brand-deep);line-height:1;font-weight:700">S</span>';
             }}
           />
         </div>
@@ -84,21 +85,22 @@ export default function AppHeader({ activeStep = 'capture', consultMode = false 
         {steps.map((step, i) => (
           <span key={step.id} style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
             <span style={stepStyle(step.id)}>{step.label}</span>
-            {i < steps.length - 1 && <span style={{ color: '#CFCCBE' }}>›</span>}
+            {i < steps.length - 1 && <span style={{ color: 'var(--color-muted)' }}>›</span>}
           </span>
         ))}
       </nav>
 
       {/* User menu */}
       <div style={{ position: 'relative', display: 'flex', alignItems: 'center', gap: 9 }}>
+        <ThemeToggle />
         <button
           onClick={() => setMenuOpen((v) => !v)}
           style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'none', border: 'none', cursor: 'pointer', padding: '4px 6px', borderRadius: 10 }}
         >
           <div style={{ position: 'relative' }}>
             <div style={{
-              width: 32, height: 32, borderRadius: '50%', background: '#6E7733',
-              color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center',
+              width: 32, height: 32, borderRadius: '50%', background: 'var(--color-brand-deep)',
+              color: 'var(--color-surface)', display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontWeight: 600, fontSize: 13,
             }}>
               {userInitial}
@@ -108,7 +110,7 @@ export default function AppHeader({ activeStep = 'capture', consultMode = false 
               <span style={{
                 position: 'absolute', top: -5, right: -7,
                 minWidth: 18, height: 18, borderRadius: '999px',
-                background: '#E8553F', border: '2px solid rgba(246,244,236,.95)',
+                background: 'var(--color-notify)', border: '2px solid var(--color-canvas)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontFamily: "'Hanken Grotesk'", fontWeight: 800, fontSize: 10,
                 color: '#fff', lineHeight: 1, padding: '0 3px',
@@ -117,8 +119,8 @@ export default function AppHeader({ activeStep = 'capture', consultMode = false 
               </span>
             )}
           </div>
-          <span style={{ fontSize: 13, color: '#57564E' }}>{userName.split(' ')[0]}</span>
-          <span style={{ fontSize: 10, color: '#9C9A8C' }}>▾</span>
+          <span style={{ fontSize: 13, color: 'var(--color-text2)' }}>{userName.split(' ')[0]}</span>
+          <span style={{ fontSize: 10, color: 'var(--color-muted)' }}>▾</span>
         </button>
 
         {/* Dropdown */}
@@ -130,13 +132,13 @@ export default function AppHeader({ activeStep = 'capture', consultMode = false 
             />
             <div style={{
               position: 'absolute', top: 'calc(100% + 10px)', right: 0, zIndex: 200,
-              background: '#fff', border: '1px solid #E6E3D8', borderRadius: 14,
+              background: 'var(--color-surface)', border: '1px solid var(--color-hairline)', borderRadius: 14,
               boxShadow: '0 8px 24px rgba(0,0,0,.12)', minWidth: 200, overflow: 'hidden',
             }}>
               {/* User info */}
-              <div style={{ padding: '14px 16px', borderBottom: '1px solid #F0EDE4' }}>
-                <div style={{ fontWeight: 600, fontSize: 14, color: '#23241C' }}>{userName}</div>
-                <div style={{ fontSize: 12, color: '#9C9A8C', marginTop: 2 }}>{state.user?.email}</div>
+              <div style={{ padding: '14px 16px', borderBottom: '1px solid var(--color-hairline)' }}>
+                <div style={{ fontWeight: 600, fontSize: 14, color: 'var(--color-ink)' }}>{userName}</div>
+                <div style={{ fontSize: 12, color: 'var(--color-muted)', marginTop: 2 }}>{state.user?.email}</div>
               </div>
 
               {/* Menu items */}
@@ -148,18 +150,18 @@ export default function AppHeader({ activeStep = 'capture', consultMode = false 
                 <button key={label} onClick={action} style={{
                   width: '100%', display: 'flex', alignItems: 'center', gap: 10,
                   padding: '12px 16px', background: 'none', border: 'none',
-                  cursor: 'pointer', textAlign: 'left', fontSize: 13.5, color: '#3a3a2a',
-                  fontFamily: "'Hanken Grotesk'", borderBottom: '1px solid #F8F6F0',
+                  cursor: 'pointer', textAlign: 'left', fontSize: 13.5, color: 'var(--color-ink)',
+                  fontFamily: "'Hanken Grotesk'", borderBottom: '1px solid var(--color-canvas-alt)',
                   transition: 'background .12s',
                 }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = '#F8F6F0'; }}
+                onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-canvas-alt)'; }}
                 onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}>
                   <span>{icon}</span>
                   <span style={{ flex: 1 }}>{label}</span>
                   {badge != null && (
                     <span style={{
                       minWidth: 20, height: 20, borderRadius: '999px',
-                      background: '#E8553F', color: '#fff',
+                      background: 'var(--color-notify)', color: '#fff',
                       fontWeight: 800, fontSize: 11,
                       display: 'flex', alignItems: 'center', justifyContent: 'center',
                       padding: '0 5px', lineHeight: 1, flexShrink: 0,
@@ -174,10 +176,10 @@ export default function AppHeader({ activeStep = 'capture', consultMode = false 
               <button onClick={handleLogout} style={{
                 width: '100%', display: 'flex', alignItems: 'center', gap: 10,
                 padding: '12px 16px', background: 'none', border: 'none',
-                cursor: 'pointer', textAlign: 'left', fontSize: 13.5, color: '#B05E3C',
+                cursor: 'pointer', textAlign: 'left', fontSize: 13.5, color: 'var(--color-alert-strong)',
                 fontFamily: "'Hanken Grotesk'", transition: 'background .12s',
               }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = '#FDF4F0'; }}
+              onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--color-alert-bg)'; }}
               onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}>
                 <span>↩</span> Sign out
               </button>

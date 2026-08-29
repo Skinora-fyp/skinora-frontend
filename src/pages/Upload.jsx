@@ -191,7 +191,7 @@ export default function Upload() {
 
   const ghostBtn = {
     background: 'rgba(255,255,255,0.14)', backdropFilter: 'blur(4px)',
-    border: '1px solid rgba(255,255,255,0.28)', color: '#fff',
+    border: '1px solid rgba(255,255,255,0.28)', color: '#F6F4EC',
     borderRadius: 9, padding: '8px 18px', fontFamily: "'Hanken Grotesk'",
     fontWeight: 600, fontSize: 13, cursor: 'pointer',
   };
@@ -199,7 +199,7 @@ export default function Upload() {
   const hasPhoto = !!preview && !scanning;
 
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: '#F6F4EC', fontFamily: "'Hanken Grotesk'" }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', background: 'var(--color-canvas)', fontFamily: "'Hanken Grotesk'" }}>
       <AppHeader activeStep="capture" />
 
       <style>{`
@@ -217,14 +217,14 @@ export default function Upload() {
         .sk-fade-in  { animation: sk-fade-in .3s ease both; }
 
         .sk-opt-card { transition: transform .16s, box-shadow .16s, border-color .16s, background .16s; border: 2px solid #D4D8B8; }
-        .sk-opt-card:hover { transform: translateY(-3px); border-color: #6E7733 !important; background: #F4F7E8 !important; box-shadow: 0 10px 28px rgba(94,106,42,.15) !important; }
+        .sk-opt-card:hover { transform: translateY(-3px); border-color: var(--color-brand-deep) !important; background: #F4F7E8 !important; box-shadow: 0 10px 28px rgba(94,106,42,.15) !important; }
         .sk-opt-card:hover .sk-opt-icon { background: #E4EAC4 !important; color: #4A5820 !important; border-color: #8A9A40 !important; transform: scale(1.08); }
         .sk-opt-icon { transition: all .18s; }
 
         .sk-analyze-btn { transition: transform .16s, box-shadow .16s, filter .14s; }
         .sk-analyze-btn.ready:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(190,202,92,.45) !important; filter: brightness(1.05); }
 
-        .sk-guide-link:hover { color: #3A4E14 !important; border-color: #6E7733 !important; background: #EEF0DC !important; }
+        .sk-guide-link:hover { color: #3A4E14 !important; border-color: var(--color-brand-deep) !important; background: var(--color-surface-tint) !important; }
         .sk-guide-link { transition: all .15s; }
 
         .sk-dropzone-ring { transition: border-color .22s, box-shadow .22s; }
@@ -266,7 +266,7 @@ export default function Upload() {
           <div style={{ marginTop: 30, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
             <button onClick={capturePhoto} disabled={!cameraReady}
               style={{ width: 76, height: 76, borderRadius: '50%', border: '4px solid rgba(255,255,255,.22)', background: cameraReady ? 'rgba(255,255,255,.12)' : 'rgba(255,255,255,.06)', cursor: cameraReady ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all .2s' }}>
-              <div style={{ width: 52, height: 52, borderRadius: '50%', background: cameraReady ? '#BECA5C' : 'rgba(255,255,255,.2)', transition: 'background .2s' }} />
+              <div style={{ width: 52, height: 52, borderRadius: '50%', background: cameraReady ? 'var(--color-brand)' : 'rgba(255,255,255,.2)', transition: 'background .2s' }} />
             </button>
             <div style={{ color: 'rgba(255,255,255,.4)', fontSize: 11, fontFamily: "'Spline Sans Mono',monospace", letterSpacing: '.12em', textTransform: 'uppercase' }}>
               {cameraReady ? 'Tap to capture' : 'Waiting…'}
@@ -292,11 +292,11 @@ export default function Upload() {
 
           {/* Header */}
           <div>
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: '#23241C', border: '1px solid #3A3D20', borderRadius: '999px', padding: '4px 13px', marginBottom: 10 }}>
-              <span style={{ width: 6, height: 6, borderRadius: '50%', background: '#BECA5C', display: 'inline-block', flexShrink: 0 }} />
-              <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: '#BECA5C' }}>Step 2 · Upload</span>
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, background: 'var(--color-ink)', border: '1px solid #3A3D20', borderRadius: '999px', padding: '4px 13px', marginBottom: 10 }}>
+              <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--color-brand)', display: 'inline-block', flexShrink: 0 }} />
+              <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: 'var(--color-brand)' }}>Step 2 · Upload</span>
             </div>
-            <h2 style={{ fontFamily: "'Newsreader',serif", fontWeight: 400, fontSize: 32, letterSpacing: '-.02em', margin: 0, color: '#23241C', lineHeight: 1.15 }}>
+            <h2 style={{ fontFamily: "'Newsreader',serif", fontWeight: 400, fontSize: 32, letterSpacing: '-.02em', margin: 0, color: 'var(--color-ink)', lineHeight: 1.15 }}>
               {state.trackingDue?.due ? 'Upload your new photo.' : 'Upload your photo.'}
             </h2>
           </div>
@@ -306,13 +306,13 @@ export default function Upload() {
             const td = state.trackingDue;
             const freqDays = td.tracking?.frequency === 'weekly' ? '7 days' : '30 days';
             return (
-              <div className="sk-fade-in" style={{ background: 'linear-gradient(135deg,#EEF0DC,#F4F6EA)', border: '1.5px solid #BECA5C', borderRadius: 14, padding: '14px 18px', display: 'flex', gap: 14, alignItems: 'flex-start', flexShrink: 0 }}>
-                <div style={{ width: 36, height: 36, borderRadius: 10, background: '#BECA5C', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2A2D14" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+              <div className="sk-fade-in" style={{ background: 'linear-gradient(135deg,var(--color-surface-tint),var(--color-surface-tint))', border: '1.5px solid var(--color-brand)', borderRadius: 14, padding: '14px 18px', display: 'flex', gap: 14, alignItems: 'flex-start', flexShrink: 0 }}>
+                <div style={{ width: 36, height: 36, borderRadius: 10, background: 'var(--color-brand)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand-ink)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
                 </div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 700, fontSize: 13.5, color: '#23241C', marginBottom: 2 }}>{freqDays} have passed — progress check-in due</div>
-                  <div style={{ fontSize: 12.5, color: '#6B6A60', lineHeight: 1.5 }}>Upload a new photo below. Our AI will compare it with your original scan automatically.</div>
+                  <div style={{ fontWeight: 700, fontSize: 13.5, color: 'var(--color-ink)', marginBottom: 2 }}>{freqDays} have passed — progress check-in due</div>
+                  <div style={{ fontSize: 12.5, color: 'var(--color-body)', lineHeight: 1.5 }}>Upload a new photo below. Our AI will compare it with your original scan automatically.</div>
                 </div>
               </div>
             );
@@ -325,11 +325,11 @@ export default function Upload() {
             onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
             onDragLeave={() => setDragOver(false)}
             style={{
-              minHeight: 420, position: 'relative', borderRadius: 20, overflow: 'hidden', background: '#fff',
+              minHeight: 420, position: 'relative', borderRadius: 20, overflow: 'hidden', background: 'var(--color-surface)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               border: faceError  ? '2px solid #C0392B'
-                    : dragOver   ? '2px solid #BECA5C'
-                    : preview    ? '2px solid #6E7733'
+                    : dragOver   ? '2px solid var(--color-brand)'
+                    : preview    ? '2px solid var(--color-brand-deep)'
                     :              '2px solid #C8C8B0',
               boxShadow: dragOver  ? '0 0 0 4px rgba(190,202,92,.2), 0 8px 32px rgba(35,36,28,.1)'
                         : preview  ? '0 8px 28px rgba(35,36,28,.12)'
@@ -347,7 +347,7 @@ export default function Upload() {
                 )}
                 {/* Ready badge */}
                 {!scanning && (
-                  <div className="sk-fade-in" style={{ position: 'absolute', top: 14, right: 14, background: 'rgba(94,106,42,.9)', backdropFilter: 'blur(8px)', color: '#fff', borderRadius: '999px', padding: '5px 13px', fontFamily: "'Spline Sans Mono',monospace", fontSize: 10, letterSpacing: '.1em', textTransform: 'uppercase', border: '1px solid rgba(190,202,92,.4)' }}>
+                  <div className="sk-fade-in" style={{ position: 'absolute', top: 14, right: 14, background: 'rgba(94,106,42,.9)', backdropFilter: 'blur(8px)', color: '#F6F4EC', borderRadius: '999px', padding: '5px 13px', fontFamily: "'Spline Sans Mono',monospace", fontSize: 10, letterSpacing: '.1em', textTransform: 'uppercase', border: '1px solid rgba(190,202,92,.4)' }}>
                     ✓ Photo ready
                   </div>
                 )}
@@ -357,12 +357,12 @@ export default function Upload() {
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', padding: '32px 24px', width: '100%', height: '100%', textAlign: 'center' }}>
 
                 {/* Floating camera icon */}
-                <div className="sk-float" style={{ width: 80, height: 80, borderRadius: '50%', background: 'linear-gradient(135deg,#EEF0DC,#DDE4BA)', border: '2px solid #C8D068', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 18, boxShadow: '0 8px 24px rgba(94,106,42,.15)' }}>
-                  <CameraIcon size={34} color="#5E6A2A" />
+                <div className="sk-float" style={{ width: 80, height: 80, borderRadius: '50%', background: 'var(--color-surface-tint)', border: '2px solid var(--color-header-line)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 18, boxShadow: '0 8px 24px rgba(94,106,42,.15)' }}>
+                  <CameraIcon size={34} color="var(--color-brand-text)" />
                 </div>
 
-                <p style={{ fontFamily: "'Newsreader',serif", fontSize: 18, color: '#3A3A2E', margin: '0 0 6px', fontWeight: 400 }}>Add your photo to begin</p>
-                <p style={{ fontSize: 13, color: '#9C9A8C', margin: '0 0 24px' }}>Take a live photo or upload from your device</p>
+                <p style={{ fontFamily: "'Newsreader',serif", fontSize: 18, color: 'var(--color-ink)', margin: '0 0 6px', fontWeight: 400 }}>Add your photo to begin</p>
+                <p style={{ fontSize: 13, color: 'var(--color-muted)', margin: '0 0 24px' }}>Take a live photo or upload from your device</p>
 
                 {/* Option cards */}
                 <div style={{ display: 'flex', gap: 12, marginBottom: 20, width: '100%', maxWidth: 380 }}>
@@ -379,7 +379,7 @@ export default function Upload() {
 
                 {/* Drag-over glow ring */}
                 {dragOver && (
-                  <div className="sk-pulse" style={{ position: 'absolute', inset: 12, borderRadius: 14, border: '2px dashed #BECA5C', pointerEvents: 'none' }} />
+                  <div className="sk-pulse" style={{ position: 'absolute', inset: 12, borderRadius: 14, border: '2px dashed var(--color-brand)', pointerEvents: 'none' }} />
                 )}
               </div>
             )}
@@ -387,8 +387,8 @@ export default function Upload() {
             {/* Scan overlay */}
             {scanning && (
               <div style={{ position: 'absolute', inset: 0, background: 'rgba(35,36,28,.6)', backdropFilter: 'blur(2px)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
-                <div style={{ position: 'absolute', left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,transparent,#BECA5C,transparent)', boxShadow: '0 0 20px 5px rgba(190,202,92,.6)', animation: 'sk-scan 2s linear infinite' }} />
-                <div className="sk-spin" style={{ width: 44, height: 44, border: '3px solid rgba(255,255,255,.2)', borderTopColor: '#BECA5C', borderRadius: '50%' }} />
+                <div style={{ position: 'absolute', left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,transparent,var(--color-brand),transparent)', boxShadow: '0 0 20px 5px rgba(190,202,92,.6)', animation: 'sk-scan 2s linear infinite' }} />
+                <div className="sk-spin" style={{ width: 44, height: 44, border: '3px solid rgba(255,255,255,.2)', borderTopColor: 'var(--color-brand)', borderRadius: '50%' }} />
                 <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 11, letterSpacing: '.14em', textTransform: 'uppercase', color: '#F6F4EC' }}>Analysing dermal layers…</div>
                 <div style={{ display: 'flex', gap: 8 }}>
                   {['Skin type', 'Acne status'].map(l => (
@@ -412,9 +412,9 @@ export default function Upload() {
                 </div>
               </div>
               <div style={{ borderTop: '1px solid #F5C6C2', padding: '9px 16px', display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-                <button onClick={() => openCamera('user')} style={{ background: '#922B21', color: '#fff', border: 'none', borderRadius: 8, padding: '7px 14px', fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 12.5, cursor: 'pointer' }}>Retake with camera</button>
+                <button onClick={() => openCamera('user')} style={{ background: '#922B21', color: '#F6F4EC', border: 'none', borderRadius: 8, padding: '7px 14px', fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 12.5, cursor: 'pointer' }}>Retake with camera</button>
                 <button onClick={handleReupload} style={{ background: 'transparent', color: '#922B21', border: '1px solid #F5C6C2', borderRadius: 8, padding: '7px 14px', fontFamily: "'Hanken Grotesk'", fontWeight: 500, fontSize: 12.5, cursor: 'pointer' }}>Upload different photo</button>
-                <button onClick={() => navigate('/guidelines')} style={{ background: 'transparent', border: 'none', color: '#9C9A8C', fontFamily: "'Hanken Grotesk'", fontSize: 12, cursor: 'pointer', padding: '7px 4px', marginLeft: 'auto' }}>View guidelines →</button>
+                <button onClick={() => navigate('/guidelines')} style={{ background: 'transparent', border: 'none', color: 'var(--color-muted)', fontFamily: "'Hanken Grotesk'", fontSize: 12, cursor: 'pointer', padding: '7px 4px', marginLeft: 'auto' }}>View guidelines →</button>
               </div>
             </div>
           )}
@@ -427,26 +427,26 @@ export default function Upload() {
 
           {/* Checklist card — light, lime-accented */}
           <div style={{
-            background: '#fff',
+            background: 'var(--color-surface)',
             border: '1.5px solid #D4DEB8',
-            borderLeft: '4px solid #BECA5C',
+            borderLeft: '4px solid var(--color-brand)',
             borderRadius: 16,
             padding: '20px 20px 18px',
             boxShadow: '0 4px 20px rgba(94,106,42,.09)',
             flex: 1,
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 16 }}>
-              <div style={{ width: 28, height: 28, borderRadius: 8, background: '#EEF0DC', border: '1px solid #C8D068', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#5E6A2A" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <div style={{ width: 28, height: 28, borderRadius: 8, background: 'var(--color-surface-tint)', border: '1px solid var(--color-header-line)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand-text)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
               </div>
-              <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 10, letterSpacing: '.13em', textTransform: 'uppercase', color: '#5E6A2A', fontWeight: 500 }}>Quick checklist</span>
+              <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 10, letterSpacing: '.13em', textTransform: 'uppercase', color: 'var(--color-brand-text)', fontWeight: 500 }}>Quick checklist</span>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               {CHECKLIST.map((item) => (
                 <div key={item} style={{ display: 'flex', gap: 11, alignItems: 'flex-start', padding: '10px 12px', background: '#F8FAF0', border: '1px solid #E4EAC4', borderRadius: 10 }}>
-                  <div style={{ width: 20, height: 20, borderRadius: '50%', background: '#BECA5C', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#2A2D14" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'var(--color-brand)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 1 }}>
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--color-brand-ink)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
                   </div>
                   <span style={{ fontSize: 13.5, color: '#3A3A2E', lineHeight: 1.5, fontWeight: 500 }}>{item}</span>
                 </div>
@@ -455,9 +455,9 @@ export default function Upload() {
 
             <div style={{ height: 1, background: '#E8EAD8', margin: '16px 0' }} />
 
-            <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', background: '#F4F6EA', border: '1px solid #D8DCBA', borderRadius: 10, padding: '10px 12px' }}>
-              <span style={{ color: '#7E9A3E', marginTop: 1 }}><ShieldIcon /></span>
-              <p style={{ fontSize: 12, color: '#6B6A60', lineHeight: 1.6, margin: 0 }}>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', background: 'var(--color-surface-tint)', border: '1px solid #D8DCBA', borderRadius: 10, padding: '10px 12px' }}>
+              <span style={{ color: 'var(--color-success)', marginTop: 1 }}><ShieldIcon /></span>
+              <p style={{ fontSize: 12, color: 'var(--color-body)', lineHeight: 1.6, margin: 0 }}>
                 Your photo is encrypted, used only for this analysis, and never shared.
               </p>
             </div>
@@ -465,8 +465,8 @@ export default function Upload() {
 
           {/* Action card */}
           <div style={{
-            background: '#fff',
-            border: `2px solid ${hasPhoto ? '#6E7733' : '#C8C8B0'}`,
+            background: 'var(--color-surface)',
+            border: `2px solid ${hasPhoto ? 'var(--color-brand-deep)' : '#C8C8B0'}`,
             borderRadius: 16,
             padding: '18px 18px',
             boxShadow: hasPhoto ? '0 8px 28px rgba(110,119,51,.18)' : '0 4px 16px rgba(35,36,28,.07)',
@@ -479,8 +479,8 @@ export default function Upload() {
               className={`sk-analyze-btn${hasPhoto ? ' ready' : ''}`}
               style={{
                 width: '100%',
-                background: hasPhoto ? '#BECA5C' : '#ECEADF',
-                color: hasPhoto ? '#1A1E0A' : '#A8A698',
+                background: hasPhoto ? 'var(--color-brand)' : 'var(--color-tint-neutral)',
+                color: hasPhoto ? 'var(--color-brand-ink)' : 'var(--color-muted)',
                 border: hasPhoto ? '1.5px solid #8A9A40' : '1.5px solid #D4D0C4',
                 borderRadius: 12, padding: '14px',
                 fontFamily: "'Hanken Grotesk'", fontWeight: 700, fontSize: 15,
@@ -494,7 +494,7 @@ export default function Upload() {
             </button>
 
             {!preview && (
-              <p style={{ fontSize: 11.5, color: '#B6B4A8', textAlign: 'center', margin: '9px 0 0', lineHeight: 1.5 }}>
+              <p style={{ fontSize: 11.5, color: 'var(--color-muted)', textAlign: 'center', margin: '9px 0 0', lineHeight: 1.5 }}>
                 Add a photo from the left to get started.
               </p>
             )}
@@ -522,11 +522,11 @@ export default function Upload() {
 function OptionCard({ Icon, title, sub, onClick }) {
   return (
     <button onClick={onClick} className="sk-opt-card"
-      style={{ flex: 1, background: '#fff', borderRadius: 14, padding: '18px 12px 16px', cursor: 'pointer', textAlign: 'center', fontFamily: "'Hanken Grotesk'", boxShadow: '0 3px 12px rgba(35,36,28,.08)' }}>
-      <div className="sk-opt-icon" style={{ width: 46, height: 46, borderRadius: '50%', background: '#F0F3E4', border: '1.5px solid #BECA5C', margin: '0 auto 12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#5E6A2A' }}>
+      style={{ flex: 1, background: 'var(--color-surface)', borderRadius: 14, padding: '18px 12px 16px', cursor: 'pointer', textAlign: 'center', fontFamily: "'Hanken Grotesk'", boxShadow: '0 3px 12px rgba(35,36,28,.08)' }}>
+      <div className="sk-opt-icon" style={{ width: 46, height: 46, borderRadius: '50%', background: '#F0F3E4', border: '1.5px solid var(--color-brand)', margin: '0 auto 12px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--color-brand-text)' }}>
         <Icon size={20} />
       </div>
-      <div style={{ fontWeight: 700, fontSize: 13.5, color: '#23241C', marginBottom: 3 }}>{title}</div>
+      <div style={{ fontWeight: 700, fontSize: 13.5, color: 'var(--color-ink)', marginBottom: 3 }}>{title}</div>
       <div style={{ fontSize: 11.5, color: '#7A7868', lineHeight: 1.4 }}>{sub}</div>
     </button>
   );

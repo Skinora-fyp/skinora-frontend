@@ -3,14 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { useGoogleLogin } from '@react-oauth/google';
 import { useApp } from '../context/AppContext';
 import { sendOtp, verifyOtp, register, login, googleLogin } from '../api';
+import ThemeToggle from '../components/ThemeToggle';
 
 const EMAIL_RE = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/;
 
 /* ── Shared input style ── */
 const INPUT = (extra = {}) => ({
-  width: '100%', border: '1.5px solid #E0DCCC', borderRadius: 11,
-  padding: '10px 14px 10px 42px', background: '#FAFAF7', fontSize: 14,
-  fontFamily: "'Hanken Grotesk'", color: '#23241C', outline: 'none',
+  width: '100%', border: '1.5px solid var(--color-field-border)', borderRadius: 11,
+  padding: '10px 14px 10px 42px', background: 'var(--color-surface)', fontSize: 14,
+  fontFamily: "'Hanken Grotesk'", color: 'var(--color-ink)', outline: 'none',
   boxSizing: 'border-box', transition: 'border-color .15s',
   ...extra,
 });
@@ -18,7 +19,7 @@ const INPUT = (extra = {}) => ({
 function IconInput({ icon, children }) {
   return (
     <div style={{ position: 'relative' }}>
-      <span style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', fontSize: 15, color: '#A8A698', pointerEvents: 'none', lineHeight: 1 }}>
+      <span style={{ position: 'absolute', left: 14, top: '50%', transform: 'translateY(-50%)', fontSize: 15, color: 'var(--color-muted)', pointerEvents: 'none', lineHeight: 1 }}>
         {icon}
       </span>
       {children}
@@ -29,7 +30,7 @@ function IconInput({ icon, children }) {
 function FieldLabel({ children, right }) {
   return (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-      <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9.5, letterSpacing: '.09em', textTransform: 'uppercase', color: '#9C9A8C' }}>
+      <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9.5, letterSpacing: '.09em', textTransform: 'uppercase', color: 'var(--color-muted)' }}>
         {children}
       </span>
       {right}
@@ -183,15 +184,15 @@ export default function Auth() {
   function ErrorBanner() {
     if (!error) return null;
     const cfgMap = {
-      EMAIL_NOT_FOUND: { icon: '📧', accent: '#8A6B1E', bg: '#FFF8E6', border: '#F0DFA0',
+      EMAIL_NOT_FOUND: { icon: '📧', accent: 'var(--color-warn-strong)', bg: 'var(--color-warn-bg)', border: 'var(--color-warn-border)',
         action: { label: 'Create an account instead →', fn: () => switchTab('signup') } },
       GOOGLE_ONLY:     { icon: '🔑', accent: '#3A5FA0', bg: '#EEF3FB', border: '#BACCF5',
         action: { label: 'Use Google Sign In →', fn: () => initiateGoogleLogin() } },
-      WRONG_PASSWORD:  { icon: '🔒', accent: '#B05E3C', bg: '#FDF4F0', border: '#EDBBAA', action: null },
+      WRONG_PASSWORD:  { icon: '🔒', accent: 'var(--color-alert-strong)', bg: 'var(--color-alert-bg)', border: '#EDBBAA', action: null },
     };
     const cfg = !isSignup ? cfgMap[errorCode] : null;
-    const accent = cfg?.accent ?? '#B05E3C';
-    const bg     = cfg?.bg     ?? '#FDF4F0';
+    const accent = cfg?.accent ?? 'var(--color-alert-strong)';
+    const bg     = cfg?.bg     ?? 'var(--color-alert-bg)';
     const border = cfg?.border ?? '#EDBBAA';
     const icon   = cfg?.icon   ?? '⚠️';
 
@@ -226,11 +227,11 @@ export default function Auth() {
         }
         .skinora-error-banner { animation: skinora-banner-in 0.22s ease both; }
         .skinora-tab-btn { transition: color .15s, border-color .15s; }
-        .skinora-tab-btn:hover { color: #23241C !important; }
-        .skinora-field input:focus { border-color: #BECA5C !important; background: #fff !important; }
+        .skinora-tab-btn:hover { color: var(--color-ink) !important; }
+        .skinora-field input:focus { border-color: var(--color-brand) !important; background: var(--color-surface) !important; }
         .skinora-submit-btn:hover:not(:disabled) { filter: brightness(1.04); transform: translateY(-1px); }
         .skinora-submit-btn { transition: all .15s; }
-        .skinora-google-btn:hover { border-color: #BECA5C !important; background: #FAFAF7 !important; }
+        .skinora-google-btn:hover { border-color: var(--color-brand) !important; background: var(--color-surface) !important; }
         .skinora-google-btn { transition: all .15s; }
 
         @media (max-width: 640px) {
@@ -247,6 +248,10 @@ export default function Auth() {
         }
       `}</style>
 
+      <div style={{ position: 'absolute', top: 18, right: 18, zIndex: 2 }}>
+        <ThemeToggle />
+      </div>
+
       {/* ── Decorative background circles ── */}
       <div style={{ position: 'absolute', top: -120, right: -120, width: 480, height: 480, borderRadius: '50%', background: 'rgba(190,202,92,.13)', pointerEvents: 'none' }} />
       <div style={{ position: 'absolute', bottom: -80, left: -80,  width: 340, height: 340, borderRadius: '50%', background: 'rgba(110,119,51,.10)', pointerEvents: 'none' }} />
@@ -256,7 +261,7 @@ export default function Auth() {
       {/* ── Card ── */}
       <div className="sk-auth-card" style={{
         display: 'flex', width: '100%', maxWidth: 920,
-        maxHeight: 'calc(100vh - 32px)', background: '#fff',
+        maxHeight: 'calc(100vh - 32px)', background: 'var(--color-surface)',
         borderRadius: 20, overflow: 'hidden',
         boxShadow: '0 20px 60px rgba(0,0,0,.14)',
         position: 'relative', zIndex: 1,
@@ -272,25 +277,25 @@ export default function Auth() {
             <div style={{ width: 56, height: 56, flexShrink: 0, overflow: 'hidden', background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <img src="/assets/skinora_logo.png" alt="Skinora"
                 style={{ width: 168, height: 168, objectFit: 'contain', flexShrink: 0 }}
-                onError={e => { e.target.style.display = 'none'; e.target.parentElement.innerHTML = '<span style="font-family:\'Newsreader\',serif;font-size:26px;color:#6E7733;line-height:1;font-weight:700">S</span>'; }} />
+                onError={e => { e.target.style.display = 'none'; e.target.parentElement.innerHTML = '<span style="font-family:\'Newsreader\',serif;font-size:26px;color:var(--color-brand-deep);line-height:1;font-weight:700">S</span>'; }} />
             </div>
-            <span style={{ fontFamily: "'Newsreader',serif", fontSize: 20, color: '#23241C', letterSpacing: '-.01em' }}>Skinora</span>
+            <span style={{ fontFamily: "'Newsreader',serif", fontSize: 20, color: 'var(--color-ink)', letterSpacing: '-.01em' }}>Skinora</span>
           </div>
 
           {/* ── OTP step ── */}
           {step === 'otp' ? (
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
               <button onClick={() => { setStep('form'); setError(''); setSuccess(''); }}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, color: '#9C9A8C', fontSize: 13, marginBottom: 28, padding: 0, fontFamily: "'Hanken Grotesk'" }}>
+                style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, color: 'var(--color-muted)', fontSize: 13, marginBottom: 28, padding: 0, fontFamily: "'Hanken Grotesk'" }}>
                 ← Back
               </button>
 
-              <div style={{ width: 52, height: 52, borderRadius: 14, background: '#EEF0DC', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, marginBottom: 18 }}>✉️</div>
+              <div style={{ width: 52, height: 52, borderRadius: 14, background: 'var(--color-surface-tint)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 24, marginBottom: 18 }}>✉️</div>
               <h3 style={{ fontFamily: "'Newsreader',serif", fontWeight: 400, fontSize: 28, margin: '0 0 8px', letterSpacing: '-.01em' }}>
                 Check your inbox
               </h3>
               <p style={{ fontSize: 14, color: '#8A887C', margin: '0 0 28px', lineHeight: 1.55 }}>
-                We sent a 6-digit code to <strong style={{ color: '#23241C' }}>{email}</strong>
+                We sent a 6-digit code to <strong style={{ color: 'var(--color-ink)' }}>{email}</strong>
               </p>
 
               <form onSubmit={handleVerifyAndRegister} style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
@@ -304,21 +309,21 @@ export default function Auth() {
                       onPaste={i === 0 ? handleOtpPaste : undefined}
                       style={{
                         flex: 1, height: 56, textAlign: 'center',
-                        border: `1.5px solid ${digit ? '#BECA5C' : '#E0DCCC'}`,
-                        borderRadius: 12, background: digit ? '#F4F6EA' : '#FAFAF7',
+                        border: `1.5px solid ${digit ? 'var(--color-brand)' : 'var(--color-field-border)'}`,
+                        borderRadius: 12, background: digit ? 'var(--color-surface-tint)' : 'var(--color-surface)',
                         fontSize: 22, fontWeight: 700, fontFamily: "'Spline Sans Mono',monospace",
-                        color: '#23241C', outline: 'none', transition: 'border-color .12s, background .12s',
+                        color: 'var(--color-ink)', outline: 'none', transition: 'border-color .12s, background .12s',
                       }}
                     />
                   ))}
                 </div>
 
                 {error && (
-                  <div className="skinora-error-banner" style={{ background: '#FDF4F0', border: '1.5px solid #EDBBAA', borderRadius: 12, padding: '12px 14px', marginBottom: 16, display: 'flex', gap: 9, alignItems: 'flex-start' }}>
+                  <div className="skinora-error-banner" style={{ background: 'var(--color-alert-bg)', border: '1.5px solid #EDBBAA', borderRadius: 12, padding: '12px 14px', marginBottom: 16, display: 'flex', gap: 9, alignItems: 'flex-start' }}>
                     <span style={{ fontSize: 16, flexShrink: 0 }}>⚠️</span>
-                    <span style={{ fontSize: 13.5, color: '#B05E3C', lineHeight: 1.5, flex: 1 }}>{error}</span>
+                    <span style={{ fontSize: 13.5, color: 'var(--color-alert-strong)', lineHeight: 1.5, flex: 1 }}>{error}</span>
                     <button type="button" onClick={() => setError('')}
-                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#B05E3C', opacity: .5, fontSize: 18, lineHeight: 1, padding: 0 }}>×</button>
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--color-alert-strong)', opacity: .5, fontSize: 18, lineHeight: 1, padding: 0 }}>×</button>
                   </div>
                 )}
                 {success && (
@@ -329,15 +334,15 @@ export default function Auth() {
                 )}
 
                 <button type="submit" disabled={loading || !otpFilled} className="skinora-submit-btn"
-                  style={{ width: '100%', background: otpFilled ? '#BECA5C' : '#ECEADF', color: otpFilled ? '#2A2D14' : '#A8A698', border: 'none', borderRadius: '999px', padding: '14px', fontFamily: "'Hanken Grotesk'", fontWeight: 700, fontSize: 15, cursor: (loading || !otpFilled) ? 'not-allowed' : 'pointer', marginBottom: 20 }}>
+                  style={{ width: '100%', background: otpFilled ? 'var(--color-brand)' : 'var(--color-tint-neutral)', color: otpFilled ? 'var(--color-brand-ink)' : 'var(--color-muted)', border: 'none', borderRadius: '999px', padding: '14px', fontFamily: "'Hanken Grotesk'", fontWeight: 700, fontSize: 15, cursor: (loading || !otpFilled) ? 'not-allowed' : 'pointer', marginBottom: 20 }}>
                   {loading ? 'Verifying…' : 'Verify & create account →'}
                 </button>
               </form>
 
-              <div style={{ textAlign: 'center', fontSize: 13, color: '#9C9A8C' }}>
+              <div style={{ textAlign: 'center', fontSize: 13, color: 'var(--color-muted)' }}>
                 Didn't receive it?{' '}
                 <button onClick={handleResend} disabled={cooldown > 0 || loading}
-                  style={{ background: 'none', border: 'none', cursor: cooldown > 0 ? 'default' : 'pointer', color: cooldown > 0 ? '#B6B4A8' : '#5E6A2A', fontWeight: 700, fontSize: 13, fontFamily: "'Hanken Grotesk'", padding: 0 }}>
+                  style={{ background: 'none', border: 'none', cursor: cooldown > 0 ? 'default' : 'pointer', color: cooldown > 0 ? 'var(--color-muted)' : 'var(--color-brand-text)', fontWeight: 700, fontSize: 13, fontFamily: "'Hanken Grotesk'", padding: 0 }}>
                   {cooldown > 0 ? `Resend in ${cooldown}s` : 'Resend code'}
                 </button>
               </div>
@@ -352,20 +357,20 @@ export default function Auth() {
               <h3 style={{ fontFamily: "'Newsreader',serif", fontWeight: 400, fontSize: 26, margin: '0 0 3px', letterSpacing: '-.01em' }}>
                 {isSignup ? 'Create your account' : 'Welcome back'}
               </h3>
-              <p style={{ fontSize: 13.5, color: '#9C9A8C', margin: '0 0 14px' }}>
+              <p style={{ fontSize: 13.5, color: 'var(--color-muted)', margin: '0 0 14px' }}>
                 {isSignup ? 'Start your personalised skin journey.' : 'Continue to your Skinora dashboard.'}
               </p>
 
               {/* ── Tab switcher — underline style ── */}
-              <div style={{ display: 'flex', borderBottom: '1.5px solid #ECEADF', marginBottom: 16 }}>
+              <div style={{ display: 'flex', borderBottom: '1.5px solid var(--color-tint-neutral)', marginBottom: 16 }}>
                 {[['signin', 'Login'], ['signup', 'Sign up']].map(([id, label]) => (
                   <button key={id} onClick={() => switchTab(id)} className="skinora-tab-btn"
                     style={{
                       padding: '0 0 10px', marginRight: 28,
                       background: 'none', border: 'none',
-                      borderBottom: tab === id ? '2.5px solid #BECA5C' : '2.5px solid transparent',
+                      borderBottom: tab === id ? '2.5px solid var(--color-brand)' : '2.5px solid transparent',
                       marginBottom: -1.5,
-                      color: tab === id ? '#23241C' : '#9C9A8C',
+                      color: tab === id ? 'var(--color-ink)' : 'var(--color-muted)',
                       fontWeight: tab === id ? 700 : 500,
                       fontSize: 15, cursor: 'pointer', fontFamily: "'Hanken Grotesk'",
                     }}>
@@ -376,16 +381,16 @@ export default function Auth() {
 
               {/* Google */}
               <button onClick={() => initiateGoogleLogin()} className="skinora-google-btn"
-                style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, background: '#fff', border: '1.5px solid #E0DCCC', borderRadius: '999px', padding: '10px 20px', cursor: 'pointer', fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 14, color: '#23241C', marginBottom: 12 }}>
+                style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, background: 'var(--color-surface)', border: '1.5px solid var(--color-field-border)', borderRadius: '999px', padding: '10px 20px', cursor: 'pointer', fontFamily: "'Hanken Grotesk'", fontWeight: 600, fontSize: 14, color: 'var(--color-ink)', marginBottom: 12 }}>
                 <span style={{ fontFamily: "'Newsreader',serif", fontWeight: 800, fontSize: 17, background: 'conic-gradient(from -45deg,#EA4335,#FBBC05,#34A853,#4285F4,#EA4335)', WebkitBackgroundClip: 'text', backgroundClip: 'text', color: 'transparent' }}>G</span>
                 Continue with Google
               </button>
 
               {/* Divider */}
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, margin: '0 0 12px' }}>
-                <div style={{ flex: 1, height: 1, background: '#ECEADF' }} />
-                <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9.5, letterSpacing: '.1em', textTransform: 'uppercase', color: '#B6B4A8' }}>or email</span>
-                <div style={{ flex: 1, height: 1, background: '#ECEADF' }} />
+                <div style={{ flex: 1, height: 1, background: 'var(--color-tint-neutral)' }} />
+                <span style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9.5, letterSpacing: '.1em', textTransform: 'uppercase', color: 'var(--color-muted)' }}>or email</span>
+                <div style={{ flex: 1, height: 1, background: 'var(--color-tint-neutral)' }} />
               </div>
 
               <form onSubmit={isSignup ? handleSendOtp : handleSignin} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
@@ -405,8 +410,8 @@ export default function Auth() {
                 {/* Email */}
                 <div className="skinora-field">
                   <FieldLabel right={
-                    isSignup && emailStatus === 'valid'   ? <span style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, color: '#5E6A2A' }}>✓ Valid</span> :
-                    isSignup && emailStatus === 'invalid' ? <span style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, color: '#C0744E' }}>✗ Invalid</span> : null
+                    isSignup && emailStatus === 'valid'   ? <span style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, color: 'var(--color-brand-text)' }}>✓ Valid</span> :
+                    isSignup && emailStatus === 'invalid' ? <span style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, color: 'var(--color-alert)' }}>✗ Invalid</span> : null
                   }>Email</FieldLabel>
                   <IconInput icon="✉">
                     <input type="email" value={email}
@@ -414,12 +419,12 @@ export default function Auth() {
                       placeholder="you@email.com" required
                       style={INPUT({
                         borderColor: isSignup && emailStatus === 'invalid' ? '#E8A86C'
-                                   : isSignup && emailStatus === 'valid'   ? '#BECA5C'
-                                   : '#E0DCCC',
+                                   : isSignup && emailStatus === 'valid'   ? 'var(--color-brand)'
+                                   : 'var(--color-field-border)',
                       })} />
                   </IconInput>
                   {isSignup && emailStatus === 'invalid' && (
-                    <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9.5, color: '#C0744E', marginTop: 5 }}>
+                    <div style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9.5, color: 'var(--color-alert)', marginTop: 5 }}>
                       Please enter a valid email address (e.g. name@example.com)
                     </div>
                   )}
@@ -429,7 +434,7 @@ export default function Auth() {
                 <div className="skinora-field">
                   <FieldLabel right={
                     isSignup
-                      ? <span style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, color: password.length >= 8 ? '#5E6A2A' : '#B6B4A8' }}>
+                      ? <span style={{ fontFamily: "'Spline Sans Mono'", fontSize: 9, color: password.length >= 8 ? 'var(--color-brand-text)' : 'var(--color-muted)' }}>
                           {password.length >= 8 ? '✓ 8+ chars' : 'Min 8 chars'}
                         </span>
                       : null
@@ -449,14 +454,14 @@ export default function Auth() {
                   const blocked = loading || (isSignup && emailStatus === 'invalid');
                   return (
                     <button type="submit" disabled={blocked} className="skinora-submit-btn"
-                      style={{ width: '100%', background: blocked ? '#D8DC9A' : '#BECA5C', color: '#2A2D14', border: 'none', borderRadius: '999px', padding: '12px', fontFamily: "'Hanken Grotesk'", fontWeight: 700, fontSize: 15, cursor: blocked ? 'not-allowed' : 'pointer', marginTop: 2 }}>
+                      style={{ width: '100%', background: blocked ? '#D8DC9A' : 'var(--color-brand)', color: 'var(--color-brand-ink)', border: 'none', borderRadius: '999px', padding: '12px', fontFamily: "'Hanken Grotesk'", fontWeight: 700, fontSize: 15, cursor: blocked ? 'not-allowed' : 'pointer', marginTop: 2 }}>
                       {loading ? 'Loading…' : isSignup ? 'Send verification code →' : 'Login →'}
                     </button>
                   );
                 })()}
               </form>
 
-              <p style={{ fontSize: 12, color: '#B6B4A8', textAlign: 'center', margin: '10px 0 0', lineHeight: 1.5 }}>
+              <p style={{ fontSize: 12, color: 'var(--color-muted)', textAlign: 'center', margin: '10px 0 0', lineHeight: 1.5 }}>
                 {isSignup
                   ? '✉️  A 6-digit code will be sent to verify your email.'
                   : '🔒  A verified account is required to upload any photo.'
@@ -476,7 +481,7 @@ export default function Auth() {
           {/* Image */}
           <img src="/assets/sign_up.jfif" alt="Natural skin care"
             style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-            onError={e => { e.target.style.background = 'linear-gradient(160deg,#6E7733,#B4C45A)'; e.target.src = ''; }}
+            onError={e => { e.target.style.background = 'var(--color-brand-deep)'; e.target.src = ''; }}
           />
 
           {/* Gradient overlay */}
@@ -484,8 +489,8 @@ export default function Auth() {
 
           {/* Brand badge */}
           <div style={{ position: 'absolute', top: 24, left: 24, display: 'flex', alignItems: 'center', gap: 7, background: 'rgba(246,244,236,.15)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,.25)', borderRadius: '999px', padding: '7px 14px' }}>
-            <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#BECA5C', display: 'inline-block', flexShrink: 0 }} />
-            <span style={{ fontFamily: "'Newsreader',serif", fontSize: 14, color: '#fff', letterSpacing: '.01em' }}>Skinora</span>
+            <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--color-brand)', display: 'inline-block', flexShrink: 0 }} />
+            <span style={{ fontFamily: "'Newsreader',serif", fontSize: 14, color: 'var(--color-surface)', letterSpacing: '.01em' }}>Skinora</span>
           </div>
 
           {/* Bottom text */}
@@ -493,14 +498,14 @@ export default function Auth() {
             <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 10, letterSpacing: '.14em', textTransform: 'uppercase', color: 'rgba(190,202,92,.9)', marginBottom: 8 }}>
               Natural · Science-backed
             </div>
-            <p style={{ fontFamily: "'Newsreader',serif", fontSize: 22, fontWeight: 400, color: '#F6F4EC', lineHeight: 1.25, margin: 0 }}>
+            <p style={{ fontFamily: "'Newsreader',serif", fontSize: 22, fontWeight: 400, color: 'var(--color-canvas)', lineHeight: 1.25, margin: 0 }}>
               AI-powered skin analysis<br />meets botanical care.
             </p>
             {/* Stats row */}
             <div style={{ display: 'flex', gap: 20, marginTop: 18 }}>
               {[['256-bit', 'Encryption'], ['0', 'Photos sold']].map(([v, l]) => (
                 <div key={l}>
-                  <div style={{ fontFamily: "'Newsreader',serif", fontSize: 20, color: '#BECA5C', lineHeight: 1 }}>{v}</div>
+                  <div style={{ fontFamily: "'Newsreader',serif", fontSize: 20, color: 'var(--color-brand)', lineHeight: 1 }}>{v}</div>
                   <div style={{ fontFamily: "'Spline Sans Mono',monospace", fontSize: 9, letterSpacing: '.1em', textTransform: 'uppercase', color: 'rgba(230,227,216,.7)', marginTop: 3 }}>{l}</div>
                 </div>
               ))}
